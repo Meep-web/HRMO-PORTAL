@@ -1,0 +1,490 @@
+/* Reset default margins and paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Global body styling */
+body, html {
+    height: 100%; /* Ensure full height for both body and HTML */
+    overflow: hidden; /* Prevent unnecessary scrollbars */
+    font-family: Arial, sans-serif;
+    background-color: #111; /* Dark theme consistency */
+    color: white;
+}
+
+/* Layout container */
+.layout-container {
+    display: flex;
+    height: 100%; /* Full height */
+}
+
+/* Sidebar */
+.layout-sidebar {
+    background-color: #fff3cc; /* Updated background color */
+    width: 250px; /* Fixed sidebar width */
+    flex-shrink: 0; /* Prevent shrinking */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    color: #111; /* Text color to contrast the background */
+}
+
+/* Main wrapper */
+.layout-main-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Ensure it takes the remaining space next to the sidebar */
+}
+
+/* Header */
+.layout-header {
+    background-color: #fff3cc; /* Updated background color */
+    height: 75px; /* Fixed header height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevent shrinking */
+    color: #111; /* Text color to contrast the background */
+}
+
+/* Main content */
+.layout-main {  
+    flex: 1; /* Take up all remaining space in the main wrapper */
+    display: flex;
+    background-color: #ffda66; /* Set background color for the main content area */
+    flex-direction: column;
+    padding: 10px; /* Add padding for better visuals */
+    overflow-y: auto; /* Allow vertical scrolling for large content */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    color: #111;
+}
+
+/* Footer */
+.layout-footer {
+    background-color: #fff3cc; /* Updated background color */
+    height: 50px; /* Fixed footer height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Prevent shrinking */
+    color: #111; /* Text color to contrast the background */
+}
+
+/* Sidebar logo styling */
+.sidebar-logo {
+    width: 150%; /* Adjust the width as needed */
+    max-width: 125px; /* Maximum width for the logo */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 20px; /* Add some spacing below the logo */
+    cursor: pointer; /* Make the logo clickable */
+    border: none; /* Remove any border */
+}
+
+
+
+/* Nosa button */
+.nosa-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+}
+
+.nosa-button img {
+    width: 150%;
+    max-width: 125px;
+    height: auto;
+    transition: transform 0.2s ease;
+}
+
+.nosa-button:hover img {
+    transform: scale(1.1);
+}
+
+/* Service Records button */
+.service-records-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+}
+
+.service-records-button img {
+    width: 100%; /* Adjust the size */
+    max-width: 135px; /* Maintain a consistent max size */
+    height: auto; /* Keep aspect ratio */
+    transition: transform 0.2s ease;
+}
+
+.service-records-button:hover img {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+/* Leave Credits button */
+.leave-credits-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+}
+
+.leave-credits-button img {
+    width: 100%; /* Adjust size */
+    max-width: 135px; /* Maintain a consistent max size */
+    height: auto; /* Keep aspect ratio */
+    transition: transform 0.2s ease;
+}
+
+.leave-credits-button:hover img {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+/* Account Management button */
+.account-management-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+}
+
+.account-management-button img {
+    width: 100%; /* Adjust the size */
+    max-width: 125px; /* Maintain a consistent max size */
+    height: auto; /* Keep aspect ratio */
+    transition: transform 0.2s ease;
+}
+
+.account-management-button:hover img {
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+.main-content {
+    background-color: #ffda66; /* Your background color */
+    flex: 1; /* Ensure it takes up the remaining vertical space */
+    padding: 20px;
+    overflow-y: auto; /* Allow vertical scrolling if needed */
+    color: #000; /* Set text color to black */
+}
+
+.section-container {
+    display: flex; /* Use flexbox to arrange the sections side by side */
+    justify-content: space-between; /* Add space between columns */
+    gap: 20px; /* Adjust the gap between columns */
+}
+
+.section {
+    flex: 1; /* Ensure each section takes up equal space */
+    padding: 20px;
+    /* Removed background-color and border */
+    border-radius: 0; /* No rounded corners */
+    box-shadow: none; /* Removed shadow */
+}
+
+h2 {
+    font-size: 27px; /* Increased text size by 3px (from 24px to 27px) */
+    margin-bottom: 10px;
+    text-align: center; /* Center the title */
+}
+
+p {
+    font-size: 23px; /* Increased paragraph size by 3px (from 16px to 19px) */
+    line-height: 1.6; /* Increase line height for readability */
+    text-align: justify; /* Justify the text */
+}
+
+/* Search bar container styling */
+/* Search Bar Styles */
+.search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 30%;
+}
+
+.search-bar {
+    padding: 8px 40px 8px 10px; /* Adjusted padding for icon */
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.search-button {
+    position: absolute;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #333;
+    font-size: 13px; /* Adjust size for the icon */
+}
+
+/* Optional: Style for the magnifying glass */
+.search-button i {
+    font-size: 15px; /* Size of the icon */
+}
+
+
+
+/* Table styling */
+.nosa-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+    background-color: white; /* Optional for better readability */
+}
+
+.nosa-table th, .nosa-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.nosa-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 70%; /* Adjust as needed */
+    max-width: 800px; /* Max width for large screens */
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+.search-bar {
+    padding: 8px;
+    font-size: 14px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-button {
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
+
+/* Table Styles inside Modal */
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.modal-table th, .modal-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.modal-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.modal-table td {
+    font-size: 14px;
+}
+
+.modal-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.modal-table button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.modal-table button:hover {
+    background-color: #0056b3;
+}
+
+/* Modal Image Styles */
+.modal-image {
+    width: 100%; /* Make it responsive */
+    max-width: 600px; /* Limit the width */
+    height: auto; /* Maintain aspect ratio */
+    margin: 0 auto; /* Center the image */
+}
+
+/* Unique Button for User Dropdown */
+.user-dropdown-button {
+    position: absolute;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    right: 2%;
+    top: 2.3%;
+}
+
+/* General Dropdown Menu Styles */
+.user-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0; /* Align to the right of the parent container */
+    background-color: white;
+    min-width: 160px;
+    z-index: 10;
+    border: 1px solid #ccc;
+    padding: 5px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+/* Show the dropdown when hovering over the user icon/button */
+.user-dropdown:hover .user-dropdown-menu {
+    display: block;
+}
+
+/* Dropdown Items */
+.user-dropdown .user-dropdown-item {
+    padding: 10px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+/* Hover effect for dropdown items */
+.user-dropdown .user-dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Dropdown Header (user name display) */
+.user-dropdown .user-dropdown-header {
+    padding: 12px;
+    font-weight: bold;
+    background-color: #f8f8f8;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Dropdown item icons */
+.user-dropdown .user-dropdown-item i {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+/* Person icon styling */
+#userDropdownButton i {
+    font-size: 24px; /* Adjust icon size */
+    color: #333; /* Default color */
+}
+
+/* Optional: Adding padding to the button for better alignment */
+.user-dropdown .dropdown-toggle {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+/* Unique class for the profile form to isolate styling */
+.profile-form {
+    display: inline-block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Styling for the logout and profile buttons */
+.profile-form button,
+.logout-form button {
+    background: none;
+    border: none;
+    padding: 0;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* Styling for the dropdown items (same for both profile and logout) */
+.profile-form .user-dropdown-item,
+.logout-form .user-dropdown-item {
+    padding: 10px 16px;
+    color: #333;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* Hover effect for profile and logout items */
+.profile-form .user-dropdown-item:hover,
+.logout-form .user-dropdown-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* Optional: Adjust the icon sizes for the profile and logout buttons */
+.profile-form button i,
+.logout-form button i {
+    font-size: 18px;
+    margin-right: 10px;
+}

@@ -1,0 +1,75 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+}
+
+h2, .input-label, .submit-button {
+    font-family: 'Times New Roman', serif; /* Apply Times New Roman to the text */
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-box {
+    background-color: rgba(255, 255, 255, 0.9); /* White background with 50% opacity */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    border: 2px solid yellow; /* Yellow border for the container */
+}
+
+h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid yellow; /* Yellow border for input fields */
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: transparent;
+    color: #333;
+}
+
+/* For floating label effect (inside the input field) */
+.input-field::placeholder {
+    color: #888;
+    font-style: italic;
+}
+
+/* Focus effect when user types */
+.input-field:focus {
+    border-color: #ffcc00; /* Bright yellow on focus */
+    outline: none;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
