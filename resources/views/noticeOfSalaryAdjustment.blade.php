@@ -119,7 +119,7 @@
     <div class="modal-content">
         <span class="close-pdf-modal">&times;</span>
         <h2>NOSA Document</h2>
-        <iframe id="pdfIframe" src="" width="100%" height="300px"></iframe>
+        <iframe id="pdfIframe" src="" width="100%" height="500px"></iframe>
     </div>
 </div>
 

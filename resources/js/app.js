@@ -1,4 +1,5 @@
 import "./bootstrap";
+import { PDFDocument, rgb } from "pdf-lib";
 
 document.addEventListener("DOMContentLoaded", function () {
     // Get all sidebar buttons
@@ -252,27 +253,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Generate Button functionality
-    document.addEventListener("click", function (event) {
-        if (
-            event.target &&
-            event.target.classList.contains("generate-button")
-        ) {
-            const employeeId = event.target.getAttribute("data-employee-id");
-
-            // Construct the URL to the NOSA.pdf file
-            const pdfUrl = `/docs/NOSA.pdf`; // Adjust the path if necessary
-
-            // Set the iframe source to the PDF URL
-            const pdfIframe = document.getElementById("pdfIframe");
-            pdfIframe.setAttribute("src", pdfUrl);
-
-            // Open the PDF modal
-            const pdfModal = document.getElementById("pdfModal");
-            pdfModal.style.display = "block";
-        }
-    });
-
     // Close the PDF modal when the close button is clicked
     const closePdfModalButton = document.querySelector(".close-pdf-modal");
     if (closePdfModalButton) {
@@ -287,6 +267,217 @@ document.addEventListener("DOMContentLoaded", function () {
         const pdfModal = document.getElementById("pdfModal");
         if (event.target === pdfModal) {
             pdfModal.style.display = "none";
+        }
+    });
+
+    async function addTextToPDF(pdfUrl, textData, pageIndex = 0) {
+        // Fetch the existing PDF
+        const existingPdfBytes = await fetch(pdfUrl).then((res) =>
+            res.arrayBuffer()
+        );
+
+        // Load the PDF document
+        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+        // Get the first page (or specify the page index)
+        const pages = pdfDoc.getPages();
+        const page = pages[pageIndex];
+
+        // Get the page dimensions
+        const { width, height } = page.getSize();
+
+        // Loop through the textData array and add each text to the page
+        textData.forEach(({ text, x, y, size = 12, color = rgb(0, 0, 0) }) => {
+            page.drawText(text, {
+                x: x, // X coordinate (from the left)
+                y: height - y, // Y coordinate (from the bottom)
+                size: size, // Font size
+                color: color, // Text color
+            });
+        });
+
+        // Save the modified PDF
+        const modifiedPdfBytes = await pdfDoc.save();
+
+        // Create a Blob and URL for the modified PDF
+        const blob = new Blob([modifiedPdfBytes], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+
+        return url;
+    }
+
+    // Attach the functionality to the Generate button
+    document.addEventListener("click", async function (event) {
+        if (
+            event.target &&
+            event.target.classList.contains("generate-button")
+        ) {
+            const employeeName='Employee Name';
+            const salaryGrade='1';
+            const stepIncrement='1';
+            // Example text data to add to the PDF
+            const textData = [
+                {
+                    text: "Date",
+                    x: 400,
+                    y: 190,
+                    size: 12,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: employeeName,
+                    x: 114,
+                    y: 225,
+                    size: 12,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: "Position",
+                    x: 114,
+                    y: 237,
+                    size: 12,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: "Department",
+                    x: 114,
+                    y: 248,
+                    size: 12,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: 'Mr/Mrs:'+employeeName,
+                    x: 114,
+                    y: 282,
+                    size: 12,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: '115',
+                    x: 327,
+                    y: 304,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: 'January 3, 2018',
+                    x: 390,
+                    y: 304,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: 'Date Effective',
+                    x: 193,
+                    y: 327,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                },
+                {
+                    text: 'Date Effective',
+                    x: 303,
+                    y: 347,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: salaryGrade,
+                    x: 268,
+                    y: 360,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                },  
+                {
+                    text: stepIncrement,
+                    x: 316,
+                    y: 360,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: 'New Salary',
+                    x: 443,
+                    y: 360,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                },
+                {
+                    text: 'Previous date',
+                    x: 279,
+                    y: 393,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                },
+                {
+                    text: salaryGrade,
+                    x: 152,
+                    y: 407,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: stepIncrement,
+                    x: 197,
+                    y: 407,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: 'Current Salary',
+                    x: 443,
+                    y: 405,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                },
+                {
+                    text: 'Date Effective',
+                    x: 290,
+                    y: 439,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                }, 
+                {
+                    text: 'Difference',
+                    x: 443,
+                    y: 439,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                },
+                {
+                    text: 'Position',
+                    x: 180,
+                    y: 598,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                },
+                {
+                    text: salaryGrade,
+                    x: 180,
+                    y: 609,
+                    size: 10,
+                    color: rgb(0, 0, 0),
+                },
+
+            ];
+
+            // Path to the original PDF
+            const pdfUrl = "/docs/NOSA.pdf";
+
+            // Add text to the PDF and display it
+            addTextToPDF(pdfUrl, textData)
+                .then((modifiedPdfUrl) => {
+                    // Display the modified PDF in the iframe
+                    const pdfIframe = document.getElementById("pdfIframe");
+                    pdfIframe.setAttribute("src", modifiedPdfUrl);
+
+                    // Open the PDF modal
+                    const pdfModal = document.getElementById("pdfModal");
+                    pdfModal.style.display = "block";
+                })
+                .catch((error) => {
+                    console.error("Error modifying PDF:", error);
+                    alert("Failed to generate the PDF. Please try again.");
+                });
         }
     });
 });
