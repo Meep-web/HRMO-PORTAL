@@ -323,3 +323,59 @@
 .generate-button:hover {
     background-color: #0056b3; /* Darker green on hover */
 }
+
+/* PDF Modal Styling */
+#pdfModal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
+    z-index: 1000; /* Sit on top of everything */
+    overflow: hidden; /* Prevent scroll bars */
+}
+
+#pdfModal .modal-content {
+    position: relative;
+    background-color: #fff; /* White background for the modal content */
+    margin: 5% auto; /* Center the modal */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 90%; /* Adjust width as needed */
+    max-width: 1200px; /* Maximum width */
+    height: 90%; /* Adjust height as needed */
+    max-height: 90vh; /* Maximum height */
+    overflow: hidden; /* Prevent scroll bars inside the modal */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow */
+}
+
+#pdfModal .close-pdf-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#pdfModal .close-pdf-modal:hover,
+#pdfModal .close-pdf-modal:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+#pdfModal h2 {
+    margin-top: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+#pdfModal iframe {
+    width: 100%;
+    height: calc(100% - 60px); /* Adjust height to fit within the modal */
+    border: none; /* Remove iframe border */
+}

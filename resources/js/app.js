@@ -189,30 +189,34 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
         });
     }
-     // View Button functionality
-     const viewButtons = document.querySelectorAll(".view-button");
-     const departmentSpecificModal = document.getElementById("DepartmentSpecificModal");
-     const closeDepartmentSpecificModalButton = document.querySelector(".close-department-specific-modal");
- 
-     // Open the department-specific modal and fetch data when a view button is clicked
-     viewButtons.forEach((button) => {
-         button.addEventListener("click", function () {
-             const department = button.getAttribute("data-department");
- 
-             // Fetch data from the backend
-             fetch(`/get-nosa-data?department=${department}`)
-                 .then((response) => response.json())
-                 .then((data) => {
-                     // Clear the table body
-                     const tableBody = document.querySelector(
-                         "#employeeDataTable tbody"
-                     );
-                     tableBody.innerHTML = "";
- 
-                     // Populate the table with fetched data
-                     data.forEach((item) => {
-                         const row = document.createElement("tr");
-                         row.innerHTML = `
+    // View Button functionality
+    const viewButtons = document.querySelectorAll(".view-button");
+    const departmentSpecificModal = document.getElementById(
+        "DepartmentSpecificModal"
+    );
+    const closeDepartmentSpecificModalButton = document.querySelector(
+        ".close-department-specific-modal"
+    );
+
+    // Open the department-specific modal and fetch data when a view button is clicked
+    viewButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const department = button.getAttribute("data-department");
+
+            // Fetch data from the backend
+            fetch(`/get-nosa-data?department=${department}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    // Clear the table body
+                    const tableBody = document.querySelector(
+                        "#employeeDataTable tbody"
+                    );
+                    tableBody.innerHTML = "";
+
+                    // Populate the table with fetched data
+                    data.forEach((item) => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
                              <td>${item.employeeName}</td>
                              <td>${item.position}</td>
                              <td>${item.dateReleased}</td>
@@ -221,40 +225,68 @@ document.addEventListener("DOMContentLoaded", function () {
                                  <button class="generate-button" data-employee-id="${item.id}">Generate</button>
                              </td>
                          `;
-                         tableBody.appendChild(row);
-                     });
- 
-                     // Open the modal
-                     departmentSpecificModal.style.display = "block";
-                 })
-                 .catch((error) => {
-                     console.error("Error fetching data:", error);
-                     alert("Failed to fetch data. Please try again.");
-                 });
-         });
-     });
- 
-     // Close the department-specific modal when the close button is clicked
-     if (closeDepartmentSpecificModalButton) {
-         closeDepartmentSpecificModalButton.addEventListener("click", () => {
-             departmentSpecificModal.style.display = "none";
-         });
-     }
- 
-     // Close the department-specific modal when clicking outside the modal content
-     window.addEventListener("click", (event) => {
-         if (event.target === departmentSpecificModal) {
-             departmentSpecificModal.style.display = "none";
-         }
-     });
- 
-    //  // Generate Button functionality
-    //  document.addEventListener("click", function (event) {
-    //      if (event.target && event.target.classList.contains("generate-button")) {
-    //          const employeeId = event.target.getAttribute("data-employee-id");
-    //          alert(`Generate button clicked for employee ID: ${employeeId}`);
-    //          // Add your logic here for what happens when the Generate button is clicked
-    //      }
-    //  });
-        
+                        tableBody.appendChild(row);
+                    });
+
+                    // Open the modal
+                    departmentSpecificModal.style.display = "block";
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                    alert("Failed to fetch data. Please try again.");
+                });
+        });
+    });
+
+    // Close the department-specific modal when the close button is clicked
+    if (closeDepartmentSpecificModalButton) {
+        closeDepartmentSpecificModalButton.addEventListener("click", () => {
+            departmentSpecificModal.style.display = "none";
+        });
+    }
+
+    // Close the department-specific modal when clicking outside the modal content
+    window.addEventListener("click", (event) => {
+        if (event.target === departmentSpecificModal) {
+            departmentSpecificModal.style.display = "none";
+        }
+    });
+
+    // Generate Button functionality
+    document.addEventListener("click", function (event) {
+        if (
+            event.target &&
+            event.target.classList.contains("generate-button")
+        ) {
+            const employeeId = event.target.getAttribute("data-employee-id");
+
+            // Construct the URL to the NOSA.pdf file
+            const pdfUrl = `/docs/NOSA.pdf`; // Adjust the path if necessary
+
+            // Set the iframe source to the PDF URL
+            const pdfIframe = document.getElementById("pdfIframe");
+            pdfIframe.setAttribute("src", pdfUrl);
+
+            // Open the PDF modal
+            const pdfModal = document.getElementById("pdfModal");
+            pdfModal.style.display = "block";
+        }
+    });
+
+    // Close the PDF modal when the close button is clicked
+    const closePdfModalButton = document.querySelector(".close-pdf-modal");
+    if (closePdfModalButton) {
+        closePdfModalButton.addEventListener("click", () => {
+            const pdfModal = document.getElementById("pdfModal");
+            pdfModal.style.display = "none";
+        });
+    }
+
+    // Close the PDF modal when clicking outside the modal content
+    window.addEventListener("click", (event) => {
+        const pdfModal = document.getElementById("pdfModal");
+        if (event.target === pdfModal) {
+            pdfModal.style.display = "none";
+        }
+    });
 });

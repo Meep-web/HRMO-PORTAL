@@ -114,4 +114,13 @@
     </div>
 </div>
 
+<!-- PDF Display Modal -->
+<div id="pdfModal" class="modal">
+    <div class="modal-content">
+        <span class="close-pdf-modal">&times;</span>
+        <h2>NOSA Document</h2>
+        <iframe id="pdfIframe" src="" width="100%" height="300px"></iframe>
+    </div>
+</div>
+
 @endsection
