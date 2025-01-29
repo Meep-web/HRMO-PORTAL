@@ -208,7 +208,8 @@ document.addEventListener("DOMContentLoaded", function () {
             fetch(`/get-nosa-data?department=${department}`)
                 .then((response) => response.json())
                 .then((data) => {
-                    // Clear the table body
+                    console.log("Fetched data:", data); // Log the fetched data
+                    // Clear the table body and populate the table
                     const tableBody = document.querySelector(
                         "#employeeDataTable tbody"
                     );
@@ -218,15 +219,29 @@ document.addEventListener("DOMContentLoaded", function () {
                     data.forEach((item) => {
                         const row = document.createElement("tr");
                         row.innerHTML = `
-                             <td>${item.employeeName}</td>
-                             <td>${item.position}</td>
-                             <td>${item.dateReleased}</td>
-                             <td>${item.userName}</td>
-                             <td>
-                                 <button class="generate-button" data-employee-id="${item.id}">Generate</button>
-                             </td>
-                         `;
+                         <td>${item.employeeName}</td>
+                         <td>${item.position}</td>
+                        <td>${new Date(item.dateReleased).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                         <td>${item.userName}</td>
+                         <td>
+                             <button class="generate-button" data-employee-id="${item.id}">Generate</button>
+                         </td>
+                     `;
                         tableBody.appendChild(row);
+                    });
+
+                    // Add event listeners to the Generate buttons
+                    const generateButtons =
+                        document.querySelectorAll(".generate-button");
+                    generateButtons.forEach((generateButton) => {
+                        generateButton.addEventListener("click", function () {
+                            const employeeId =
+                                generateButton.getAttribute("data-employee-id");
+                            console.log(
+                                "Generate button clicked for employeeId:",
+                                employeeId
+                            );
+                        });
                     });
 
                     // Open the modal
@@ -312,171 +327,242 @@ document.addEventListener("DOMContentLoaded", function () {
             event.target &&
             event.target.classList.contains("generate-button")
         ) {
-            const employeeName='Employee Name';
-            const salaryGrade='1';
-            const stepIncrement='1';
-            // Example text data to add to the PDF
-            const textData = [
-                {
-                    text: "Date",
-                    x: 400,
-                    y: 190,
-                    size: 12,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: employeeName,
-                    x: 114,
-                    y: 225,
-                    size: 12,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: "Position",
-                    x: 114,
-                    y: 237,
-                    size: 12,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: "Department",
-                    x: 114,
-                    y: 248,
-                    size: 12,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: 'Mr/Mrs:'+employeeName,
-                    x: 114,
-                    y: 282,
-                    size: 12,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: '115',
-                    x: 327,
-                    y: 304,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: 'January 3, 2018',
-                    x: 390,
-                    y: 304,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: 'Date Effective',
-                    x: 193,
-                    y: 327,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                },
-                {
-                    text: 'Date Effective',
-                    x: 303,
-                    y: 347,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: salaryGrade,
-                    x: 268,
-                    y: 360,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                },  
-                {
-                    text: stepIncrement,
-                    x: 316,
-                    y: 360,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: 'New Salary',
-                    x: 443,
-                    y: 360,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                },
-                {
-                    text: 'Previous date',
-                    x: 279,
-                    y: 393,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                },
-                {
-                    text: salaryGrade,
-                    x: 152,
-                    y: 407,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: stepIncrement,
-                    x: 197,
-                    y: 407,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: 'Current Salary',
-                    x: 443,
-                    y: 405,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                },
-                {
-                    text: 'Date Effective',
-                    x: 290,
-                    y: 439,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                }, 
-                {
-                    text: 'Difference',
-                    x: 443,
-                    y: 439,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                },
-                {
-                    text: 'Position',
-                    x: 180,
-                    y: 598,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                },
-                {
-                    text: salaryGrade,
-                    x: 180,
-                    y: 609,
-                    size: 10,
-                    color: rgb(0, 0, 0),
-                },
+            const employeeId = event.target.getAttribute("data-employee-id");
 
-            ];
+            // Fetch employee data from the backend
+            fetch(`/get-employee-data/${employeeId}`)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(
+                            `HTTP error! Status: ${response.status}`
+                        );
+                    }
+                    return response.json();
+                })
+                .then((employeeData) => {
+                    // Check if employeeData is defined and has the required properties
+                    if (
+                        !employeeData ||
+                        !employeeData.newSalary ||
+                        !employeeData.previousSalary
+                    ) {
+                        throw new Error("Invalid employee data received");
+                    }
 
-            // Path to the original PDF
-            const pdfUrl = "/docs/NOSA.pdf";
+                    // Calculate the difference between newSalary and previousSalary
+                    const difference =
+                        employeeData.newSalary - employeeData.previousSalary;
 
-            // Add text to the PDF and display it
-            addTextToPDF(pdfUrl, textData)
-                .then((modifiedPdfUrl) => {
-                    // Display the modified PDF in the iframe
-                    const pdfIframe = document.getElementById("pdfIframe");
-                    pdfIframe.setAttribute("src", modifiedPdfUrl);
+                    const textData = [
+                        {
+                            text: new Date(employeeData.dateReleased).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                            }),
+                            x: 400,
+                            y: 190,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: employeeData.employeeName,
+                            x: 114,
+                            y: 225,
+                            size: 12,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: employeeData.position,
+                            x: 114,
+                            y: 237,
+                            size: 12,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: employeeData.department,
+                            x: 114,
+                            y: 248,
+                            size: 12,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: `Mr/Mrs: ${employeeData.employeeName}`,
+                            x: 114,
+                            y: 282,
+                            size: 12,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: "115",
+                            x: 327,
+                            y: 304,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: new Date(
+                                "January 3, 2018"
+                            ).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            }),
+                            x: 390,
+                            y: 304,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: new Date(
+                                employeeData.dateOfEffectivity
+                            ).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            }),
+                            x: 193,
+                            y: 327,
+                            size: 9,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: new Date(
+                                employeeData.dateOfEffectivity
+                            ).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            }),
+                            x: 303,
+                            y: 347,
+                            size: 8,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: employeeData.salaryGrade.toString(),
+                            x: 268,
+                            y: 360,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: employeeData.stepIncrement.toString(),
+                            x: 316,
+                            y: 360,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: parseFloat(
+                                employeeData.newSalary
+                            ).toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }),
+                            x: 443,
+                            y: 360,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        }, // Ensure newSalary is a number
+                        {
+                            text: "Previous date",
+                            x: 279,
+                            y: 393,
+                            size: 8,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: employeeData.salaryGrade.toString(),
+                            x: 152,
+                            y: 407,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: employeeData.stepIncrement.toString(),
+                            x: 197,
+                            y: 407,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: parseFloat(
+                                employeeData.previousSalary
+                            ).toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }),
+                            x: 443,
+                            y: 405,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        }, // Ensure previousSalary is a number
+                        {
+                            text: new Date(
+                                employeeData.dateOfEffectivity
+                            ).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                            }),
+                            x: 290,
+                            y: 439,
+                            size: 8,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: difference.toLocaleString("en-US", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            }),
+                            x: 443,
+                            y: 439,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        }, // Formatted difference
+                        {
+                            text: employeeData.position,
+                            x: 180,
+                            y: 598,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: employeeData.salaryGrade.toString(),
+                            x: 180,
+                            y: 609,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                    ];
 
-                    // Open the PDF modal
-                    const pdfModal = document.getElementById("pdfModal");
-                    pdfModal.style.display = "block";
+                    // Path to the original PDF
+                    const pdfUrl = "/docs/NOSA.pdf";
+
+                    // Add text to the PDF and display it
+                    addTextToPDF(pdfUrl, textData)
+                        .then((modifiedPdfUrl) => {
+                            // Display the modified PDF in the iframe
+                            const pdfIframe =
+                                document.getElementById("pdfIframe");
+                            pdfIframe.setAttribute("src", modifiedPdfUrl);
+
+                            // Open the PDF modal
+                            const pdfModal =
+                                document.getElementById("pdfModal");
+                            pdfModal.style.display = "block";
+                        })
+                        .catch((error) => {
+                            console.error("Error modifying PDF:", error);
+                            alert(
+                                "Failed to generate the PDF. Please try again."
+                            );
+                        });
                 })
                 .catch((error) => {
-                    console.error("Error modifying PDF:", error);
-                    alert("Failed to generate the PDF. Please try again.");
+                    console.error("Error fetching employee data:", error);
+                    alert("Failed to fetch employee data. Please try again.");
                 });
         }
     });

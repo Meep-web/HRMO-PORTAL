@@ -28,66 +28,80 @@ class NoticeOfSalaryAdjustmentController extends Controller
     }
     // Save the data
     public function save(Request $request)
-    {
-        // Log the received data for debugging
-        Log::info('Received data:', $request->all());
+{
+    Log::info('Received data:', $request->all());
 
-        // Validate the incoming request
-        $validator = Validator::make($request->all(), [
-            'currentEmployeeName' => 'required|string',
-            'salaryAdjustments' => 'required|array',
-            'salaryAdjustments.*.employeeName' => 'required|string',
-            'salaryAdjustments.*.position' => 'required|string',
-            'salaryAdjustments.*.department' => 'required|string',
-            'salaryAdjustments.*.previousSalary' => 'required|numeric',
-            'salaryAdjustments.*.newSalary' => 'required|numeric',
-            'salaryAdjustments.*.dateOfEffectivity' => 'required|date',
-            'salaryAdjustments.*.dateReleased' => 'required|date',
-            'salaryAdjustments.*.salaryGrade' => 'required|integer',
-            'salaryAdjustments.*.stepIncrement' => 'required|integer',
-        ]);
+    $validator = Validator::make($request->all(), [
+        'currentEmployeeName' => 'required|string',
+        'salaryAdjustments' => 'required|array',
+        'salaryAdjustments.*.employeeName' => 'required|string',
+        'salaryAdjustments.*.position' => 'required|string',
+        'salaryAdjustments.*.department' => 'required|string',
+        'salaryAdjustments.*.previousSalary' => 'required|numeric',
+        'salaryAdjustments.*.newSalary' => 'required|numeric',
+        'salaryAdjustments.*.dateOfEffectivity' => 'required|date',
+        'salaryAdjustments.*.dateReleased' => 'required|date',
+        'salaryAdjustments.*.salaryGrade' => 'required|integer',
+        'salaryAdjustments.*.stepIncrement' => 'required|integer',
+    ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed.',
-                'errors' => $validator->errors(),
-            ], 422);
-        }
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed.',
+            'errors' => $validator->errors(),
+        ], 422);
+    }
 
-        // Get the validated data
-        $data = $validator->validated();
+    $data = $validator->validated();
 
-        try {
-            // Save each salary adjustment to the database
-            foreach ($data['salaryAdjustments'] as $adjustment) {
-                NOSA::create([
-                    'employeeName' => $adjustment['employeeName'],
-                    'position' => $adjustment['position'],
-                    'department' => $adjustment['department'],
-                    'previousSalary' => $adjustment['previousSalary'],
-                    'newSalary' => $adjustment['newSalary'],
-                    'dateOfEffectivity' => $adjustment['dateOfEffectivity'],
-                    'dateReleased' => $adjustment['dateReleased'],
-                    'salaryGrade' => $adjustment['salaryGrade'],
-                    'stepIncrement' => $adjustment['stepIncrement'],
-                    'userName' => $data['currentEmployeeName'], // Add the current employeeName as the userName
+    try {
+        foreach ($data['salaryAdjustments'] as $adjustment) {
+            $existingRecord = NOSA::where('employeeName', $adjustment['employeeName'])
+                ->where('department', $adjustment['department'])
+                ->first();
+
+            if ($existingRecord) {
+                // If a record exists, return it for confirmation
+                return response()->json([
+                    'success' => false,
+                    'duplicate' => true,
+                    'message' => "A record for {$adjustment['employeeName']} at {$adjustment['department']} already exists.",
+                    'existingData' => $existingRecord,
+                    'newData' => $adjustment,
                 ]);
             }
-
-            // Return a success response
-            return response()->json([
-                'success' => true,
-                'message' => 'Data saved successfully!',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Database error: ' . $e->getMessage()); // Log the error
-            return response()->json([
-                'success' => false,
-                'message' => 'Database error: ' . $e->getMessage(),
-            ], 500);
         }
+
+        // If no duplicate, proceed with saving
+        foreach ($data['salaryAdjustments'] as $adjustment) {
+            NOSA::create([
+                'employeeName' => $adjustment['employeeName'],
+                'position' => $adjustment['position'],
+                'department' => $adjustment['department'],
+                'previousSalary' => $adjustment['previousSalary'],
+                'newSalary' => $adjustment['newSalary'],
+                'dateOfEffectivity' => $adjustment['dateOfEffectivity'],
+                'dateReleased' => $adjustment['dateReleased'],
+                'salaryGrade' => $adjustment['salaryGrade'],
+                'stepIncrement' => $adjustment['stepIncrement'],
+                'userName' => $data['currentEmployeeName'],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data saved successfully!',
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Database error: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Database error: ' . $e->getMessage(),
+        ], 500);
     }
+}
+
     //Show the Data Per Department
     public function getNosaData(Request $request)
     {
@@ -95,9 +109,23 @@ class NoticeOfSalaryAdjustmentController extends Controller
 
         // Fetch data from the database
         $data = NOSA::where('department', $department)
-            ->select('employeeName', 'position', 'dateReleased', 'userName')
+            ->select('id','employeeName', 'position', 'dateReleased', 'userName')
             ->get();
 
         return response()->json($data);
     }
+    public function getEmployeeData($employeeId)
+    {
+        // Fetch the employee data from the NOSA table
+        $employeeData = NOSA::find($employeeId);
+
+        if (!$employeeData) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
+
+        // Return the employee data as JSON
+        return response()->json($employeeData);
+    }
+
+    
 }
