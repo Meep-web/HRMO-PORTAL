@@ -4,7 +4,7 @@ import { PDFDocument, rgb } from "pdf-lib";
 document.addEventListener("DOMContentLoaded", function () {
     // Get all sidebar buttons
     const sidebarButtons = document.querySelectorAll(
-        ".nosa-button, .service-records-button, .leave-credits-button, .account-management-button"
+        ".nosa-button, .service-records-button, .leave-credits-button, .personalDataSheet-button, .account-management-button"
     );
 
     // Loop through each button and add an event listener
