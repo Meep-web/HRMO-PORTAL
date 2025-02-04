@@ -489,370 +489,600 @@ document
     });
 
 document.addEventListener("DOMContentLoaded", function () {
+    // First part: Excel extraction logic
     const extractButton = document.getElementById("extractDataButton");
     const excelUpload = document.getElementById("excelUpload");
 
-    extractButton.addEventListener("click", function () {
-        const file = excelUpload.files[0];
+    if (extractButton && excelUpload) {
+        extractButton.addEventListener("click", function () {
+            const file = excelUpload.files[0];
 
-        if (!file) {
-            console.log("Please select a file first.");
-            return;
-        }
-
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: "array" });
-
-            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-
-            // Accessing the specific cells
-            const surnameCell = firstSheet["D10"];
-            const firstnameCell = firstSheet["D11"];
-            const middlenameCell = firstSheet["D12"];
-            const nameExtensionCell = firstSheet["L11"];
-            const dobCell = firstSheet["D13"];
-            const pobCell = firstSheet["D15"];
-
-            // Access gender checkboxes
-            const maleCheckboxCell = firstSheet["A62"];
-            const femaleCheckboxCell = firstSheet["B62"];
-
-            // Access civil status checkboxes
-            const singleCheckboxCell = firstSheet["A63"];
-            const marriedCheckboxCell = firstSheet["B63"];
-            const widowedCheckboxCell = firstSheet["C63"];
-            const separatedCheckboxCell = firstSheet["D63"];
-            const otherCheckboxCell = firstSheet["E63"];
-
-            // Access additional fields
-            const heightCell = firstSheet["D22"];
-            const weightCell = firstSheet["D24"];
-            const bloodTypeCell = firstSheet["D25"];
-            const gsisIdCell = firstSheet["D27"];
-            const pagIbigIdCell = firstSheet["D29"];
-            const philhealthNoCell = firstSheet["D31"];
-            const sssNoCell = firstSheet["D32"];
-            const tinNoCell = firstSheet["D33"];
-            const agencyEmpNoCell = firstSheet["D34"];
-
-            // Access citizenship checkboxes and text field
-            const filipinoCheckboxCell = firstSheet["A64"];
-            const dualCitizenshipCheckboxCell = firstSheet["B64"];
-            const byBirthCheckboxCell = firstSheet["C64"];
-            const byNaturalizationCheckboxCell = firstSheet["D64"];
-            const citizenshipCountryCell = firstSheet["F64"];
-
-            // Access residential address fields
-            const residentialHouseBlockLotCell = firstSheet["I17"];
-            const residentialStreetCell = firstSheet["L17"];
-            const residentialSubdivisionVillageCell = firstSheet["I19"];
-            const residentialBarangayCell = firstSheet["L19"];
-            const residentialCityMunicipalityCell = firstSheet["I22"];
-            const residentialProvinceCell = firstSheet["L22"];
-            const residentialZipCodeCell = firstSheet["I24"];
-
-            // Access permanent address fields
-            const permanentHouseBlockLotCell = firstSheet["I25"];
-            const permanentStreetCell = firstSheet["L25"];
-            const permanentSubdivisionVillageCell = firstSheet["I27"];
-            const permanentBarangayCell = firstSheet["L27"];
-            const permanentCityMunicipalityCell = firstSheet["I29"];
-            const permanentProvinceCell = firstSheet["L29"];
-            const permanentZipCodeCell = firstSheet["I31"];
-
-            const telephoneNumberCell = firstSheet["I32"];
-            const mobileNumberCell = firstSheet["I33"];
-            const emailAddressCell = firstSheet["I34"];
-
-            // Assign values to variables for existing fields
-            const surname = surnameCell ? surnameCell.v : "Not available";
-            const firstname = firstnameCell ? firstnameCell.v : "Not available";
-            const middlename = middlenameCell
-                ? middlenameCell.v
-                : "Not available";
-            const nameExtension = nameExtensionCell
-                ? nameExtensionCell.v
-                : "Not available";
-
-            function excelSerialToJSDate(serial) {
-                const excelStartDate = new Date(Date.UTC(1899, 11, 30)); // Set to UTC to prevent timezone shifts
-                const jsDate = new Date(
-                    excelStartDate.getTime() + serial * 86400000
-                );
-                return jsDate.toISOString().split("T")[0]; // Format to YYYY-MM-DD
+            if (!file) {
+                console.log("Please select a file first.");
+                return;
             }
 
-            // Assign Date of Birth value with proper formatting
-            const dob =
-                dobCell && !isNaN(dobCell.v)
-                    ? excelSerialToJSDate(dobCell.v)
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: "array" });
+
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                // Accessing the specific cells
+                const surnameCell = firstSheet["D10"];
+                const firstnameCell = firstSheet["D11"];
+                const middlenameCell = firstSheet["D12"];
+                const nameExtensionCell = firstSheet["L11"];
+                const dobCell = firstSheet["D13"];
+                const pobCell = firstSheet["D15"];
+
+                // Access gender checkboxes
+                const maleCheckboxCell = firstSheet["A62"];
+                const femaleCheckboxCell = firstSheet["B62"];
+
+                // Access civil status checkboxes
+                const singleCheckboxCell = firstSheet["A63"];
+                const marriedCheckboxCell = firstSheet["B63"];
+                const widowedCheckboxCell = firstSheet["C63"];
+                const separatedCheckboxCell = firstSheet["D63"];
+                const otherCheckboxCell = firstSheet["E63"];
+
+                // Access additional fields
+                const heightCell = firstSheet["D22"];
+                const weightCell = firstSheet["D24"];
+                const bloodTypeCell = firstSheet["D25"];
+                const gsisIdCell = firstSheet["D27"];
+                const pagIbigIdCell = firstSheet["D29"];
+                const philhealthNoCell = firstSheet["D31"];
+                const sssNoCell = firstSheet["D32"];
+                const tinNoCell = firstSheet["D33"];
+                const agencyEmpNoCell = firstSheet["D34"];
+
+                // Access citizenship checkboxes and text field
+                const filipinoCheckboxCell = firstSheet["A64"];
+                const dualCitizenshipCheckboxCell = firstSheet["B64"];
+                const byBirthCheckboxCell = firstSheet["C64"];
+                const byNaturalizationCheckboxCell = firstSheet["D64"];
+                const citizenshipCountryCell = firstSheet["F64"];
+
+                // Access residential address fields
+                const residentialHouseBlockLotCell = firstSheet["I17"];
+                const residentialStreetCell = firstSheet["L17"];
+                const residentialSubdivisionVillageCell = firstSheet["I19"];
+                const residentialBarangayCell = firstSheet["L19"];
+                const residentialCityMunicipalityCell = firstSheet["I22"];
+                const residentialProvinceCell = firstSheet["L22"];
+                const residentialZipCodeCell = firstSheet["I24"];
+
+                // Access permanent address fields
+                const permanentHouseBlockLotCell = firstSheet["I25"];
+                const permanentStreetCell = firstSheet["L25"];
+                const permanentSubdivisionVillageCell = firstSheet["I27"];
+                const permanentBarangayCell = firstSheet["L27"];
+                const permanentCityMunicipalityCell = firstSheet["I29"];
+                const permanentProvinceCell = firstSheet["L29"];
+                const permanentZipCodeCell = firstSheet["I31"];
+
+                const telephoneNumberCell = firstSheet["I32"];
+                const mobileNumberCell = firstSheet["I33"];
+                const emailAddressCell = firstSheet["I34"];
+
+                // Assign values to variables for existing fields
+                const surname = surnameCell ? surnameCell.v : "Not available";
+                const firstname = firstnameCell
+                    ? firstnameCell.v
+                    : "Not available";
+                const middlename = middlenameCell
+                    ? middlenameCell.v
+                    : "Not available";
+                const nameExtension = nameExtensionCell
+                    ? nameExtensionCell.v
                     : "Not available";
 
-            const pob = pobCell ? pobCell.v : "Not available";
+                function excelSerialToJSDate(serial) {
+                    const excelStartDate = new Date(Date.UTC(1899, 11, 30)); // Set to UTC to prevent timezone shifts
+                    const jsDate = new Date(
+                        excelStartDate.getTime() + serial * 86400000
+                    );
+                    return jsDate.toISOString().split("T")[0]; // Format to YYYY-MM-DD
+                }
 
-            // Process the name extension to remove unwanted text and get the next text
-            let processedNameExtension = "";
-            if (nameExtensionCell && nameExtensionCell.v) {
-                processedNameExtension = nameExtensionCell.v
-                    .replace(/NAME EXTENSION \((.*)\)/, "")
-                    .trim();
-            }
+                // Assign Date of Birth value with proper formatting
+                const dob =
+                    dobCell && !isNaN(dobCell.v)
+                        ? excelSerialToJSDate(dobCell.v)
+                        : "Not available";
 
-            // Determine gender based on checkbox state (TRUE if checked, FALSE if not)
-            let gender = "";
-            if (maleCheckboxCell && femaleCheckboxCell) {
-                if (
-                    maleCheckboxCell.v === true &&
-                    femaleCheckboxCell.v === true
-                ) {
-                    gender = ""; // Both checked, set gender to empty string
-                } else if (maleCheckboxCell.v === true) {
-                    gender = "Male";
-                } else if (femaleCheckboxCell.v === true) {
-                    gender = "Female";
+                const pob = pobCell ? pobCell.v : "Not available";
+
+                // Process the name extension to remove unwanted text and get the next text
+                let processedNameExtension = "";
+                if (nameExtensionCell && nameExtensionCell.v) {
+                    processedNameExtension = nameExtensionCell.v
+                        .replace(/NAME EXTENSION \((.*)\)/, "")
+                        .trim();
+                }
+
+                // Determine gender based on checkbox state (TRUE if checked, FALSE if not)
+                let gender = "";
+                if (maleCheckboxCell && femaleCheckboxCell) {
+                    if (
+                        maleCheckboxCell.v === true &&
+                        femaleCheckboxCell.v === true
+                    ) {
+                        gender = ""; // Both checked, set gender to empty string
+                    } else if (maleCheckboxCell.v === true) {
+                        gender = "Male";
+                    } else if (femaleCheckboxCell.v === true) {
+                        gender = "Female";
+                    } else {
+                        gender = "Not available";
+                    }
                 } else {
                     gender = "Not available";
                 }
-            } else {
-                gender = "Not available";
-            }
 
-            // Determine civil status based on checkbox state
-            let civilStatus = "";
-            const checkedStatuses = [
-                singleCheckboxCell && singleCheckboxCell.v === true
-                    ? "Single"
-                    : null,
-                marriedCheckboxCell && marriedCheckboxCell.v === true
-                    ? "Married"
-                    : null,
-                widowedCheckboxCell && widowedCheckboxCell.v === true
-                    ? "Widowed"
-                    : null,
-                separatedCheckboxCell && separatedCheckboxCell.v === true
-                    ? "Separated"
-                    : null,
-                otherCheckboxCell && otherCheckboxCell.v === true
-                    ? "Other/s"
-                    : null,
-            ].filter((status) => status !== null); // Filter out nulls
+                // Determine civil status based on checkbox state
+                let civilStatus = "";
+                const checkedStatuses = [
+                    singleCheckboxCell && singleCheckboxCell.v === true
+                        ? "Single"
+                        : null,
+                    marriedCheckboxCell && marriedCheckboxCell.v === true
+                        ? "Married"
+                        : null,
+                    widowedCheckboxCell && widowedCheckboxCell.v === true
+                        ? "Widowed"
+                        : null,
+                    separatedCheckboxCell && separatedCheckboxCell.v === true
+                        ? "Separated"
+                        : null,
+                    otherCheckboxCell && otherCheckboxCell.v === true
+                        ? "Other/s"
+                        : null,
+                ].filter((status) => status !== null); // Filter out nulls
 
-            if (checkedStatuses.length > 1) {
-                civilStatus = ""; // If more than one checkbox is checked, set civil status to empty string
-            } else if (checkedStatuses.length === 1) {
-                civilStatus = checkedStatuses[0]; // Set civil status to the only checked option
-            } else {
-                civilStatus = "Not available";
-            }
+                if (checkedStatuses.length > 1) {
+                    civilStatus = ""; // If more than one checkbox is checked, set civil status to empty string
+                } else if (checkedStatuses.length === 1) {
+                    civilStatus = checkedStatuses[0]; // Set civil status to the only checked option
+                } else {
+                    civilStatus = "Not available";
+                }
 
-            // Extract additional fields (height, weight, etc.)
-            const height = heightCell ? heightCell.v : "Not available";
-            const weight = weightCell ? weightCell.v : "Not available";
-            const bloodType = bloodTypeCell ? bloodTypeCell.v : "Not available";
-            const gsisId = gsisIdCell ? gsisIdCell.v : "Not available";
-            const pagIbigId = pagIbigIdCell ? pagIbigIdCell.v : "Not available";
-            const philhealthNo = philhealthNoCell
-                ? philhealthNoCell.v
-                : "Not available";
-            const sssNo = sssNoCell ? sssNoCell.v : "Not available";
-            const tinNo = tinNoCell ? tinNoCell.v : "Not available";
-            const agencyEmpNo = agencyEmpNoCell
-                ? agencyEmpNoCell.v
-                : "Not available";
-
-            // Determine citizenship values
-            const isFilipino = filipinoCheckboxCell
-                ? filipinoCheckboxCell.v === true
-                : false;
-            const hasDualCitizenship = dualCitizenshipCheckboxCell
-                ? dualCitizenshipCheckboxCell.v === true
-                : false;
-            const acquiredByBirth = byBirthCheckboxCell
-                ? byBirthCheckboxCell.v === true
-                : false;
-            const acquiredByNaturalization = byNaturalizationCheckboxCell
-                ? byNaturalizationCheckboxCell.v === true
-                : false;
-                const dualCitizenshipCountry = citizenshipCountryCell
-                ? citizenshipCountryCell.v.trim()
-                : "Not available";            
-            // Assign values to residential address variables
-            const residentialHouseBlockLot = residentialHouseBlockLotCell
-                ? residentialHouseBlockLotCell.v
-                : "Not available";
-            const residentialStreet = residentialStreetCell
-                ? residentialStreetCell.v
-                : "Not available";
-            const residentialSubdivisionVillage =
-                residentialSubdivisionVillageCell
-                    ? residentialSubdivisionVillageCell.v
+                // Extract additional fields (height, weight, etc.)
+                const height = heightCell ? heightCell.v : "Not available";
+                const weight = weightCell ? weightCell.v : "Not available";
+                const bloodType = bloodTypeCell
+                    ? bloodTypeCell.v
                     : "Not available";
-            const residentialBarangay = residentialBarangayCell
-                ? residentialBarangayCell.v
-                : "Not available";
-            const residentialCityMunicipality = residentialCityMunicipalityCell
-                ? residentialCityMunicipalityCell.v
-                : "Not available";
-            const residentialProvince = residentialProvinceCell
-                ? residentialProvinceCell.v
-                : "Not available";
-            const residentialZipCode = residentialZipCodeCell
-                ? residentialZipCodeCell.v
-                : "Not available";
+                const gsisId = gsisIdCell ? gsisIdCell.v : "Not available";
+                const pagIbigId = pagIbigIdCell
+                    ? pagIbigIdCell.v
+                    : "Not available";
+                const philhealthNo = philhealthNoCell
+                    ? philhealthNoCell.v
+                    : "Not available";
+                const sssNo = sssNoCell ? sssNoCell.v : "Not available";
+                const tinNo = tinNoCell ? tinNoCell.v : "Not available";
+                const agencyEmpNo = agencyEmpNoCell
+                    ? agencyEmpNoCell.v
+                    : "Not available";
 
-            // Assign values to permanent address variables
-            const permanentHouseBlockLot = permanentHouseBlockLotCell
-                ? permanentHouseBlockLotCell.v
-                : "Not available";
-            const permanentStreet = permanentStreetCell
-                ? permanentStreetCell.v
-                : "Not available";
-            const permanentSubdivisionVillage = permanentSubdivisionVillageCell
-                ? permanentSubdivisionVillageCell.v
-                : "Not available";
-            const permanentBarangay = permanentBarangayCell
-                ? permanentBarangayCell.v
-                : "Not available";
-            const permanentCityMunicipality = permanentCityMunicipalityCell
-                ? permanentCityMunicipalityCell.v
-                : "Not available";
-            const permanentProvince = permanentProvinceCell
-                ? permanentProvinceCell.v
-                : "Not available";
-            const permanentZipCode = permanentZipCodeCell
-                ? permanentZipCodeCell.v
-                : "Not available";
+                // Determine citizenship values
+                const isFilipino = filipinoCheckboxCell
+                    ? filipinoCheckboxCell.v === true
+                    : false;
+                const hasDualCitizenship = dualCitizenshipCheckboxCell
+                    ? dualCitizenshipCheckboxCell.v === true
+                    : false;
+                const acquiredByBirth = byBirthCheckboxCell
+                    ? byBirthCheckboxCell.v === true
+                    : false;
+                const acquiredByNaturalization = byNaturalizationCheckboxCell
+                    ? byNaturalizationCheckboxCell.v === true
+                    : false;
+                const dualCitizenshipCountry = citizenshipCountryCell
+                    ? citizenshipCountryCell.v.trim()
+                    : "Not available";
 
-            const telephoneNumber = telephoneNumberCell
-                ? telephoneNumberCell.v
-                : "Not available";
-            const mobileNumber = mobileNumberCell
-                ? mobileNumberCell.v
-                : "Not available";
-            const emailAddress = emailAddressCell
-                ? emailAddressCell.v
-                : "Not available";
+                // Assign values to residential address variables
+                const residentialHouseBlockLot = residentialHouseBlockLotCell
+                    ? residentialHouseBlockLotCell.v
+                    : "Not available";
+                const residentialStreet = residentialStreetCell
+                    ? residentialStreetCell.v
+                    : "Not available";
+                const residentialSubdivisionVillage =
+                    residentialSubdivisionVillageCell
+                        ? residentialSubdivisionVillageCell.v
+                        : "Not available";
+                const excelResidentialProvince = residentialProvinceCell
+                    ? residentialProvinceCell.v.toString().trim().toUpperCase()
+                    : "Not available";
 
-            // Populate the form fields
-            document.getElementById("surname").value = surname;
-            document.getElementById("firstName").value = firstname;
-            document.getElementById("middleName").value = middlename;
-            document.getElementById("nameExtension").value =
-                processedNameExtension;
-            document.getElementById("dateOfBirth").value = dob;
-            document.getElementById("placeOfBirth").value = pob;
-            document.getElementById("height").value = height;
-            document.getElementById("weight").value = weight;
-            document.getElementById("bloodType").value = bloodType;
-            document.getElementById("telephoneNo").value = telephoneNumber;
-            document.getElementById("mobileNo").value = mobileNumber;
-            document.getElementById("email").value = emailAddress;
-            document.getElementById("gsisId").value = gsisId;
-            document.getElementById("pagibigId").value = pagIbigId;
-            document.getElementById("philhealthId").value = philhealthNo;
-            document.getElementById("sssNo").value = sssNo;
-            document.getElementById("tinNo").value = tinNo;
-            document.getElementById("agencyEmployeeNo").value = agencyEmpNo;
-            document.getElementById("residentialHouseNo").value =
-                residentialHouseBlockLot;
-            document.getElementById("residentialStreet").value =
-                residentialStreet;
-            document.getElementById("residentialSubdivision").value =
-                residentialSubdivisionVillage;
-            document.getElementById("residentialBarangay").value =
-                residentialBarangay;
-            document.getElementById("residentialCity").value =
-                residentialCityMunicipality;
-            document.getElementById("residentialProvince").value =
-                residentialProvince;
-            document.getElementById("residentialZipCode").value =
-                residentialZipCode;
-            document.getElementById("permanentHouseNo").value =
-                permanentHouseBlockLot;
-            document.getElementById("permanentStreet").value = permanentStreet;
-            document.getElementById("permanentSubdivision").value =
-                permanentSubdivisionVillage;
-            document.getElementById("permanentBarangay").value =
-                permanentBarangay;
-            document.getElementById("permanentCity").value =
-                permanentCityMunicipality;
-            document.getElementById("permanentProvince").value =
-                permanentProvince;
-            document.getElementById("permanentZipCode").value =
-                permanentZipCode;
-            document.getElementById("telephoneNo").value = telephoneNumber;
-            document.getElementById("mobileNo").value = mobileNumber;
-            document.getElementById("email").value = telephoneNumber;
+                const excelResidentialCity = residentialCityMunicipalityCell
+                    ? residentialCityMunicipalityCell.v
+                          .toString()
+                          .trim()
+                          .toUpperCase()
+                    : "Not available";
 
-            // Select the radio buttons
-            const maleRadio = document.getElementById("sexMale");
-            const femaleRadio = document.getElementById("sexFemale");
+                const excelResidentialBarangay = residentialBarangayCell
+                    ? residentialBarangayCell.v.toString().trim()
+                    : "Not available";
 
-            if (gender === "Male") {
-                maleRadio.checked = true;
-            } else if (gender === "Female") {
-                femaleRadio.checked = true;
-            }
+                const residentialZipCode = residentialZipCodeCell
+                    ? residentialZipCodeCell.v
+                    : "Not available";
 
-            // Select all civil status radio buttons
-            const singleRadio = document.getElementById("civilStatusSingle");
-            const marriedRadio = document.getElementById("civilStatusMarried");
-            const widowedRadio = document.getElementById("civilStatusWidowed");
-            const separatedRadio = document.getElementById(
-                "civilStatusSeparated"
-            );
-            const otherRadio = document.getElementById("civilStatusOther");
+                // Assign values to permanent address variables
+                const permanentHouseBlockLot = permanentHouseBlockLotCell
+                    ? permanentHouseBlockLotCell.v
+                    : "Not available";
+                const permanentStreet = permanentStreetCell
+                    ? permanentStreetCell.v
+                    : "Not available";
+                const permanentSubdivisionVillage =
+                    permanentSubdivisionVillageCell
+                        ? permanentSubdivisionVillageCell.v
+                        : "Not available";
+                const excelPermanentProvince = permanentProvinceCell
+                    ? permanentProvinceCell.v.toString().trim().toUpperCase()
+                    : "Not available";
 
-            // Set the checked property based on civilStatus value
-            if (civilStatus === "Single") {
-                singleRadio.checked = true;
-            } else if (civilStatus === "Married") {
-                marriedRadio.checked = true;
-            } else if (civilStatus === "Widowed") {
-                widowedRadio.checked = true;
-            } else if (civilStatus === "Separated") {
-                separatedRadio.checked = true;
-            } else if (civilStatus === "Other/s") {
-                otherRadio.checked = true;
-            }
+                const excelPermanentCity = permanentCityMunicipalityCell
+                    ? permanentCityMunicipalityCell.v
+                          .toString()
+                          .trim()
+                          .toUpperCase()
+                    : "Not available";
 
-            // Get elements
-            const filipinoCheckbox = document.getElementById("filipino");
-            const dualCitizenshipCheckbox =
-                document.getElementById("dualCitizenship");
-            const byBirthRadio = document.getElementById("byBirth");
-            const byNaturalizationRadio =
-                document.getElementById("byNaturalization");
-            const subOptionsDiv = document.querySelector(".sub-options");
-            const countrySelect = document.getElementById("countrySelect");
+                const excelPermanentBarangay = permanentBarangayCell
+                    ? permanentBarangayCell.v.toString().trim()
+                    : "Not available";
+                const permanentZipCode = permanentZipCodeCell
+                    ? permanentZipCodeCell.v
+                    : "Not available";
 
-            // Set checkbox states
-            filipinoCheckbox.checked = isFilipino;
-            dualCitizenshipCheckbox.checked = hasDualCitizenship;
+                const telephoneNumber = telephoneNumberCell
+                    ? telephoneNumberCell.v
+                    : "Not available";
+                const mobileNumber = mobileNumberCell
+                    ? mobileNumberCell.v
+                    : "Not available";
+                const emailAddress = emailAddressCell
+                    ? emailAddressCell.v
+                    : "Not available";
 
-            // Show/hide sub-options for dual citizenship
-            subOptionsDiv.style.display = hasDualCitizenship ? "block" : "none";
+                // Populate the form fields
+                document.getElementById("surname").value = surname;
+                document.getElementById("firstName").value = firstname;
+                document.getElementById("middleName").value = middlename;
+                document.getElementById("nameExtension").value =
+                    processedNameExtension;
+                document.getElementById("dateOfBirth").value = dob;
+                document.getElementById("placeOfBirth").value = pob;
+                document.getElementById("height").value = height;
+                document.getElementById("weight").value = weight;
+                document.getElementById("bloodType").value = bloodType;
+                document.getElementById("telephoneNo").value = telephoneNumber;
+                document.getElementById("mobileNo").value = mobileNumber;
+                document.getElementById("email").value = emailAddress;
+                document.getElementById("gsisId").value = gsisId;
+                document.getElementById("pagibigId").value = pagIbigId;
+                document.getElementById("philhealthId").value = philhealthNo;
+                document.getElementById("sssNo").value = sssNo;
+                document.getElementById("tinNo").value = tinNo;
+                document.getElementById("agencyEmployeeNo").value = agencyEmpNo;
+                document.getElementById("residentialHouseNo").value =
+                    residentialHouseBlockLot;
+                document.getElementById("residentialStreet").value =
+                    residentialStreet;
+                document.getElementById("residentialSubdivision").value =
+                    residentialSubdivisionVillage;
+                // Only try to set the dropdown if the Excel value is available
+                if (excelResidentialProvince !== "Not available") {
+                    setTimeout(() => {
+                        const resProvinceSelect = document.getElementById(
+                            "residentialProvince"
+                        );
+                        for (let option of resProvinceSelect.options) {
+                            if (
+                                option.text.trim().toUpperCase() ===
+                                excelResidentialProvince
+                            ) {
+                                resProvinceSelect.value = option.value;
+                                resProvinceSelect.dispatchEvent(
+                                    new Event("change")
+                                );
+                                break;
+                            }
+                        }
+                        // Wait for cities to load after province change
+                        if (excelResidentialCity !== "Not available") {
+                            setTimeout(() => {
+                                const resCitySelect =
+                                    document.getElementById("residentialCity");
+                                for (let option of resCitySelect.options) {
+                                    if (
+                                        option.text.trim().toUpperCase() ===
+                                        excelResidentialCity
+                                    ) {
+                                        resCitySelect.value = option.value;
+                                        resCitySelect.dispatchEvent(
+                                            new Event("change")
+                                        );
+                                        break;
+                                    }
+                                }
+                                // Wait for barangays to load after city change
+                                if (
+                                    excelResidentialBarangay !== "Not available"
+                                ) {
+                                    setTimeout(() => {
+                                        const resBarangaySelect =
+                                            document.getElementById(
+                                                "residentialBarangay"
+                                            );
+                                        for (let option of resBarangaySelect.options) {
+                                            if (
+                                                option.text.trim() ===
+                                                excelResidentialBarangay
+                                            ) {
+                                                resBarangaySelect.value =
+                                                    option.value;
+                                                break;
+                                            }
+                                        }
+                                    }, 500);
+                                }
+                            }, 500);
+                        }
+                    }, 500);
+                }
+                document.getElementById("residentialZipCode").value =
+                    residentialZipCode;
+                document.getElementById("permanentHouseNo").value =
+                    permanentHouseBlockLot;
+                document.getElementById("permanentStreet").value =
+                    permanentStreet;
+                document.getElementById("permanentSubdivision").value =
+                    permanentSubdivisionVillage;
 
-            // Set radio button states for how citizenship was acquired
-            if (acquiredByBirth) {
-                byBirthRadio.checked = true;
-            } else if (acquiredByNaturalization) {
-                byNaturalizationRadio.checked = true;
-            }
+                if (excelPermanentProvince !== "Not available") {
+                    setTimeout(() => {
+                        const permProvinceSelect =
+                            document.getElementById("permanentProvince");
+                        for (let option of permProvinceSelect.options) {
+                            if (
+                                option.text.trim().toUpperCase() ===
+                                excelPermanentProvince
+                            ) {
+                                permProvinceSelect.value = option.value;
+                                permProvinceSelect.dispatchEvent(
+                                    new Event("change")
+                                );
+                                break;
+                            }
+                        }
+                        // Wait for cities to load after province change
+                        if (excelPermanentCity !== "Not available") {
+                            setTimeout(() => {
+                                const permCitySelect =
+                                    document.getElementById("permanentCity");
+                                for (let option of permCitySelect.options) {
+                                    if (
+                                        option.text.trim().toUpperCase() ===
+                                        excelPermanentCity
+                                    ) {
+                                        permCitySelect.value = option.value;
+                                        permCitySelect.dispatchEvent(
+                                            new Event("change")
+                                        );
+                                        break;
+                                    }
+                                }
+                                // Wait for barangays to load after city change
+                                if (
+                                    excelPermanentBarangay !== "Not available"
+                                ) {
+                                    setTimeout(() => {
+                                        const permBarangaySelect =
+                                            document.getElementById(
+                                                "permanentBarangay"
+                                            );
+                                        for (let option of permBarangaySelect.options) {
+                                            if (
+                                                option.text.trim() ===
+                                                excelPermanentBarangay
+                                            ) {
+                                                permBarangaySelect.value =
+                                                    option.value;
+                                                break;
+                                            }
+                                        }
+                                    }, 500);
+                                }
+                            }, 500);
+                        }
+                    }, 500);
+                }
 
-            // Set country selection if applicable
-            if (dualCitizenshipCountry !== "Not available") {
-                countrySelect.value = dualCitizenshipCountry;
-            }
-        };
+                document.getElementById("permanentZipCode").value =
+                    permanentZipCode;
 
-        reader.readAsArrayBuffer(file);
-    });
+                // Select the radio buttons
+                const maleRadio = document.getElementById("sexMale");
+                const femaleRadio = document.getElementById("sexFemale");
+
+                if (gender === "Male") {
+                    maleRadio.checked = true;
+                } else if (gender === "Female") {
+                    femaleRadio.checked = true;
+                }
+
+                // Select all civil status radio buttons
+                const singleRadio =
+                    document.getElementById("civilStatusSingle");
+                const marriedRadio =
+                    document.getElementById("civilStatusMarried");
+                const widowedRadio =
+                    document.getElementById("civilStatusWidowed");
+                const separatedRadio = document.getElementById(
+                    "civilStatusSeparated"
+                );
+                const otherRadio = document.getElementById("civilStatusOther");
+
+                // Set the checked property based on civilStatus value
+                if (civilStatus === "Single") {
+                    singleRadio.checked = true;
+                } else if (civilStatus === "Married") {
+                    marriedRadio.checked = true;
+                } else if (civilStatus === "Widowed") {
+                    widowedRadio.checked = true;
+                } else if (civilStatus === "Separated") {
+                    separatedRadio.checked = true;
+                } else if (civilStatus === "Other/s") {
+                    otherRadio.checked = true;
+                }
+
+                // Get elements
+                const filipinoCheckbox = document.getElementById("filipino");
+                const dualCitizenshipCheckbox =
+                    document.getElementById("dualCitizenship");
+                const byBirthRadio = document.getElementById("byBirth");
+                const byNaturalizationRadio =
+                    document.getElementById("byNaturalization");
+                const subOptionsDiv = document.querySelector(".sub-options");
+                const countrySelect = document.getElementById("countrySelect");
+
+                // Set checkbox states
+                filipinoCheckbox.checked = isFilipino;
+                dualCitizenshipCheckbox.checked = hasDualCitizenship;
+
+                // Show/hide sub-options for dual citizenship
+                subOptionsDiv.style.display = hasDualCitizenship
+                    ? "block"
+                    : "none";
+
+                // Set radio button states for how citizenship was acquired
+                if (acquiredByBirth) {
+                    byBirthRadio.checked = true;
+                } else if (acquiredByNaturalization) {
+                    byNaturalizationRadio.checked = true;
+                }
+
+                // Set country selection if applicable
+                if (dualCitizenshipCountry !== "Not available") {
+                    countrySelect.value = dualCitizenshipCountry;
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    // Second part: Province, City/Municipality, Barangay logic
+    const residentialProvince = document.getElementById("residentialProvince");
+    const residentialCity = document.getElementById("residentialCity");
+    const residentialBarangay = document.getElementById("residentialBarangay");
+
+    const permanentProvince = document.getElementById("permanentProvince");
+    const permanentCity = document.getElementById("permanentCity");
+    const permanentBarangay = document.getElementById("permanentBarangay");
+
+    if (
+        residentialProvince &&
+        residentialCity &&
+        residentialBarangay &&
+        permanentProvince &&
+        permanentCity &&
+        permanentBarangay
+    ) {
+        // Function to fetch provinces
+        function fetchProvinces(provinceSelect) {
+            fetch("/provinces")
+                .then((response) => response.json())
+                .then((data) => {
+                    provinceSelect.innerHTML =
+                        '<option value="">Select Province</option>';
+                    data.forEach((province) => {
+                        const option = document.createElement("option");
+                        option.value = province.provinceCode;
+                        option.textContent = province.provinceName;
+                        provinceSelect.appendChild(option);
+                    });
+                });
+        }
+
+        // Function to fetch towns
+        function fetchTowns(provinceCode, citySelect) {
+            fetch(`/towns/${provinceCode}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    citySelect.innerHTML =
+                        '<option value="">Select City/Municipality</option>';
+                    data.forEach((town) => {
+                        const option = document.createElement("option");
+                        option.value = town.townCode;
+                        option.textContent = town.townName;
+                        citySelect.appendChild(option);
+                    });
+                });
+        }
+
+        // Function to fetch barangays
+        function fetchBarangays(townCode, barangaySelect) {
+            fetch(`/barangays/${townCode}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    barangaySelect.innerHTML =
+                        '<option value="">Select Barangay</option>';
+                    data.forEach((barangay) => {
+                        const option = document.createElement("option");
+                        option.value = barangay.barangayCode;
+                        option.textContent = barangay.barangayName;
+                        barangaySelect.appendChild(option);
+                    });
+                });
+        }
+
+        // Fetch provinces for residential address
+        fetchProvinces(residentialProvince);
+        fetchProvinces(permanentProvince);
+
+        // Event listener for residential province change
+        residentialProvince.addEventListener("change", function () {
+            const provinceCode = this.value;
+            fetchTowns(provinceCode, residentialCity);
+            residentialBarangay.innerHTML =
+                '<option value="">Select Barangay</option>';
+        });
+
+        // Event listener for residential city change
+        residentialCity.addEventListener("change", function () {
+            const townCode = this.value;
+            fetchBarangays(townCode, residentialBarangay);
+        });
+
+        // Event listener for permanent province change
+        permanentProvince.addEventListener("change", function () {
+            const provinceCode = this.value;
+            fetchTowns(provinceCode, permanentCity);
+            permanentBarangay.innerHTML =
+                '<option value="">Select Barangay</option>';
+        });
+
+        // Event listener for permanent city change
+        permanentCity.addEventListener("change", function () {
+            const townCode = this.value;
+            fetchBarangays(townCode, permanentBarangay);
+        });
+    }
 });
-
 function loadCountries() {
     fetch("data/countries.json") // Path to your local JSON file
         .then((response) => response.json())
@@ -876,72 +1106,6 @@ function loadCountries() {
             document.getElementById("countrySelect").innerHTML =
                 '<option value="">Failed to load countries</option>';
         });
-}
-
-// Function to fill the form fields with extracted data
-function fillForm(data) {
-    document.getElementById("surname").value = data.surname || "";
-    document.getElementById("firstName").value = data.firstName || "";
-    document.getElementById("middleName").value = data.middleName || "";
-    document.getElementById("nameExtension").value = data.nameExtension || "";
-
-    // Handle date of birth formatting
-    if (data.dateOfBirth) {
-        let formattedDate = new Date(data.dateOfBirth)
-            .toISOString()
-            .split("T")[0];
-        document.getElementById("dateOfBirth").value = formattedDate;
-    }
-
-    document.getElementById("placeOfBirth").value = data.placeOfBirth || "";
-
-    document.getElementById("height").value = data.height || "";
-    document.getElementById("weight").value = data.weight || "";
-    document.getElementById("bloodType").value = data.bloodType || "";
-
-    document.getElementById("gsisId").value = data.gsisId || "";
-    document.getElementById("pagibigId").value = data.pagibigId || "";
-    document.getElementById("philhealthId").value = data.philhealthId || "";
-    document.getElementById("sssNo").value = data.sssNo || "";
-    document.getElementById("tinNo").value = data.tinNo || "";
-    document.getElementById("agencyEmployeeNo").value =
-        data.agencyEmployeeNo || "";
-
-    // Residential Address
-    document.getElementById("residentialHouseNo").value =
-        data.residentialHouseNo || "";
-    document.getElementById("residentialStreet").value =
-        data.residentialStreet || "";
-    document.getElementById("residentialSubdivision").value =
-        data.residentialSubdivision || "";
-    document.getElementById("residentialBarangay").value =
-        data.residentialBarangay || "";
-    document.getElementById("residentialCity").value =
-        data.residentialCity || "";
-    document.getElementById("residentialProvince").value =
-        data.residentialProvince || "";
-    document.getElementById("residentialZipCode").value =
-        data.residentialZipCode || "";
-
-    // Permanent Address
-    document.getElementById("permanentHouseNo").value =
-        data.permanentHouseNo || "";
-    document.getElementById("permanentStreet").value =
-        data.permanentStreet || "";
-    document.getElementById("permanentSubdivision").value =
-        data.permanentSubdivision || "";
-    document.getElementById("permanentBarangay").value =
-        data.permanentBarangay || "";
-    document.getElementById("permanentCity").value = data.permanentCity || "";
-    document.getElementById("permanentProvince").value =
-        data.permanentProvince || "";
-    document.getElementById("permanentZipCode").value =
-        data.permanentZipCode || "";
-
-    // Contact Information
-    document.getElementById("telephoneNo").value = data.telephoneNo || "";
-    document.getElementById("mobileNo").value = data.mobileNo || "";
-    document.getElementById("email").value = data.email || "";
 }
 
 // Function to toggle dual citizenship sub-options
@@ -977,19 +1141,53 @@ document.addEventListener("DOMContentLoaded", function () {
     document
         .getElementById("copyAddress")
         .addEventListener("click", function () {
+            // Copy text/normal input fields immediately
             document.getElementById("permanentHouseNo").value =
                 document.getElementById("residentialHouseNo").value;
             document.getElementById("permanentStreet").value =
                 document.getElementById("residentialStreet").value;
             document.getElementById("permanentSubdivision").value =
                 document.getElementById("residentialSubdivision").value;
-            document.getElementById("permanentBarangay").value =
-                document.getElementById("residentialBarangay").value;
-            document.getElementById("permanentCity").value =
-                document.getElementById("residentialCity").value;
-            document.getElementById("permanentProvince").value =
-                document.getElementById("residentialProvince").value;
             document.getElementById("permanentZipCode").value =
                 document.getElementById("residentialZipCode").value;
+
+            // Copy the Province dropdown value
+            const resProvinceSelect = document.getElementById(
+                "residentialProvince"
+            );
+            const permProvinceSelect =
+                document.getElementById("permanentProvince");
+            const selectedProvinceValue = resProvinceSelect.value;
+            if (selectedProvinceValue && selectedProvinceValue !== "") {
+                permProvinceSelect.value = selectedProvinceValue;
+                // Dispatch change event to trigger the loading of the dependent cities
+                permProvinceSelect.dispatchEvent(new Event("change"));
+            }
+
+            // Allow some time for the City dropdown to be populated after province change
+            setTimeout(() => {
+                const resCitySelect =
+                    document.getElementById("residentialCity");
+                const permCitySelect = document.getElementById("permanentCity");
+                const selectedCityValue = resCitySelect.value;
+                if (selectedCityValue && selectedCityValue !== "") {
+                    permCitySelect.value = selectedCityValue;
+                    // Dispatch change event to trigger the loading of the dependent barangays
+                    permCitySelect.dispatchEvent(new Event("change"));
+                }
+
+                // Allow some time for the Barangay dropdown to be populated after city change
+                setTimeout(() => {
+                    const resBarangaySelect = document.getElementById(
+                        "residentialBarangay"
+                    );
+                    const permBarangaySelect =
+                        document.getElementById("permanentBarangay");
+                    const selectedBarangayValue = resBarangaySelect.value;
+                    if (selectedBarangayValue && selectedBarangayValue !== "") {
+                        permBarangaySelect.value = selectedBarangayValue;
+                    }
+                }, 500);
+            }, 500);
         });
 });

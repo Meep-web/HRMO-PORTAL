@@ -244,15 +244,21 @@
                             <legend>Residential Address</legend>
                             <div class="form-group">
                                 <label for="residentialProvince">Province:</label>
-                                <input type="text" id="residentialProvince" name="residentialProvince" required>
+                                <select id="residentialProvince" name="residentialProvince" required>
+                                    <option value="">Select Province</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="residentialCity">City/Municipality:</label>
-                                <input type="text" id="residentialCity" name="residentialCity" required>
+                                <select id="residentialCity" name="residentialCity" required>
+                                    <option value="">Select City/Municipality</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="residentialBarangay">Barangay:</label>
-                                <input type="text" id="residentialBarangay" name="residentialBarangay" required>
+                                <select id="residentialBarangay" name="residentialBarangay" required>
+                                    <option value="">Select Barangay</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="residentialSubdivision">Subdivision/Village:</label>
@@ -282,15 +288,21 @@
                             <legend>Permanent Address</legend>
                             <div class="form-group">
                                 <label for="permanentProvince">Province:</label>
-                                <input type="text" id="permanentProvince" name="permanentProvince" required>
+                                <select id="permanentProvince" name="permanentProvince" required>
+                                    <option value="">Select Province</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="permanentCity">City/Municipality:</label>
-                                <input type="text" id="permanentCity" name="permanentCity" required>
+                                <select id="permanentCity" name="permanentCity" required>
+                                    <option value="">Select City/Municipality</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="permanentBarangay">Barangay:</label>
-                                <input type="text" id="permanentBarangay" name="permanentBarangay" required>
+                                <select id="permanentBarangay" name="permanentBarangay" required>
+                                    <option value="">Select Barangay</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="permanentSubdivision">Subdivision/Village:</label>
