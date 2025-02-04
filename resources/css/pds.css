@@ -80,7 +80,10 @@
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s ease;
+    background-color: #007bff;
+    color: #fff;
 }
+
 
 .salary-adjustment-table tr:hover {
     background-color: #f1f1f1;
@@ -233,14 +236,7 @@ input:focus {
     border-top: 1px solid #eee;
 }
 
-.action-button[type="button"] {
-    background-color: #6c757d;
-    color: white;
-}
 
-.action-button[type="button"]:hover {
-    background-color: #5a6268;
-}
 
 #nextButton1,
 #nextButton2,
@@ -371,5 +367,19 @@ input:focus {
         margin: 1.5rem 0 !important; /* Add !important to ensure it overrides other styles */
     }
     
+    .citizenship-option {
+        margin-bottom: 10px;
+    }
+
+    .sub-options {
+        margin-left: 25px;
+        margin-top: 5px;
+    }
+
+    .country-select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+    }
     
 }
