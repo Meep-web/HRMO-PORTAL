@@ -23,7 +23,7 @@
 
     <!-- Leave Credits Button -->
     <button class="leave-credits-button" data-title="Leave Credits">
-        <img src="{{ asset('Leave_credits.png') }}" alt="Leave Credits" class="sidebar-leave-credits">
+        {{-- <img src="{{ asset('Leave_credits.png') }}" alt="Leave Credits" class="sidebar-leave-credits"> --}}
     </button>
 
     <!-- Account Management Button -->

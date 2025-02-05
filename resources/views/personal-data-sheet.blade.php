@@ -452,11 +452,6 @@
                         <div class="form-group">
                             <label>Mother's Maiden Name:</label>
                             <div class="mother-name-group">
-                                <!-- Title -->
-                                <div class="form-group">
-                                    <label for="motherTitle">Title:</label>
-                                    <input type="text" id="motherTitle" name="motherTitle">
-                                </div>
 
                                 <!-- Surname -->
                                 <div class="form-group">
@@ -508,21 +503,16 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="elementaryFrom">Attendance Period (From):</label>
-                                    <input type="text" id="elementaryFrom" name="elementaryFrom" placeholder="Year">
+                                    <input type="date" id="elementaryFrom" name="elementaryFrom">
                                 </div>
                                 <div class="form-group">
                                     <label for="elementaryTo">Attendance Period (To):</label>
-                                    <input type="text" id="elementaryTo" name="elementaryTo" placeholder="Year">
+                                    <input type="date" id="elementaryTo" name="elementaryTo">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="elementaryHighestLevel">Highest Level/Units Earned (if not graduated):</label>
                                 <input type="text" id="elementaryHighestLevel" name="elementaryHighestLevel">
-                            </div>
-                            <div class="form-group">
-                                <label for="elementaryYearGraduated">Year Graduated:</label>
-                                <input type="text" id="elementaryYearGraduated" name="elementaryYearGraduated"
-                                    placeholder="Year">
                             </div>
                             <div class="form-group">
                                 <label for="elementaryHonors">Scholarship/Academic Honors Received:</label>
@@ -544,21 +534,16 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="secondaryFrom">Attendance Period (From):</label>
-                                    <input type="text" id="secondaryFrom" name="secondaryFrom" placeholder="Year">
+                                    <input type="date" id="secondaryFrom" name="secondaryFrom">
                                 </div>
                                 <div class="form-group">
                                     <label for="secondaryTo">Attendance Period (To):</label>
-                                    <input type="text" id="secondaryTo" name="secondaryTo" placeholder="Year">
+                                    <input type="date" id="secondaryTo" name="secondaryTo">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="secondaryHighestLevel">Highest Level/Units Earned (if not graduated):</label>
                                 <input type="text" id="secondaryHighestLevel" name="secondaryHighestLevel">
-                            </div>
-                            <div class="form-group">
-                                <label for="secondaryYearGraduated">Year Graduated:</label>
-                                <input type="text" id="secondaryYearGraduated" name="secondaryYearGraduated"
-                                    placeholder="Year">
                             </div>
                             <div class="form-group">
                                 <label for="secondaryHonors">Scholarship/Academic Honors Received:</label>
@@ -580,21 +565,16 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="vocationalFrom">Attendance Period (From):</label>
-                                    <input type="text" id="vocationalFrom" name="vocationalFrom" placeholder="Year">
+                                    <input type="date" id="vocationalFrom" name="vocationalFrom">
                                 </div>
                                 <div class="form-group">
                                     <label for="vocationalTo">Attendance Period (To):</label>
-                                    <input type="text" id="vocationalTo" name="vocationalTo" placeholder="Year">
+                                    <input type="date" id="vocationalTo" name="vocationalTo">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="vocationalHighestLevel">Highest Level/Units Earned (if not graduated):</label>
                                 <input type="text" id="vocationalHighestLevel" name="vocationalHighestLevel">
-                            </div>
-                            <div class="form-group">
-                                <label for="vocationalYearGraduated">Year Graduated:</label>
-                                <input type="text" id="vocationalYearGraduated" name="vocationalYearGraduated"
-                                    placeholder="Year">
                             </div>
                             <div class="form-group">
                                 <label for="vocationalHonors">Scholarship/Academic Honors Received:</label>
@@ -616,21 +596,16 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="collegeFrom">Attendance Period (From):</label>
-                                    <input type="text" id="collegeFrom" name="collegeFrom" placeholder="Year">
+                                    <input type="date" id="collegeFrom" name="collegeFrom">
                                 </div>
                                 <div class="form-group">
                                     <label for="collegeTo">Attendance Period (To):</label>
-                                    <input type="text" id="collegeTo" name="collegeTo" placeholder="Year">
+                                    <input type="date" id="collegeTo" name="collegeTo">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="collegeHighestLevel">Highest Level/Units Earned (if not graduated):</label>
                                 <input type="text" id="collegeHighestLevel" name="collegeHighestLevel">
-                            </div>
-                            <div class="form-group">
-                                <label for="collegeYearGraduated">Year Graduated:</label>
-                                <input type="text" id="collegeYearGraduated" name="collegeYearGraduated"
-                                    placeholder="Year">
                             </div>
                             <div class="form-group">
                                 <label for="collegeHonors">Scholarship/Academic Honors Received:</label>
@@ -652,11 +627,11 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="graduateFrom">Attendance Period (From):</label>
-                                    <input type="text" id="graduateFrom" name="graduateFrom" placeholder="Year">
+                                    <input type="date" id="graduateFrom" name="graduateFrom">
                                 </div>
                                 <div class="form-group">
                                     <label for="graduateTo">Attendance Period (To):</label>
-                                    <input type="text" id="graduateTo" name="graduateTo" placeholder="Year">
+                                    <input type="date" id="graduateTo" name="graduateTo">
                                 </div>
                             </div>
                             <div class="form-group">
@@ -664,15 +639,11 @@
                                 <input type="text" id="graduateHighestLevel" name="graduateHighestLevel">
                             </div>
                             <div class="form-group">
-                                <label for="graduateYearGraduated">Year Graduated:</label>
-                                <input type="text" id="graduateYearGraduated" name="graduateYearGraduated"
-                                    placeholder="Year">
-                            </div>
-                            <div class="form-group">
                                 <label for="graduateHonors">Scholarship/Academic Honors Received:</label>
                                 <input type="text" id="graduateHonors" name="graduateHonors">
                             </div>
                         </div>
+
                     </fieldset>
 
                     <!-- Form Actions -->
@@ -682,7 +653,7 @@
                         <button type="button" class="action-button" id="nextButton3">Next</button>
                     </div>
                 </div>
-
+                
                 <!-- Step 4: Civil Service Eligibility -->
                 <div id="step4" class="form-step" style="display: none;">
                     <fieldset>

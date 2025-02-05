@@ -103,7 +103,6 @@ document.getElementById("submitButton").addEventListener("click", () => {
     resetForm();
 });
 
-// Function to collect form data
 function collectFormData() {
     const formData = {};
 
@@ -209,7 +208,6 @@ function collectFormData() {
 
         // Mother's Information
         mother: {
-            title: document.getElementById("motherTitle").value,
             surname: document.getElementById("motherSurname").value,
             firstName: document.getElementById("motherFirstName").value,
             middleName: document.getElementById("motherMiddleName").value,
@@ -219,57 +217,59 @@ function collectFormData() {
     // Step 3: Educational Background
     formData.educationalBackground = {
         elementary: {
-            school: document.getElementById("elementarySchool").value,
-            degree: document.getElementById("elementaryDegree").value,
-            from: document.getElementById("elementaryFrom").value,
-            to: document.getElementById("elementaryTo").value,
-            highestLevel: document.getElementById("elementaryHighestLevel")
-                .value,
-            yearGraduated: document.getElementById("elementaryYearGraduated")
-                .value,
-            honors: document.getElementById("elementaryHonors").value,
+            school: document.getElementById("elementarySchool")?.value || "",
+            degree: document.getElementById("elementaryDegree")?.value || "",
+            from: document.getElementById("elementaryFrom")?.value || "",
+            to: document.getElementById("elementaryTo")?.value || "",
+            highestLevel:
+                document.getElementById("elementaryHighestLevel")?.value || "",
+            yearGraduated:
+                document.getElementById("elementaryYearGraduated")?.value || "",
+            honors: document.getElementById("elementaryHonors")?.value || "",
         },
         secondary: {
-            school: document.getElementById("secondarySchool").value,
-            degree: document.getElementById("secondaryDegree").value,
-            from: document.getElementById("secondaryFrom").value,
-            to: document.getElementById("secondaryTo").value,
-            highestLevel: document.getElementById("secondaryHighestLevel")
-                .value,
-            yearGraduated: document.getElementById("secondaryYearGraduated")
-                .value,
-            honors: document.getElementById("secondaryHonors").value,
+            school: document.getElementById("secondarySchool")?.value || "",
+            degree: document.getElementById("secondaryDegree")?.value || "",
+            from: document.getElementById("secondaryFrom")?.value || "",
+            to: document.getElementById("secondaryTo")?.value || "",
+            highestLevel:
+                document.getElementById("secondaryHighestLevel")?.value || "",
+            yearGraduated:
+                document.getElementById("secondaryYearGraduated")?.value || "",
+            honors: document.getElementById("secondaryHonors")?.value || "",
         },
         vocational: {
-            school: document.getElementById("vocationalSchool").value,
-            degree: document.getElementById("vocationalDegree").value,
-            from: document.getElementById("vocationalFrom").value,
-            to: document.getElementById("vocationalTo").value,
-            highestLevel: document.getElementById("vocationalHighestLevel")
-                .value,
-            yearGraduated: document.getElementById("vocationalYearGraduated")
-                .value,
-            honors: document.getElementById("vocationalHonors").value,
+            school: document.getElementById("vocationalSchool")?.value || "",
+            degree: document.getElementById("vocationalDegree")?.value || "",
+            from: document.getElementById("vocationalFrom")?.value || "",
+            to: document.getElementById("vocationalTo")?.value || "",
+            highestLevel:
+                document.getElementById("vocationalHighestLevel")?.value || "",
+            yearGraduated:
+                document.getElementById("vocationalYearGraduated")?.value || "",
+            honors: document.getElementById("vocationalHonors")?.value || "",
         },
         college: {
-            school: document.getElementById("collegeSchool").value,
-            degree: document.getElementById("collegeDegree").value,
-            from: document.getElementById("collegeFrom").value,
-            to: document.getElementById("collegeTo").value,
-            highestLevel: document.getElementById("collegeHighestLevel").value,
-            yearGraduated: document.getElementById("collegeYearGraduated")
-                .value,
-            honors: document.getElementById("collegeHonors").value,
+            school: document.getElementById("collegeSchool")?.value || "",
+            degree: document.getElementById("collegeDegree")?.value || "",
+            from: document.getElementById("collegeFrom")?.value || "",
+            to: document.getElementById("collegeTo")?.value || "",
+            highestLevel:
+                document.getElementById("collegeHighestLevel")?.value || "",
+            yearGraduated:
+                document.getElementById("collegeYearGraduated")?.value || "",
+            honors: document.getElementById("collegeHonors")?.value || "",
         },
         graduate: {
-            school: document.getElementById("graduateSchool").value,
-            degree: document.getElementById("graduateDegree").value,
-            from: document.getElementById("graduateFrom").value,
-            to: document.getElementById("graduateTo").value,
-            highestLevel: document.getElementById("graduateHighestLevel").value,
-            yearGraduated: document.getElementById("graduateYearGraduated")
-                .value,
-            honors: document.getElementById("graduateHonors").value,
+            school: document.getElementById("graduateSchool")?.value || "",
+            degree: document.getElementById("graduateDegree")?.value || "",
+            from: document.getElementById("graduateFrom")?.value || "",
+            to: document.getElementById("graduateTo")?.value || "",
+            highestLevel:
+                document.getElementById("graduateHighestLevel")?.value || "",
+            yearGraduated:
+                document.getElementById("graduateYearGraduated")?.value || "",
+            honors: document.getElementById("graduateHonors")?.value || "",
         },
     };
 
@@ -297,38 +297,39 @@ function collectFormData() {
 
     // Step 5: Work Experience
     formData.workExperience = [];
-    const workExperienceContainer = document.getElementById(
-        "workExperienceContainer"
-    );
-    const workExperienceEntries = workExperienceContainer.querySelectorAll(
-        ".work-experience-entry"
-    );
-
-    workExperienceEntries.forEach((entry, index) => {
-        formData.workExperience.push({
-            inclusiveDatesFrom: entry.querySelector(
-                `#inclusiveDatesFrom${index + 1}`
-            ).value,
-            inclusiveDatesTo: entry.querySelector(
-                `#inclusiveDatesTo${index + 1}`
-            ).value,
-            positionTitle: entry.querySelector(`#positionTitle${index + 1}`)
-                .value,
-            department: entry.querySelector(`#department${index + 1}`).value,
-            monthlySalary: entry.querySelector(`#monthlySalary${index + 1}`)
-                .value,
-            salaryGrade: entry.querySelector(`#salaryGrade${index + 1}`).value,
-            stepIncrement: entry.querySelector(`#stepIncrement${index + 1}`)
-                .value,
-            appointmentStatus: entry.querySelector(
-                `#appointmentStatus${index + 1}`
-            ).value,
-            govtService:
-                entry.querySelector(
-                    `input[name="govtService${index + 1}"]:checked`
-                )?.value || "",
+    document
+        .querySelectorAll(".work-experience-entry")
+        .forEach((entry, index) => {
+            formData.workExperience.push({
+                from:
+                    entry.querySelector(`#inclusiveDatesFrom${index + 1}`)
+                        ?.value || "",
+                to:
+                    entry.querySelector(`#inclusiveDatesTo${index + 1}`)
+                        ?.value || "",
+                positionTitle:
+                    entry.querySelector(`#positionTitle${index + 1}`)?.value ||
+                    "",
+                department:
+                    entry.querySelector(`#department${index + 1}`)?.value || "",
+                monthlySalary:
+                    entry.querySelector(`#monthlySalary${index + 1}`)?.value ||
+                    "",
+                salaryGrade:
+                    entry.querySelector(`#salaryGrade${index + 1}`)?.value ||
+                    "",
+                stepIncrement:
+                    entry.querySelector(`#stepIncrement${index + 1}`)?.value ||
+                    "",
+                appointmentStatus:
+                    entry.querySelector(`#appointmentStatus${index + 1}`)
+                        ?.value || "",
+                govtService:
+                    entry.querySelector(
+                        `input[name="govtService${index + 1}"]:checked`
+                    )?.value || "",
+            });
         });
-    });
 
     return formData;
 }
@@ -364,48 +365,46 @@ document
 
         childrenContainer.appendChild(childEntry);
     });
+
 document
     .getElementById("addCivilServiceButton")
     .addEventListener("click", function () {
-        const civilServiceContainer = document.getElementById(
-            "civilServiceContainer"
-        );
-        const entryCount = civilServiceContainer.children.length + 1;
+        const container = document.getElementById("civilServiceContainer");
+        const entryNumber = container.children.length + 1; // Next entry number
 
-        const civilServiceEntry = document.createElement("div");
-        civilServiceEntry.classList.add("civil-service-entry");
-
-        civilServiceEntry.innerHTML = `
-            <div class="form-group">
-                <label for="eligibilityName${entryCount}">Eligibility Name:</label>
-                <input type="text" id="eligibilityName${entryCount}" name="eligibilityName${entryCount}">
-            </div>
-            <div class="form-group">
-                <label for="rating${entryCount}">Rating:</label>
-                <input type="text" id="rating${entryCount}" name="rating${entryCount}">
-            </div>
-            <div class="form-group">
-                <label for="dateOfExam${entryCount}">Date of Exam:</label>
-                <input type="date" id="dateOfExam${entryCount}" name="dateOfExam${entryCount}">
-            </div>
-            <div class="form-group">
-                <label for="placeOfExam${entryCount}">Place of Exam:</label>
-                <input type="text" id="placeOfExam${entryCount}" name="placeOfExam${entryCount}">
-            </div>
-            <div class="form-row">
+        const template = `
+            <div class="civil-service-entry">
                 <div class="form-group">
-                    <label for="licenseNumber${entryCount}">License Number (if applicable):</label>
-                    <input type="text" id="licenseNumber${entryCount}" name="licenseNumber${entryCount}">
+                    <label for="eligibilityName${entryNumber}">Eligibility Name:</label>
+                    <input type="text" id="eligibilityName${entryNumber}" name="eligibilityName${entryNumber}">
                 </div>
                 <div class="form-group">
-                    <label for="licenseValidity${entryCount}">Date of Validity:</label>
-                    <input type="date" id="licenseValidity${entryCount}" name="licenseValidity${entryCount}">
+                    <label for="rating${entryNumber}">Rating (if applicable):</label>
+                    <input type="text" id="rating${entryNumber}" name="rating${entryNumber}">
                 </div>
+                <div class="form-group">
+                    <label for="dateOfExam${entryNumber}">Date of Exam/Conferment:</label>
+                    <input type="date" id="dateOfExam${entryNumber}" name="dateOfExam${entryNumber}">
+                </div>
+                <div class="form-group">
+                    <label for="placeOfExam${entryNumber}">Place of Exam/Conferment:</label>
+                    <input type="text" id="placeOfExam${entryNumber}" name="placeOfExam${entryNumber}">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="licenseNumber${entryNumber}">License Number (if applicable):</label>
+                        <input type="text" id="licenseNumber${entryNumber}" name="licenseNumber${entryNumber}">
+                    </div>
+                    <div class="form-group">
+                        <label for="licenseValidity${entryNumber}">Date of Validity:</label>
+                        <input type="date" id="licenseValidity${entryNumber}" name="licenseValidity${entryNumber}">
+                    </div>
+                </div>
+                <hr> <!-- Horizontal line to separate entries -->
             </div>
-            <hr class="separator"> <!-- Horizontal line to separate entries -->
         `;
 
-        civilServiceContainer.appendChild(civilServiceEntry);
+        container.insertAdjacentHTML("beforeend", template);
     });
 
 // Add Another Work Experience Entry
@@ -502,13 +501,58 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            function safeDateFormat(value) {
+                if (!value) return ""; // Return empty if no value
+
+                let dateObj;
+
+                if (typeof value === "number") {
+                    // Convert Excel serial date to JavaScript Date
+                    const excelStartDate = new Date(1899, 11, 30);
+                    dateObj = new Date(
+                        excelStartDate.getTime() + value * 86400000
+                    );
+                } else if (typeof value === "string") {
+                    // Parse string date
+                    dateObj = new Date(value);
+                }
+
+                if (dateObj && !isNaN(dateObj.getTime())) {
+                    // Format as YYYY-MM-DD for <input type="date">
+                    return dateObj.toISOString().split("T")[0];
+                }
+
+                return ""; // Return empty if invalid
+            }
+
+            // Function to get cell value safely
+            function getCellValue(sheet, cell) {
+                return sheet[cell] ? sheet[cell].v : "";
+            }
+
             const reader = new FileReader();
 
             reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: "array" });
-
+                // Access the first sheet (existing logic)
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+
+                // Access the second sheet (for Civil Service Eligibility)
+                const secondSheet = workbook.Sheets[workbook.SheetNames[1]];
+
+                // Extract data from the second sheet
+                const eligibilityData =
+                    extractCivilServiceEligibility(secondSheet);
+
+                // Populate the form with eligibility data
+                populateCivilServiceEligibility(eligibilityData);
+
+                // Extract data from the second sheet
+                const workExperienceData = extractWorkExperience(secondSheet);
+
+                // Populate the form with Work Experience data
+                populateWorkExperience(workExperienceData);
 
                 // Accessing the specific cells
                 const surnameCell = firstSheet["D10"];
@@ -569,6 +613,189 @@ document.addEventListener("DOMContentLoaded", function () {
                 const mobileNumberCell = firstSheet["I33"];
                 const emailAddressCell = firstSheet["I34"];
 
+                function safeTrim(value) {
+                    return value && typeof value === "string"
+                        ? value.trim()
+                        : "Not available";
+                }
+
+                // Extract Family Background Data from Excel
+                const familyBackground = {};
+
+                // Spouse Information
+                familyBackground.spouseSurname = firstSheet["D36"]
+                    ? safeTrim(firstSheet["D36"].v)
+                    : "Not available";
+                familyBackground.spouseFirstName = firstSheet["D37"]
+                    ? safeTrim(firstSheet["D37"].v)
+                    : "Not available";
+                familyBackground.spouseMiddleName = firstSheet["D38"]
+                    ? safeTrim(firstSheet["D38"].v)
+                    : "Not available";
+                familyBackground.spouseNameExtension = firstSheet["G37"]
+                    ? safeTrim(
+                          firstSheet["G37"].v.replace(
+                              /NAME EXTENSION \(JR\., SR\)/i,
+                              ""
+                          )
+                      )
+                    : ""; // Remove "NAME EXTENSION (JR., SR)" if present
+                familyBackground.spouseOccupation = firstSheet["D39"]
+                    ? safeTrim(firstSheet["D39"].v)
+                    : "Not available";
+                familyBackground.spouseEmployerBusinessName = firstSheet["D40"]
+                    ? safeTrim(firstSheet["D40"].v)
+                    : "Not available";
+                familyBackground.spouseBusinessAddress = firstSheet["D41"]
+                    ? safeTrim(firstSheet["D41"].v)
+                    : "Not available";
+                familyBackground.spouseTelephoneNo = firstSheet["D42"]
+                    ? safeTrim(firstSheet["D42"].v)
+                    : "Not available";
+
+                // Father's Information
+                familyBackground.fatherSurname = firstSheet["D43"]
+                    ? safeTrim(firstSheet["D43"].v)
+                    : "Not available";
+                familyBackground.fatherFirstName = firstSheet["D44"]
+                    ? safeTrim(firstSheet["D44"].v)
+                    : "Not available";
+                familyBackground.fatherMiddleName = firstSheet["D45"]
+                    ? safeTrim(firstSheet["D45"].v)
+                    : "Not available";
+                familyBackground.fatherNameExtension = firstSheet["G44"]
+                    ? safeTrim(
+                          firstSheet["G44"].v.replace(
+                              /NAME EXTENSION \(JR\., SR\)/i,
+                              ""
+                          )
+                      )
+                    : ""; // Remove "NAME EXTENSION (JR., SR)" if present
+
+                // Mother's Information (Maiden Name)
+                familyBackground.motherSurname = firstSheet["D47"]
+                    ? safeTrim(firstSheet["D47"].v)
+                    : "Not available";
+                familyBackground.motherFirstName = firstSheet["D48"]
+                    ? safeTrim(firstSheet["D48"].v)
+                    : "Not available";
+                familyBackground.motherMiddleName = firstSheet["D49"]
+                    ? safeTrim(firstSheet["D49"].v)
+                    : "Not available";
+
+                // Extract Children Data as an Array
+                familyBackground.children = [];
+                for (let row = 37; row <= 48; row++) {
+                    const childNameCell = firstSheet[`I${row}`];
+                    const childBirthdateCell = firstSheet[`M${row}`];
+
+                    if (childNameCell && childNameCell.v.trim()) {
+                        familyBackground.children.push({
+                            name: childNameCell.v.trim(),
+                            birthdate: childBirthdateCell
+                                ? safeDateFormat(childBirthdateCell.v)
+                                : "Unknown",
+                        });
+                    }
+                }
+
+                // Education data extraction
+                let educationData = [
+                    { level: "elementary", row: 54 },
+                    { level: "secondary", row: 55 },
+                    { level: "vocational", row: 56 },
+                    { level: "college", row: 57 },
+                    { level: "graduate", row: 58 },
+                ];
+
+                educationData.forEach((edu) => {
+                    let row = edu.row;
+                    let prefix = edu.level;
+
+                    document.getElementById(prefix + "School").value =
+                        getCellValue(firstSheet, `D${row}`);
+                    document.getElementById(prefix + "Degree").value =
+                        getCellValue(firstSheet, `G${row}`);
+                    document.getElementById(prefix + "From").value =
+                        safeDateFormat(getCellValue(firstSheet, `J${row}`));
+                    document.getElementById(prefix + "To").value =
+                        safeDateFormat(getCellValue(firstSheet, `K${row}`));
+                    document.getElementById(prefix + "HighestLevel").value =
+                        getCellValue(firstSheet, `L${row}`);
+                    document.getElementById(prefix + "Honors").value =
+                        getCellValue(firstSheet, `N${row}`);
+                });
+
+                
+
+                function extractCivilServiceEligibility(sheet) {
+                    const eligibilityData = [];
+                    let row = 5; // Start from row 5
+
+                    while (row <= 11 && sheet[`A${row}`]) {
+                        // Stop at row 11 or when no more data
+                        eligibilityData.push({
+                            careerService: sheet[`A${row}`]
+                                ? sheet[`A${row}`].v
+                                : "", // Column A
+                            rating: sheet[`F${row}`] ? sheet[`F${row}`].v : "", // Column F
+                            examinationDate: sheet[`G${row}`]
+                                ? sheet[`G${row}`].v
+                                : "", // Column G
+                            examinationPlace: sheet[`I${row}`]
+                                ? sheet[`I${row}`].v
+                                : "", // Column I
+                            licenseNumber: sheet[`L${row}`]
+                                ? sheet[`L${row}`].v
+                                : "", // Column L
+                            validityDate: sheet[`M${row}`]
+                                ? sheet[`M${row}`].v
+                                : "", // Column M
+                        });
+                        row++;
+                    }
+
+                    return eligibilityData;
+                }
+
+                function extractWorkExperience(sheet) {
+                    const workExperienceData = [];
+                    let row = 18; // Start from row 18
+
+                    while (row <= 45 && sheet[`A${row}`]) {
+                        // Stop at row 45 or when no more data
+                        workExperienceData.push({
+                            inclusiveDatesFrom: sheet[`A${row}`]
+                                ? sheet[`A${row}`].v
+                                : "", // Column A
+                            inclusiveDatesTo: sheet[`C${row - 1}`]
+                                ? sheet[`C${row}`].v
+                                : "", // Column C (row - 1 for "To")
+                            positionTitle: sheet[`D${row}`]
+                                ? sheet[`D${row}`].v
+                                : "", // Column D
+                            department: sheet[`G${row}`]
+                                ? sheet[`G${row}`].v
+                                : "", // Column G
+                            monthlySalary: sheet[`J${row}`]
+                                ? sheet[`J${row}`].v
+                                : "", // Column J
+                            salaryGrade: sheet[`K${row}`]
+                                ? sheet[`K${row}`].v
+                                : "", // Column K
+                            appointmentStatus: sheet[`L${row}`]
+                                ? sheet[`L${row}`].v
+                                : "", // Column L
+                            govtService: sheet[`M${row}`]
+                                ? sheet[`M${row}`].v
+                                : "", // Column M
+                        });
+                        row++;
+                    }
+
+                    return workExperienceData;
+                }
+
                 // Assign values to variables for existing fields
                 const surname = surnameCell ? surnameCell.v : "Not available";
                 const firstname = firstnameCell
@@ -582,10 +809,37 @@ document.addEventListener("DOMContentLoaded", function () {
                     : "Not available";
 
                 function excelSerialToJSDate(serial) {
+                    // Check if serial is a string (date) or a number
+                    if (typeof serial === "string") {
+                        // Try converting string date to a JavaScript Date object
+                        const jsDate = new Date(serial);
+                        if (isNaN(jsDate)) {
+                            console.error("Invalid date string:", serial);
+                            return ""; // Return an empty string if the date is invalid
+                        }
+                        return jsDate.toISOString().split("T")[0]; // Format to YYYY-MM-DD
+                    }
+
+                    // If it's a number (Excel serial date)
+                    if (
+                        isNaN(serial) ||
+                        serial === null ||
+                        serial === undefined
+                    ) {
+                        console.error("Invalid Excel serial date:", serial);
+                        return ""; // Return an empty string if invalid serial
+                    }
+
                     const excelStartDate = new Date(Date.UTC(1899, 11, 30)); // Set to UTC to prevent timezone shifts
                     const jsDate = new Date(
                         excelStartDate.getTime() + serial * 86400000
                     );
+
+                    if (isNaN(jsDate)) {
+                        console.error("Invalid JS Date:", jsDate);
+                        return ""; // Return empty string if JS date is invalid
+                    }
+
                     return jsDate.toISOString().split("T")[0]; // Format to YYYY-MM-DD
                 }
 
@@ -979,6 +1233,242 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (dualCitizenshipCountry !== "Not available") {
                     countrySelect.value = dualCitizenshipCountry;
                 }
+
+                // Spouse Information
+                document.getElementById("spouseSurname").value =
+                    familyBackground.spouseSurname;
+                document.getElementById("spouseFirstName").value =
+                    familyBackground.spouseFirstName;
+                document.getElementById("spouseMiddleName").value =
+                    familyBackground.spouseMiddleName;
+                document.getElementById("spouseNameExtension").value =
+                    familyBackground.spouseNameExtension;
+                document.getElementById("spouseOccupation").value =
+                    familyBackground.spouseOccupation;
+                document.getElementById("spouseEmployer").value =
+                    familyBackground.spouseEmployerBusinessName;
+                document.getElementById("spouseTelephone").value =
+                    familyBackground.spouseTelephoneNo;
+
+                // Father's Information
+                document.getElementById("fatherSurname").value =
+                    familyBackground.fatherSurname;
+                document.getElementById("fatherFirstName").value =
+                    familyBackground.fatherFirstName;
+                document.getElementById("fatherMiddleName").value =
+                    familyBackground.fatherMiddleName;
+                document.getElementById("fatherNameExtension").value =
+                    familyBackground.fatherNameExtension;
+
+                // Mother's Information (Maiden Name)
+                document.getElementById("motherSurname").value =
+                    familyBackground.motherSurname;
+                document.getElementById("motherFirstName").value =
+                    familyBackground.motherFirstName;
+                document.getElementById("motherMiddleName").value =
+                    familyBackground.motherMiddleName;
+
+                // Children Information
+                let childCount = 0; // Keep track of how many children we need to add
+                familyBackground.children.forEach((child, index) => {
+                    childCount++;
+                    const childNameInput = document.getElementById(
+                        `childName${childCount}`
+                    );
+                    const childDOBInput = document.getElementById(
+                        `childDOB${childCount}`
+                    );
+
+                    if (childNameInput && childDOBInput) {
+                        childNameInput.value = child.name;
+                        childDOBInput.value = excelSerialToJSDate(
+                            child.birthdate
+                        ); // Use your function to convert the date
+                    } else {
+                        // Create new input fields if more children than available inputs
+                        const newChildDiv = document.createElement("div");
+                        newChildDiv.classList.add("child-entry");
+                        newChildDiv.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="childName${childCount}">Child's Name:</label>
+                        <input type="text" id="childName${childCount}" name="childName${childCount}" value="${
+                            child.name
+                        }">
+                    </div>
+                    <div class="form-group">
+                        <label for="childDOB${childCount}">Date of Birth:</label>
+                        <input type="date" id="childDOB${childCount}" name="childDOB${childCount}" value="${excelSerialToJSDate(
+                            child.birthdate
+                        )}">
+                    </div>
+                </div>
+            `;
+                        document
+                            .getElementById("childrenContainer")
+                            .appendChild(newChildDiv);
+                    }
+                });
+
+                function populateCivilServiceEligibility(data) {
+                    const container = document.getElementById(
+                        "civilServiceContainer"
+                    );
+                    container.innerHTML = ""; // Clear existing content
+
+                    data.forEach((item, index) => {
+                        const entryNumber = index + 1; // Start numbering from 1
+
+                        const template = `
+                            <div class="civil-service-entry">
+                                <div class="form-group">
+                                    <label for="eligibilityName${entryNumber}">Eligibility Name:</label>
+                                    <input type="text" id="eligibilityName${entryNumber}" name="eligibilityName${entryNumber}" value="${
+                            item.careerService
+                        }">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rating${entryNumber}">Rating (if applicable):</label>
+                                    <input type="text" id="rating${entryNumber}" name="rating${entryNumber}" value="${
+                            item.rating
+                        }">
+                                </div>
+                                <div class="form-group">
+                                    <label for="dateOfExam${entryNumber}">Date of Exam/Conferment:</label>
+                                    <input type="date" id="dateOfExam${entryNumber}" name="dateOfExam${entryNumber}" value="${safeDateFormat(
+                            item.examinationDate
+                        )}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="placeOfExam${entryNumber}">Place of Exam/Conferment:</label>
+                                    <input type="text" id="placeOfExam${entryNumber}" name="placeOfExam${entryNumber}" value="${
+                            item.examinationPlace
+                        }">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="licenseNumber${entryNumber}">License Number (if applicable):</label>
+                                        <input type="text" id="licenseNumber${entryNumber}" name="licenseNumber${entryNumber}" value="${
+                            item.licenseNumber
+                        }">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="licenseValidity${entryNumber}">Date of Validity:</label>
+                                        <input type="date" id="licenseValidity${entryNumber}" name="licenseValidity${entryNumber}" value="${safeDateFormat(
+                            item.validityDate
+                        )}">
+                                    </div>
+                                </div>
+                                <hr> <!-- Horizontal line to separate entries -->
+                            </div>
+                        `;
+
+                        container.insertAdjacentHTML("beforeend", template);
+                    });
+                }
+
+                function populateWorkExperience(data) {
+                    const container = document.getElementById(
+                        "workExperienceContainer"
+                    );
+                    container.innerHTML = ""; // Clear existing content
+
+                    data.forEach((item, index) => {
+                        const entryNumber = index + 1; // Start numbering from 1
+
+                        const template = `
+                            <div class="work-experience-entry">
+                                <!-- Inclusive Dates (From and To) -->
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="inclusiveDatesFrom${entryNumber}">Inclusive Dates (From):</label>
+                                        <input type="date" id="inclusiveDatesFrom${entryNumber}" name="inclusiveDatesFrom${entryNumber}" value="${safeDateFormat(
+                            item.inclusiveDatesFrom
+                        )}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="inclusiveDatesTo${entryNumber}">Inclusive Dates (To):</label>
+                                        <input type="date" id="inclusiveDatesTo${entryNumber}" name="inclusiveDatesTo${entryNumber}" value="${safeDateFormat(
+                            item.inclusiveDatesTo
+                        )}">
+                                    </div>
+                                </div>
+                
+                                <!-- Position Title -->
+                                <div class="form-group">
+                                    <label for="positionTitle${entryNumber}">Position Title:</label>
+                                    <input type="text" id="positionTitle${entryNumber}" name="positionTitle${entryNumber}" value="${
+                            item.positionTitle
+                        }">
+                                </div>
+                
+                                <!-- Department/Agency/Office/Company -->
+                                <div class="form-group">
+                                    <label for="department${entryNumber}">Department/Agency/Office/Company:</label>
+                                    <input type="text" id="department${entryNumber}" name="department${entryNumber}" value="${
+                            item.department
+                        }">
+                                </div>
+                
+                                <!-- Monthly Salary -->
+                                <div class="form-group">
+                                    <label for="monthlySalary${entryNumber}">Monthly Salary:</label>
+                                    <input type="text" id="monthlySalary${entryNumber}" name="monthlySalary${entryNumber}" value="${
+                            item.monthlySalary
+                        }">
+                                </div>
+                
+                                <!-- Salary/Job/Pay Grade -->
+                                <div class="form-group">
+                                    <label for="salaryGrade${entryNumber}">Salary/Job/Pay Grade:</label>
+                                    <input type="text" id="salaryGrade${entryNumber}" name="salaryGrade${entryNumber}" value="${
+                            item.salaryGrade
+                        }">
+                                </div>
+                
+                                <!-- Status of Appointment -->
+                                <div class="form-group">
+                                    <label for="appointmentStatus${entryNumber}">Status of Appointment:</label>
+                                    <input type="text" id="appointmentStatus${entryNumber}" name="appointmentStatus${entryNumber}" value="${
+                            item.appointmentStatus
+                        }">
+                                </div>
+                
+                                <!-- Gov't Service (Yes or No) -->
+                                <div class="form-group">
+                                    <label>Gov't Service:</label>
+                                    <div class="radio-group">
+                                        <div class="radio-option">
+                                            <input type="radio" id="govtServiceYes${entryNumber}" name="govtService${entryNumber}" value="Yes" ${
+                            item.govtService === "Y" ? "checked" : ""
+                        }>
+                                            <label for="govtServiceYes${entryNumber}">Yes</label>
+                                        </div>
+                                        <div class="radio-option">
+                                            <input type="radio" id="govtServiceNo${entryNumber}" name="govtService${entryNumber}" value="No" ${
+                            item.govtService === "N" ? "checked" : ""
+                        }>
+                                            <label for="govtServiceNo${entryNumber}">No</label>
+                                        </div>
+                                    </div>
+                                </div>
+                
+                                <hr class="separator"> <!-- Horizontal line to separate entries -->
+                            </div>
+                        `;
+
+                        container.insertAdjacentHTML("beforeend", template);
+                    });
+                }
+
+                // Ensure Step 1 stays visible
+                document.getElementById("step1").style.display = "block";
+
+                // Ensure Step 2 remains hidden for now
+                document.getElementById("step2").style.display = "none";
+                document.getElementById("step3").style.display = "none";
+                document.getElementById("step4").style.display = "none";
+                document.getElementById("step5").style.display = "none";
             };
 
             reader.readAsArrayBuffer(file);
@@ -1083,6 +1573,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
 function loadCountries() {
     fetch("data/countries.json") // Path to your local JSON file
         .then((response) => response.json())
