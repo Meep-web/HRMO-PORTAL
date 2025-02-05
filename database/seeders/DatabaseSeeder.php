@@ -19,6 +19,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Call the EmployeesTableSeeder to seed employee data
-        $this->call(EmployeesTableSeeder::class);
+        $this->call([
+            EmployeesTableSeeder::class,
+            RegionSeeder::class,
+            ProvinceSeeder::class,
+            TownSeeder::class,
+            BarangaySeeder::class,
+    ]);
+        
     }
 }

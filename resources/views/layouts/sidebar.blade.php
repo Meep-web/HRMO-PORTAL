@@ -15,9 +15,15 @@
         <img src="{{ asset('Service_Records.png') }}" alt="Service Records" class="sidebar-service-records">
     </a>
 
+    
+    <!-- Personal Data Sheet Button -->
+    <a href="{{ route('personalDataSheet') }}" class="personalDataSheet-button" data-title="Personal Data Sheet">
+        <img src="{{ asset('personalDataSheet.png') }}" alt="Personal Data Sheet" class="sidebar-personalDataSheet">
+    </a>
+
     <!-- Leave Credits Button -->
     <button class="leave-credits-button" data-title="Leave Credits">
-        <img src="{{ asset('Leave_credits.png') }}" alt="Leave Credits" class="sidebar-leave-credits">
+        {{-- <img src="{{ asset('Leave_credits.png') }}" alt="Leave Credits" class="sidebar-leave-credits"> --}}
     </button>
 
     <!-- Account Management Button -->

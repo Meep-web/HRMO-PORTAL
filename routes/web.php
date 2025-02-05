@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NoticeOfSalaryAdjustmentController;
+use App\Http\Controllers\PersonalDataSheetController;
+use App\Http\Controllers\LocationController;
 
 // Redirect root to login page
 Route::get('/', function () {
@@ -26,3 +28,8 @@ Route::post('/save-nosa', [NoticeOfSalaryAdjustmentController::class, 'save'])->
 Route::get('/get-nosa-data', [NoticeOfSalaryAdjustmentController::class, 'getNosaData']);
 Route::get('/get-employee-data/{employeeId}', [NoticeOfSalaryAdjustmentController::class, 'getEmployeeData']);
 Route::get('/get-employee-data/{employeeId}', [NoticeOfSalaryAdjustmentController::class, 'getEmployeeData']);
+Route::get('/personal-data-sheet', [PersonalDataSheetController::class, 'index'])->name('personalDataSheet');
+
+Route::get('/provinces', [LocationController::class, 'getProvinces']);
+Route::get('/towns/{provinceCode}', [LocationController::class, 'getTowns']);
+Route::get('/barangays/{townCode}', [LocationController::class, 'getBarangays']);
