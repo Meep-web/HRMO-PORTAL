@@ -466,7 +466,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             color: rgb(0, 0, 0),
                         }, // Ensure newSalary is a number
                         {
-                            text: "Previous date",
+                            text: "December 31, 2024",
                             x: 279,
                             y: 393,
                             size: 8,
@@ -525,6 +525,13 @@ document.addEventListener("DOMContentLoaded", function () {
                             text: employeeData.position,
                             x: 180,
                             y: 598,
+                            size: 10,
+                            color: rgb(0, 0, 0),
+                        },
+                        {
+                            text: "CESAR V. AREZA",
+                            x: 388,
+                            y: 562,
                             size: 10,
                             color: rgb(0, 0, 0),
                         },
