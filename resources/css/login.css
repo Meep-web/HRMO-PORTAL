@@ -73,3 +73,21 @@ h2 {
 .submit-button:hover {
     background-color: #0056b3;
 }
+
+/* resources/css/login.css */
+
+
+.throttle-error-message {
+    color: #ff0000; /* Red text color */
+    background-color: #ffe6e6; /* Light red background */
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+#countdown-timer {
+    font-weight: bold;
+    color: #df160f; /* Bootstrap danger color */
+}
