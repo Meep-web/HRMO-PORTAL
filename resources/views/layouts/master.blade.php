@@ -8,8 +8,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'PH-R:Portal')</title>
     
+    
     <!-- Vite-managed assets (CSS and JS) -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
     <!-- Font Awesome 6.7.2 CSS -->
     <link href="{{ asset('vendor/fontawesome/css/all.min.css') }}" rel="stylesheet">
 

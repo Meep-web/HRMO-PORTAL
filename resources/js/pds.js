@@ -105,6 +105,7 @@ document.getElementById("submitButton").addEventListener("click", () => {
 
 function collectFormData() {
     const formData = {};
+    console.log(formData);
 
     // Step 1: Personal Information
     formData.personalInfo = {
@@ -616,7 +617,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 function safeTrim(value) {
                     return value && typeof value === "string"
                         ? value.trim()
-                        : "Not available";
+                        : "";
                 }
 
                 // Extract Family Background Data from Excel
@@ -625,13 +626,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Spouse Information
                 familyBackground.spouseSurname = firstSheet["D36"]
                     ? safeTrim(firstSheet["D36"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.spouseFirstName = firstSheet["D37"]
                     ? safeTrim(firstSheet["D37"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.spouseMiddleName = firstSheet["D38"]
                     ? safeTrim(firstSheet["D38"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.spouseNameExtension = firstSheet["G37"]
                     ? safeTrim(
                           firstSheet["G37"].v.replace(
@@ -642,27 +643,27 @@ document.addEventListener("DOMContentLoaded", function () {
                     : ""; // Remove "NAME EXTENSION (JR., SR)" if present
                 familyBackground.spouseOccupation = firstSheet["D39"]
                     ? safeTrim(firstSheet["D39"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.spouseEmployerBusinessName = firstSheet["D40"]
                     ? safeTrim(firstSheet["D40"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.spouseBusinessAddress = firstSheet["D41"]
                     ? safeTrim(firstSheet["D41"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.spouseTelephoneNo = firstSheet["D42"]
                     ? safeTrim(firstSheet["D42"].v)
-                    : "Not available";
+                    : "";
 
                 // Father's Information
                 familyBackground.fatherSurname = firstSheet["D43"]
                     ? safeTrim(firstSheet["D43"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.fatherFirstName = firstSheet["D44"]
                     ? safeTrim(firstSheet["D44"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.fatherMiddleName = firstSheet["D45"]
                     ? safeTrim(firstSheet["D45"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.fatherNameExtension = firstSheet["G44"]
                     ? safeTrim(
                           firstSheet["G44"].v.replace(
@@ -675,13 +676,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Mother's Information (Maiden Name)
                 familyBackground.motherSurname = firstSheet["D47"]
                     ? safeTrim(firstSheet["D47"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.motherFirstName = firstSheet["D48"]
                     ? safeTrim(firstSheet["D48"].v)
-                    : "Not available";
+                    : "";
                 familyBackground.motherMiddleName = firstSheet["D49"]
                     ? safeTrim(firstSheet["D49"].v)
-                    : "Not available";
+                    : "";
 
                 // Extract Children Data as an Array
                 familyBackground.children = [];
@@ -797,16 +798,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 // Assign values to variables for existing fields
-                const surname = surnameCell ? surnameCell.v : "Not available";
+                const surname = surnameCell ? surnameCell.v : "";
                 const firstname = firstnameCell
                     ? firstnameCell.v
-                    : "Not available";
+                    : "";
                 const middlename = middlenameCell
                     ? middlenameCell.v
-                    : "Not available";
+                    : "";
                 const nameExtension = nameExtensionCell
                     ? nameExtensionCell.v
-                    : "Not available";
+                    : "";
 
                 function excelSerialToJSDate(serial) {
                     // Check if serial is a string (date) or a number
@@ -847,9 +848,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 const dob =
                     dobCell && !isNaN(dobCell.v)
                         ? excelSerialToJSDate(dobCell.v)
-                        : "Not available";
+                        : "";
 
-                const pob = pobCell ? pobCell.v : "Not available";
+                const pob = pobCell ? pobCell.v : "";
 
                 // Process the name extension to remove unwanted text and get the next text
                 let processedNameExtension = "";
@@ -872,10 +873,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     } else if (femaleCheckboxCell.v === true) {
                         gender = "Female";
                     } else {
-                        gender = "Not available";
+                        gender = "";
                     }
                 } else {
-                    gender = "Not available";
+                    gender = "";
                 }
 
                 // Determine civil status based on checkbox state
@@ -903,27 +904,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else if (checkedStatuses.length === 1) {
                     civilStatus = checkedStatuses[0]; // Set civil status to the only checked option
                 } else {
-                    civilStatus = "Not available";
+                    civilStatus = "";
                 }
 
                 // Extract additional fields (height, weight, etc.)
-                const height = heightCell ? heightCell.v : "Not available";
-                const weight = weightCell ? weightCell.v : "Not available";
+                const height = heightCell ? heightCell.v : "";
+                const weight = weightCell ? weightCell.v : "";
                 const bloodType = bloodTypeCell
                     ? bloodTypeCell.v
-                    : "Not available";
-                const gsisId = gsisIdCell ? gsisIdCell.v : "Not available";
+                    : "";
+                const gsisId = gsisIdCell ? gsisIdCell.v : "";
                 const pagIbigId = pagIbigIdCell
                     ? pagIbigIdCell.v
-                    : "Not available";
+                    : "";
                 const philhealthNo = philhealthNoCell
                     ? philhealthNoCell.v
-                    : "Not available";
-                const sssNo = sssNoCell ? sssNoCell.v : "Not available";
-                const tinNo = tinNoCell ? tinNoCell.v : "Not available";
+                    : "";
+                const sssNo = sssNoCell ? sssNoCell.v : "";
+                const tinNo = tinNoCell ? tinNoCell.v : "";
                 const agencyEmpNo = agencyEmpNoCell
                     ? agencyEmpNoCell.v
-                    : "Not available";
+                    : "";
 
                 // Determine citizenship values
                 const isFilipino = filipinoCheckboxCell
@@ -940,76 +941,76 @@ document.addEventListener("DOMContentLoaded", function () {
                     : false;
                 const dualCitizenshipCountry = citizenshipCountryCell
                     ? citizenshipCountryCell.v.trim()
-                    : "Not available";
+                    : "";
 
                 // Assign values to residential address variables
                 const residentialHouseBlockLot = residentialHouseBlockLotCell
                     ? residentialHouseBlockLotCell.v
-                    : "Not available";
+                    : "";
                 const residentialStreet = residentialStreetCell
                     ? residentialStreetCell.v
-                    : "Not available";
+                    : "";
                 const residentialSubdivisionVillage =
                     residentialSubdivisionVillageCell
                         ? residentialSubdivisionVillageCell.v
-                        : "Not available";
+                        : "";
                 const excelResidentialProvince = residentialProvinceCell
                     ? residentialProvinceCell.v.toString().trim().toUpperCase()
-                    : "Not available";
+                    : "";
 
                 const excelResidentialCity = residentialCityMunicipalityCell
                     ? residentialCityMunicipalityCell.v
                           .toString()
                           .trim()
                           .toUpperCase()
-                    : "Not available";
+                    : "";
 
                 const excelResidentialBarangay = residentialBarangayCell
                     ? residentialBarangayCell.v.toString().trim()
-                    : "Not available";
+                    : "";
 
-                const residentialZipCode = residentialZipCodeCell
-                    ? residentialZipCodeCell.v
-                    : "Not available";
+                       
+                    
+                    
 
                 // Assign values to permanent address variables
                 const permanentHouseBlockLot = permanentHouseBlockLotCell
                     ? permanentHouseBlockLotCell.v
-                    : "Not available";
+                    : "";
                 const permanentStreet = permanentStreetCell
                     ? permanentStreetCell.v
-                    : "Not available";
+                    : "";
                 const permanentSubdivisionVillage =
                     permanentSubdivisionVillageCell
                         ? permanentSubdivisionVillageCell.v
-                        : "Not available";
+                        : "";
                 const excelPermanentProvince = permanentProvinceCell
                     ? permanentProvinceCell.v.toString().trim().toUpperCase()
-                    : "Not available";
+                    : "";
 
                 const excelPermanentCity = permanentCityMunicipalityCell
                     ? permanentCityMunicipalityCell.v
                           .toString()
                           .trim()
                           .toUpperCase()
-                    : "Not available";
+                    : "";
 
                 const excelPermanentBarangay = permanentBarangayCell
                     ? permanentBarangayCell.v.toString().trim()
-                    : "Not available";
+                    : "";
                 const permanentZipCode = permanentZipCodeCell
                     ? permanentZipCodeCell.v
-                    : "Not available";
+                    : "";
 
                 const telephoneNumber = telephoneNumberCell
                     ? telephoneNumberCell.v
-                    : "Not available";
+                    : "";
                 const mobileNumber = mobileNumberCell
                     ? mobileNumberCell.v
-                    : "Not available";
+                    : "";
                 const emailAddress = emailAddressCell
                     ? emailAddressCell.v
-                    : "Not available";
+                    : "";
 
                 // Populate the form fields
                 document.getElementById("surname").value = surname;
@@ -1038,7 +1039,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("residentialSubdivision").value =
                     residentialSubdivisionVillage;
                 // Only try to set the dropdown if the Excel value is available
-                if (excelResidentialProvince !== "Not available") {
+                if (excelResidentialProvince !== "") {
                     setTimeout(() => {
                         const resProvinceSelect = document.getElementById(
                             "residentialProvince"
@@ -1056,7 +1057,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             }
                         }
                         // Wait for cities to load after province change
-                        if (excelResidentialCity !== "Not available") {
+                        if (excelResidentialCity !== "") {
                             setTimeout(() => {
                                 const resCitySelect =
                                     document.getElementById("residentialCity");
@@ -1070,12 +1071,14 @@ document.addEventListener("DOMContentLoaded", function () {
                                             new Event("change")
                                         );
                                         break;
+                                        
                                     }
                                 }
                                 // Wait for barangays to load after city change
                                 if (
-                                    excelResidentialBarangay !== "Not available"
+                                    excelResidentialBarangay !== ""
                                 ) {
+                                    getZipCode();
                                     setTimeout(() => {
                                         const resBarangaySelect =
                                             document.getElementById(
@@ -1097,8 +1100,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }, 500);
                 }
-                document.getElementById("residentialZipCode").value =
-                    residentialZipCode;
+                // document.getElementById("residentialZipCode").value =
+                //     residentialZipCode;
+                
                 document.getElementById("permanentHouseNo").value =
                     permanentHouseBlockLot;
                 document.getElementById("permanentStreet").value =
@@ -1106,7 +1110,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("permanentSubdivision").value =
                     permanentSubdivisionVillage;
 
-                if (excelPermanentProvince !== "Not available") {
+                if (excelPermanentProvince !== "") {
                     setTimeout(() => {
                         const permProvinceSelect =
                             document.getElementById("permanentProvince");
@@ -1123,7 +1127,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             }
                         }
                         // Wait for cities to load after province change
-                        if (excelPermanentCity !== "Not available") {
+                        if (excelPermanentCity !== "") {
                             setTimeout(() => {
                                 const permCitySelect =
                                     document.getElementById("permanentCity");
@@ -1141,8 +1145,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                 }
                                 // Wait for barangays to load after city change
                                 if (
-                                    excelPermanentBarangay !== "Not available"
+                                    excelPermanentBarangay !== ""
                                 ) {
+                                    getPermanentZipCode()
                                     setTimeout(() => {
                                         const permBarangaySelect =
                                             document.getElementById(
@@ -1230,7 +1235,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 // Set country selection if applicable
-                if (dualCitizenshipCountry !== "Not available") {
+                if (dualCitizenshipCountry !== "") {
                     countrySelect.value = dualCitizenshipCountry;
                 }
 
@@ -1508,7 +1513,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
         }
 
-        // Function to fetch towns
         function fetchTowns(provinceCode, citySelect) {
             fetch(`/towns/${provinceCode}`)
                 .then((response) => response.json())
@@ -1517,10 +1521,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         '<option value="">Select City/Municipality</option>';
                     data.forEach((town) => {
                         const option = document.createElement("option");
-                        option.value = town.townCode;
+                        option.value = town.townCode; // Still using townCode as value
                         option.textContent = town.townName;
+                        option.dataset.townName = town.townName; // Store townName in data attribute
                         citySelect.appendChild(option);
+                        
                     });
+    
                 });
         }
 
@@ -1536,6 +1543,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         option.value = barangay.barangayCode;
                         option.textContent = barangay.barangayName;
                         barangaySelect.appendChild(option);
+
+                       
+                       
                     });
                 });
         }
@@ -1556,6 +1566,7 @@ document.addEventListener("DOMContentLoaded", function () {
         residentialCity.addEventListener("change", function () {
             const townCode = this.value;
             fetchBarangays(townCode, residentialBarangay);
+            
         });
 
         // Event listener for permanent province change
@@ -1598,7 +1609,6 @@ function loadCountries() {
                 '<option value="">Failed to load countries</option>';
         });
 }
-
 // Function to toggle dual citizenship sub-options
 function toggleDualCitizenshipOptions() {
     const dualCitizenshipCheckbox = document.getElementById("dualCitizenship");
@@ -1607,7 +1617,7 @@ function toggleDualCitizenshipOptions() {
             const subOptions = this.closest(
                 ".citizenship-option"
             ).querySelector(".sub-options");
-            subOptions.style.display = this.checked ? "block" : "none";
+            subOptions.classList.toggle("show", this.checked);
 
             if (!this.checked) {
                 subOptions
@@ -1621,9 +1631,11 @@ function toggleDualCitizenshipOptions() {
 
 // Initialize the form functionality
 function initializeForm() {
+    console.log("Form initialized"); // Debugging
     loadCountries();
     toggleDualCitizenshipOptions();
 }
+
 
 // Run the initialization when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", initializeForm);
@@ -1682,3 +1694,106 @@ document.addEventListener("DOMContentLoaded", function () {
             }, 500);
         });
 });
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Attach the change event handler after the DOM is loaded
+    document.getElementById('residentialCity').addEventListener('change', updateCityText);
+    document.getElementById('cityTextField').addEventListener('blur', getZipCode); // Trigger ZIP code lookup on blur
+});
+
+function updateCityText() {
+    // Get the selected city name
+    var citySelect = document.getElementById('residentialCity');
+    var selectedCity = citySelect.options[citySelect.selectedIndex].text;
+
+    // Capitalize the first letter of every word
+    var capitalizedCity = selectedCity
+        .split(' ') // Split the string into an array by spaces
+        .map(function(word) {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(); // Capitalize the first letter of each word
+        })
+        .join(' '); // Join the words back with spaces
+
+    // Get the text field and set its value to the formatted city name
+    var cityTextField = document.getElementById('cityTextField');
+    cityTextField.value = capitalizedCity;
+    getZipCode();
+}
+
+// Function to get the ZIP code based on the city name
+function getZipCode() {
+    // Get the city name from the text field
+    var cityName = document.getElementById('cityTextField').value;
+
+    // Load the ZIP code data from the JSON file
+    fetch('/data/zipcodes.json')
+        .then(response => response.json())
+        .then(zipcodes => {
+            // Loop through the zipcodes and check for a match
+            for (let [zipcode, town] of Object.entries(zipcodes)) {
+                if (town.includes(cityName)) {
+                    // If match is found, set the ZIP code in the text field
+                    document.getElementById('residentialZipCode').value = zipcode;
+                    return; // Exit the loop once we find the match
+                }
+            }
+
+            // If no match is found, clear the ZIP code field
+            document.getElementById('residentialZipCode').value = '';
+        })
+        .catch(error => console.error('Error fetching ZIP codes:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Attach the change event handler after the DOM is loaded for permanent city
+    document.getElementById('permanentCity').addEventListener('change', updatePermanentCityText);
+    document.getElementById('permanentCityTextField').addEventListener('blur', getPermanentZipCode); // Trigger ZIP code lookup on blur
+});
+
+function updatePermanentCityText() {
+    // Get the selected city name from permanent city dropdown
+    var citySelect = document.getElementById('permanentCity');
+    var selectedCity = citySelect.options[citySelect.selectedIndex].text;
+
+    // Capitalize the first letter of every word
+    var capitalizedCity = selectedCity
+        .split(' ') // Split the string into an array by spaces
+        .map(function(word) {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(); // Capitalize the first letter of each word
+        })
+        .join(' '); // Join the words back with spaces
+
+    // Get the text field and set its value to the formatted city name
+    var cityTextField = document.getElementById('permanentCityTextField');
+    cityTextField.value = capitalizedCity;
+
+    getPermanentZipCode();
+}
+
+// Function to get the ZIP code based on the permanent city name
+function getPermanentZipCode() {
+    // Get the city name from the text field
+    var cityName = document.getElementById('permanentCityTextField').value;
+
+    // Load the ZIP code data from the JSON file
+    fetch('/data/zipcodes.json')
+        .then(response => response.json())
+        .then(zipcodes => {
+            
+            // Loop through the zipcodes and check for a match
+            for (let [zipcode, town] of Object.entries(zipcodes)) {
+                if (town.includes(cityName)) {
+                    // If match is found, set the ZIP code in the text field
+                    document.getElementById('permanentZipCode').value = zipcode;
+                    return; // Exit the loop once we find the match
+                }
+            }
+
+            // If no match is found, clear the ZIP code field
+            document.getElementById('permanentZipCode').value = '';
+        })
+        .catch(error => console.error('Error fetching ZIP codes:', error));
+}
+
+

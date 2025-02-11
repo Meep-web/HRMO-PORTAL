@@ -5,6 +5,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\NoticeOfSalaryAdjustmentController;
 use App\Http\Controllers\PersonalDataSheetController;
 use App\Http\Controllers\LocationController;
+use Illuminate\Support\Facades\File;
+
+
+
 
 // Redirect root to login page
 Route::get('/', function () {
@@ -38,4 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/provinces', [LocationController::class, 'getProvinces']);
     Route::get('/towns/{provinceCode}', [LocationController::class, 'getTowns']);
     Route::get('/barangays/{townCode}', [LocationController::class, 'getBarangays']);
+});
+
+Route::get('/data/zipcodes.json', function () {
+    return response()->json(json_decode(File::get(public_path('data/zipcodes.json'))));
 });

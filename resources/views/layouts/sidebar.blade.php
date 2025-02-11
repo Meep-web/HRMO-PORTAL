@@ -1,3 +1,5 @@
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+
 <aside class="layout-sidebar">
     <!-- Logo Button -->
     <a href="{{ route('dashboard') }}" class="logo-button" data-title="Dashboard">

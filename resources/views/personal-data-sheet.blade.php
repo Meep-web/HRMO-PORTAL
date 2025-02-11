@@ -3,6 +3,7 @@
 @section('title', 'Personal Data Sheet')
 @vite(['resources/css/pds.css', 'resources/js/pds.js']) <!-- Include CSS & JS -->
 
+
 @section('content')
     <div class="search-container">
         <div class="search-bar-container">
@@ -37,7 +38,7 @@
 
     <!-- Modal -->
     <div id="uploadModal" class="modal">
-        <div class="modal-content">
+        <div class="modal-content-pds">
             <span class="close">&times;</span>
             <h2>Personal Data Sheet (CSC Form 212 Revised 2017)</h2>
             <form id="uploadForm">
@@ -63,44 +64,44 @@
                         <legend>Personal Information</legend>
 
                         <!-- Name Fields -->
-                        <div class="form-row">
-                            <div class="form-group required">
+                        <div class="name-field-row">
+                            <div class="name-field full-width">
                                 <label for="surname">Surname</label>
                                 <input type="text" id="surname" required>
                             </div>
-                            <div class="form-group required">
+                        </div>
+
+                        <div class="name-field-row">
+                            <div class="name-field half-width">
                                 <label for="firstName">First Name</label>
                                 <input type="text" id="firstName" required>
                             </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="middleName">Middle Name</label>
-                                <input type="text" id="middleName">
-                            </div>
-                            <div class="form-group required">
+                            <div class="name-field quarter-width">
                                 <label for="nameExtension">Name Extension (e.g., Jr., Sr.):</label>
                                 <input type="text" id="nameExtension" name="nameExtension">
                             </div>
                         </div>
 
-                        <!-- Date of Birth and Place of Birth -->
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="dateOfBirth">Date of Birth:</label>
-                                <input type="date" id="dateOfBirth" name="dateOfBirth" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="placeOfBirth">Place of Birth:</label>
-                                <input type="text" id="placeOfBirth" name="placeOfBirth" required>
+                        <div class="name-field-row">
+                            <div class="name-field full-width">
+                                <label for="middleName">Middle Name</label>
+                                <input type="text" id="middleName">
                             </div>
                         </div>
 
-                        <!-- Sex and Civil Status -->
-                        <div class="form-row">
-                            <div class="form-group sex-group">
-                                <label>Sex</label>
-                                <div class="radio-group">
+                        <!-- Date of Birth, Place of Birth, and Sex (Left Column) -->
+                        <div class="form-row birth-sex-citizenship">
+                            <div class="form-group left-column">
+                                <label for="dateOfBirth">Date of Birth:</label>
+                                <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+
+                                <label for="placeOfBirth">Place of Birth:</label>
+                                <input type="text" id="placeOfBirth" name="placeOfBirth" required>
+
+                                <!-- Sex Section -->
+
+                                <label>Sex:</label>
+                                <div class="horizontal-radio-group">
                                     <div class="radio-option">
                                         <input type="radio" id="sexMale" name="sex" value="Male" required>
                                         <label for="sexMale">Male</label>
@@ -110,238 +111,599 @@
                                         <label for="sexFemale">Female</label>
                                     </div>
                                 </div>
-                                <div class="radio-group">
-                                </div>
-                                <div class="radio-group">
-                                </div>
-                                <div class="radio-group">
-                                </div>
+
+
+
                             </div>
 
-                            <div class="form-group civil-status-group">
-                                <label>Civil Status:</label>
-                                <div class="radio-group-columns">
-                                    <!-- Column 1 -->
-                                    <div class="radio-group">
-                                        <div class="radio-option">
-                                            <input type="radio" id="civilStatusSingle" name="civilStatus" value="Single"
-                                                required>
-                                            <label for="civilStatusSingle">Single</label>
-                                        </div>
-                                        <div class="radio-option">
-                                            <input type="radio" id="civilStatusWidowed" name="civilStatus" value="Widowed"
-                                                required>
-                                            <label for="civilStatusWidowed">Widowed</label>
-                                        </div>
+                            <div class="form-group right-column">
+                                <label>Citizenship:</label>
+                                <div class="citizenship-options">
+                                    <!-- Filipino Checkbox -->
+                                    <div class="citizenship-option">
+                                        <input type="checkbox" id="filipino" name="citizenship" value="Filipino">
+                                        <label for="filipino">Filipino</label>
                                     </div>
 
-                                    <!-- Column 2 -->
-                                    <div class="radio-group">
-                                        <div class="radio-option">
-                                            <input type="radio" id="civilStatusMarried" name="civilStatus" value="Married"
-                                                required>
-                                            <label for="civilStatusMarried">Married</label>
-                                        </div>
-                                        <div class="radio-option">
-                                            <input type="radio" id="civilStatusSeparated" name="civilStatus"
-                                                value="Separated" required>
-                                            <label for="civilStatusSeparated">Separated</label>
-                                        </div>
-                                    </div>
+                                    <!-- Dual Citizenship Checkbox & Sub-options -->
+                                    <div class="citizenship-option">
+                                        <input type="checkbox" id="dualCitizenship" name="citizenship"
+                                            value="Dual Citizenship">
+                                        <label for="dualCitizenship">Dual Citizenship</label>
 
-                                    <!-- Last Option (if odd) -->
-                                    <div class="radio-group">
-                                        <div class="radio-option">
-                                            <input type="radio" id="civilStatusOther" name="civilStatus"
-                                                value="Other" required>
-                                            <label for="civilStatusOther">Other</label>
+                                        <!-- Dual Citizenship Sub-options -->
+                                        <div class="sub-options">
+                                            <div class="radio-group">
+                                                <div class="radio-option">
+                                                    <input type="radio" id="byBirth" name="dualCitizenType"
+                                                        value="byBirth">
+                                                    <label for="byBirth">By Birth</label>
+                                                </div>
+                                                <div class="radio-option">
+                                                    <input type="radio" id="byNaturalization" name="dualCitizenType"
+                                                        value="byNaturalization">
+                                                    <label for="byNaturalization">By Naturalization</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group-country">
+                                                <label>Please indicate country:</label>
+                                                <select id="countrySelect" class="country-select"
+                                                    name="dualCitizenshipCountry">
+                                                    <option value="">Loading countries...</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+
+
                         </div>
 
-                        <!-- Height, Weight, and Blood Type -->
-                        <div class="form-group">
-                            <label for="height">Height (m):</label>
-                            <input type="number" id="height" name="height" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="weight">Weight (kg):</label>
-                            <input type="number" id="weight" name="weight" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="bloodType">Blood Type:</label>
-                            <input type="text" id="bloodType" name="bloodType" required>
-                        </div>
-
-                        <!-- Government IDs -->
-                        <div class="form-group">
-                            <label for="gsisId">GSIS ID No.:</label>
-                            <input type="text" id="gsisId" name="gsisId">
-                        </div>
-                        <div class="form-group">
-                            <label for="pagibigId">PAGIBIG ID No.:</label>
-                            <input type="text" id="pagibigId" name="pagibigId">
-                        </div>
-                        <div class="form-group">
-                            <label for="philhealthId">Philhealth ID No.:</label>
-                            <input type="text" id="philhealthId" name="philhealthId">
-                        </div>
-                        <div class="form-group">
-                            <label for="sssNo">SSS No.:</label>
-                            <input type="text" id="sssNo" name="sssNo">
-                        </div>
-                        <div class="form-group">
-                            <label for="tinNo">TIN No.:</label>
-                            <input type="text" id="tinNo" name="tinNo">
-                        </div>
-                        <div class="form-group">
-                            <label for="agencyEmployeeNo">Agency Employee No.:</label>
-                            <input type="text" id="agencyEmployeeNo" name="agencyEmployeeNo">
-                        </div>
-
-                        <!-- Citizenship -->
-                        <div class="form-group">
-                            <label>Citizenship:</label>
-
-                            <!-- Filipino Checkbox -->
-                            <div class="citizenship-option">
-                                <input type="checkbox" id="filipino" name="citizenship" value="Filipino">
-                                <label for="filipino">Filipino</label>
-                            </div>
-
-                            <!-- Dual Citizenship Checkbox -->
-                            <div class="citizenship-option">
-                                <input type="checkbox" id="dualCitizenship" name="citizenship" value="Dual Citizenship">
-                                <label for="dualCitizenship">Dual Citizenship</label>
-
-                                <!-- Dual Citizenship Sub-options -->
-                                <div class="sub-options" style="display: none;">
-                                    <div class="radio-group">
-                                        <div class="radio-option">
-                                            <input type="radio" id="byBirth" name="dualCitizenType" value="byBirth">
-                                            <label for="byBirth">By Birth</label>
+                        <!-- Second Form Row -->
+                        <!-- Residential Address Section (on Top) -->
+                        <div class="form-row second-row">
+                            <!-- Left Column: Civil Status, Height, and Weight -->
+                            <div class="form-column left-column">
+                                <!-- Civil Status Group -->
+                                <div class="form-group civil-status-group">
+                                    <label>Civil Status:</label>
+                                    <div class="radio-group-columns">
+                                        <!-- Column 1 -->
+                                        <div class="radio-group">
+                                            <div class="radio-option">
+                                                <input type="radio" id="civilStatusSingle" name="civilStatus"
+                                                    value="Single" required>
+                                                <label for="civilStatusSingle">Single</label>
+                                            </div>
+                                            <div class="radio-option">
+                                                <input type="radio" id="civilStatusWidowed" name="civilStatus"
+                                                    value="Widowed" required>
+                                                <label for="civilStatusWidowed">Widowed</label>
+                                            </div>
                                         </div>
-                                        <div class="radio-option">
-                                            <input type="radio" id="byNaturalization" name="dualCitizenType"
-                                                value="byNaturalization">
-                                            <label for="byNaturalization">By Naturalization</label>
+                                        <!-- Column 2 -->
+                                        <div class="radio-group">
+                                            <div class="radio-option">
+                                                <input type="radio" id="civilStatusMarried" name="civilStatus"
+                                                    value="Married" required>
+                                                <label for="civilStatusMarried">Married</label>
+                                            </div>
+                                            <div class="radio-option">
+                                                <input type="radio" id="civilStatusSeparated" name="civilStatus"
+                                                    value="Separated" required>
+                                                <label for="civilStatusSeparated">Separated</label>
+                                            </div>
                                         </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label>Please indicate country:</label>
-                                        <select id="countrySelect" class="country-select" name="dualCitizenshipCountry">
-                                            <option value="">Loading countries...</option>
-                                        </select>
+                                        <!-- Last Option (if odd) -->
+                                        <div class="radio-group">
+                                            <div class="radio-option">
+                                                <input type="radio" id="civilStatusOther" name="civilStatus"
+                                                    value="Other" required>
+                                                <label for="civilStatusOther">Other</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- Height -->
+                                <div class="form-group">
+                                    <label for="height">Height (m):</label>
+                                    <input type="number" id="height" name="height" step="0.01" required>
+                                </div>
+
+                                <!-- Weight -->
+                                <div class="form-group">
+                                    <label for="weight">Weight (kg):</label>
+                                    <input type="number" id="weight" name="weight" step="0.01" required>
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Residential Address Details -->
+                            <div class="form-column right-column">
+                                <fieldset>
+                                    <legend>Residential Address</legend>
+                                    <!-- Two-Column Layout for Address Fields -->
+                                    <div class="residential-address-columns">
+                                        <!-- Left Sub-column -->
+                                        <div class="residential-col">
+                                            <div class="form-group">
+                                                <label for="residentialProvince">Province:</label>
+                                                <select id="residentialProvince" name="residentialProvince" required>
+                                                    <option value="">Select Province</option>
+                                                    <!-- More options -->
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="residentialCity">City/Municipality:</label>
+                                                <select id="residentialCity" name="residentialCity">
+                                                    <option value="">Select City/Municipality</option>
+                                                    <!-- More options -->
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group" style="display: none;">
+                                                <label for="cityTextField">Selected City:</label>
+                                                <input type="text" id="cityTextField" name="cityTextField" readonly >
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="residentialBarangay">Barangay:</label>
+                                                <select id="residentialBarangay" name="residentialBarangay" required>
+                                                    <option value="">Select Barangay</option>
+                                                    <!-- More options -->
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Right Sub-column -->
+                                        <div class="residential-col">
+                                            <div class="form-group">
+                                                <label for="residentialSubdivision">Subdivision/Village:</label>
+                                                <input type="text" id="residentialSubdivision"
+                                                    name="residentialSubdivision">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="residentialStreet">Street:</label>
+                                                <input type="text" id="residentialStreet" name="residentialStreet"
+                                                    required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="residentialHouseNo">House/Block/Lot No.:</label>
+                                                <input type="text" id="residentialHouseNo" name="residentialHouseNo"
+                                                    required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Full-Width Zip Code Field -->
+                                    <div class="form-group full-width">
+                                        <label for="residentialZipCode">Zip Code:</label>
+                                        <input type="text" id="residentialZipCode" name="residentialZipCode" required>
+                                    </div>
+                                </fieldset>
                             </div>
                         </div>
-                        <!-- Residential Address -->
-                        <fieldset>
-                            <legend>Residential Address</legend>
-                            <div class="form-group">
-                                <label for="residentialProvince">Province:</label>
-                                <select id="residentialProvince" name="residentialProvince" required>
-                                    <option value="">Select Province</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="residentialCity">City/Municipality:</label>
-                                <select id="residentialCity" name="residentialCity" required>
-                                    <option value="">Select City/Municipality</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="residentialBarangay">Barangay:</label>
-                                <select id="residentialBarangay" name="residentialBarangay" required>
-                                    <option value="">Select Barangay</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="residentialSubdivision">Subdivision/Village:</label>
-                                <input type="text" id="residentialSubdivision" name="residentialSubdivision">
-                            </div>
-                            <div class="form-group">
-                                <label for="residentialStreet">Street:</label>
-                                <input type="text" id="residentialStreet" name="residentialStreet" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="residentialHouseNo">House/Block/Lot No.:</label>
-                                <input type="text" id="residentialHouseNo" name="residentialHouseNo" required>
+
+                        <!-- Permanent Address Section (Below Residential Address) -->
+                        <div class="form-row second-row">
+                            <!-- Left Column: Blood Type, Government IDs, and Contact Information -->
+                            <div class="form-column">
+                                <!-- Blood Type -->
+                                <div class="form-group">
+                                    <label for="bloodType">Blood Type:</label>
+                                    <input type="text" id="bloodType" name="bloodType" required>
+                                </div>
+                                <!-- Government IDs -->
+                                <div class="form-group">
+                                    <label for="gsisId">GSIS ID No.:</label>
+                                    <input type="text" id="gsisId" name="gsisId">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pagibigId">PAGIBIG ID No.:</label>
+                                    <input type="text" id="pagibigId" name="pagibigId">
+                                </div>
+                                <div class="form-group">
+                                    <label for="philhealthId">Philhealth ID No.:</label>
+                                    <input type="text" id="philhealthId" name="philhealthId">
+                                </div>
+                                <div class="form-group">
+                                    <label for="sssNo">SSS No.:</label>
+                                    <input type="text" id="sssNo" name="sssNo">
+                                </div>
+                                <div class="form-group">
+                                    <label for="tinNo">TIN No.:</label>
+                                    <input type="text" id="tinNo" name="tinNo">
+                                </div>
+                                <div class="form-group">
+                                    <label for="agencyEmployeeNo">Agency Employee No.:</label>
+                                    <input type="text" id="agencyEmployeeNo" name="agencyEmployeeNo">
+                                </div>
+                                <!-- Contact Information -->
+                                <div class="form-group">
+                                    <label for="telephoneNo">Telephone No.:</label>
+                                    <input type="text" id="telephoneNo" name="telephoneNo">
+                                </div>
+                               
                             </div>
 
-                            <div class="form-group">
-                                <label for="residentialZipCode">Zip Code:</label>
-                                <input type="text" id="residentialZipCode" name="residentialZipCode" required>
-                            </div>
-                        </fieldset>
 
-                        <!-- Button to Copy Address -->
-                        <button type="button" class="action-button" id="copyAddress">Same as the Residential
-                            Address</button>
 
-                        <!-- Permanent Address -->
-                        <fieldset>
-                            <legend>Permanent Address</legend>
-                            <div class="form-group">
-                                <label for="permanentProvince">Province:</label>
-                                <select id="permanentProvince" name="permanentProvince" required>
-                                    <option value="">Select Province</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="permanentCity">City/Municipality:</label>
-                                <select id="permanentCity" name="permanentCity" required>
-                                    <option value="">Select City/Municipality</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="permanentBarangay">Barangay:</label>
-                                <select id="permanentBarangay" name="permanentBarangay" required>
-                                    <option value="">Select Barangay</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="permanentSubdivision">Subdivision/Village:</label>
-                                <input type="text" id="permanentSubdivision" name="permanentSubdivision">
-                            </div>
-                            <div class="form-group">
-                                <label for="permanentStreet">Street:</label>
-                                <input type="text" id="permanentStreet" name="permanentStreet" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="permanentHouseNo">House/Block/Lot No.:</label>
-                                <input type="text" id="permanentHouseNo" name="permanentHouseNo" required>
+                            <!-- Right Column: Permanent Address Details -->
+                            <div class="form-column right-column">
+                                <fieldset>
+                                    <legend>Permanent Address</legend>
+                                    
+                                        <!-- Button to Copy Address -->
+                                        <button type="button" class="action-button" id="copyAddress">Same as the
+                                            Residential
+                                            Address</button>
+                                    <!-- Two-Column Layout for Address Fields -->
+                                    <div class="permanent-address-columns">
+
+
+                                        <!-- Left Sub-column -->
+                                        <div class="permanent-col">
+                                            <div class="form-group">
+                                                <label for="permanentProvince">Province:</label>
+                                                <select id="permanentProvince" name="permanentProvince" required>
+                                                    <option value="">Select Province</option>
+                                                    <!-- More options -->
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="permanentCity">City/Municipality:</label>
+                                                <select id="permanentCity" name="permanentCity" required>
+                                                    <option value="">Select City/Municipality</option>
+                                                    <!-- More options -->
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Text Field for Permanent City -->
+                                            <div class="form-group"style="display: none;" >
+                                                <label for="permanentCityTextField">Permanent City Name:</label>
+                                                <input type="text" id="permanentCityTextField" name="permanentCityTextField" readonly />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="permanentBarangay">Barangay:</label>
+                                                <select id="permanentBarangay" name="permanentBarangay" required>
+                                                    <option value="">Select Barangay</option>
+                                                    <!-- More options -->
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Right Sub-column -->
+                                        <div class="permanent-col">
+                                            <div class="form-group">
+                                                <label for="permanentSubdivision">Subdivision/Village:</label>
+                                                <input type="text" id="permanentSubdivision"
+                                                    name="permanentSubdivision">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="permanentStreet">Street:</label>
+                                                <input type="text" id="permanentStreet" name="permanentStreet"
+                                                    required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="permanentHouseNo">House/Block/Lot No.:</label>
+                                                <input type="text" id="permanentHouseNo" name="permanentHouseNo"
+                                                    required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Full-Width Zip Code Field -->
+                                    <div class="form-group full-width">
+                                        <label for="permanentZipCode">Zip Code:</label>
+                                        <input type="text" id="permanentZipCode" name="permanentZipCode" required>
+                                    </div>
+                                </fieldset>
+                                
+                                <div class="form-group">
+                                    <label for="mobileNo">Mobile No.:</label>
+                                    <input type="text" id="mobileNo" name="mobileNo" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email Address (if applicable):</label>
+                                    <input type="email" id="email" name="email">
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="permanentZipCode">Zip Code:</label>
-                                <input type="text" id="permanentZipCode" name="permanentZipCode" required>
-                            </div>
-                        </fieldset>
-
-                        <!-- Contact Information -->
-                        <div class="form-group">
-                            <label for="telephoneNo">Telephone No.:</label>
-                            <input type="text" id="telephoneNo" name="telephoneNo">
                         </div>
-                        <div class="form-group">
-                            <label for="mobileNo">Mobile No.:</label>
-                            <input type="text" id="mobileNo" name="mobileNo" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email Address (if applicable):</label>
-                            <input type="email" id="email" name="email">
-                        </div>
+
+
+
+
+
                     </fieldset>
                     <div class="form-actions">
                         <button type="button" class="action-button" id="cancelButton">Cancel</button>
                         <button type="button" class="action-button" id="nextButton1">Next</button>
                     </div>
                 </div>
+
+
+                {{-- <fieldset>
+                    <legend>Personal Information</legend>
+
+                    <!-- Name Fields -->
+                    <div class="form-row">
+                        <div class="form-group required">
+                            <label for="surname">Surname</label>
+                            <input type="text" id="surname" required>
+                        </div>
+                        <div class="form-group required">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="middleName">Middle Name</label>
+                            <input type="text" id="middleName">
+                        </div>
+                        <div class="form-group required">
+                            <label for="nameExtension">Name Extension (e.g., Jr., Sr.):</label>
+                            <input type="text" id="nameExtension" name="nameExtension">
+                        </div>
+                    </div>
+
+                    <!-- Date of Birth and Place of Birth -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dateOfBirth">Date of Birth:</label>
+                            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="placeOfBirth">Place of Birth:</label>
+                            <input type="text" id="placeOfBirth" name="placeOfBirth" required>
+                        </div>
+                    </div>
+
+                    <!-- Sex and Civil Status -->
+                    <div class="form-row">
+                        <div class="form-group sex-group">
+                            <label>Sex</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" id="sexMale" name="sex" value="Male" required>
+                                    <label for="sexMale">Male</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" id="sexFemale" name="sex" value="Female" required>
+                                    <label for="sexFemale">Female</label>
+                                </div>
+                            </div>
+                            <div class="radio-group">
+                            </div>
+                            <div class="radio-group">
+                            </div>
+                            <div class="radio-group">
+                            </div>
+                        </div>
+
+                        <div class="form-group civil-status-group">
+                            <label>Civil Status:</label>
+                            <div class="radio-group-columns">
+                                <!-- Column 1 -->
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="civilStatusSingle" name="civilStatus" value="Single"
+                                            required>
+                                        <label for="civilStatusSingle">Single</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="civilStatusWidowed" name="civilStatus" value="Widowed"
+                                            required>
+                                        <label for="civilStatusWidowed">Widowed</label>
+                                    </div>
+                                </div>
+
+                                <!-- Column 2 -->
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="civilStatusMarried" name="civilStatus" value="Married"
+                                            required>
+                                        <label for="civilStatusMarried">Married</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="civilStatusSeparated" name="civilStatus"
+                                            value="Separated" required>
+                                        <label for="civilStatusSeparated">Separated</label>
+                                    </div>
+                                </div>
+
+                                <!-- Last Option (if odd) -->
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="civilStatusOther" name="civilStatus"
+                                            value="Other" required>
+                                        <label for="civilStatusOther">Other</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Height, Weight, and Blood Type -->
+                    <div class="form-group">
+                        <label for="height">Height (m):</label>
+                        <input type="number" id="height" name="height" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Weight (kg):</label>
+                        <input type="number" id="weight" name="weight" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bloodType">Blood Type:</label>
+                        <input type="text" id="bloodType" name="bloodType" required>
+                    </div>
+
+                    <!-- Government IDs -->
+                    <div class="form-group">
+                        <label for="gsisId">GSIS ID No.:</label>
+                        <input type="text" id="gsisId" name="gsisId">
+                    </div>
+                    <div class="form-group">
+                        <label for="pagibigId">PAGIBIG ID No.:</label>
+                        <input type="text" id="pagibigId" name="pagibigId">
+                    </div>
+                    <div class="form-group">
+                        <label for="philhealthId">Philhealth ID No.:</label>
+                        <input type="text" id="philhealthId" name="philhealthId">
+                    </div>
+                    <div class="form-group">
+                        <label for="sssNo">SSS No.:</label>
+                        <input type="text" id="sssNo" name="sssNo">
+                    </div>
+                    <div class="form-group">
+                        <label for="tinNo">TIN No.:</label>
+                        <input type="text" id="tinNo" name="tinNo">
+                    </div>
+                    <div class="form-group">
+                        <label for="agencyEmployeeNo">Agency Employee No.:</label>
+                        <input type="text" id="agencyEmployeeNo" name="agencyEmployeeNo">
+                    </div>
+
+                    <!-- Citizenship -->
+                    <div class="form-group">
+                        <label>Citizenship:</label>
+
+                        <!-- Filipino Checkbox -->
+                        <div class="citizenship-option">
+                            <input type="checkbox" id="filipino" name="citizenship" value="Filipino">
+                            <label for="filipino">Filipino</label>
+                        </div>
+
+                        <!-- Dual Citizenship Checkbox -->
+                        <div class="citizenship-option">
+                            <input type="checkbox" id="dualCitizenship" name="citizenship" value="Dual Citizenship">
+                            <label for="dualCitizenship">Dual Citizenship</label>
+
+                            <!-- Dual Citizenship Sub-options -->
+                            <div class="sub-options" style="display: none;">
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" id="byBirth" name="dualCitizenType" value="byBirth">
+                                        <label for="byBirth">By Birth</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" id="byNaturalization" name="dualCitizenType"
+                                            value="byNaturalization">
+                                        <label for="byNaturalization">By Naturalization</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Please indicate country:</label>
+                                    <select id="countrySelect" class="country-select" name="dualCitizenshipCountry">
+                                        <option value="">Loading countries...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Residential Address -->
+                    <fieldset>
+                        <legend>Residential Address</legend>
+                        <div class="form-group">
+                            <label for="residentialProvince">Province:</label>
+                            <select id="residentialProvince" name="residentialProvince" required>
+                                <option value="">Select Province</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="residentialCity">City/Municipality:</label>
+                            <select id="residentialCity" name="residentialCity" required>
+                                <option value="">Select City/Municipality</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="residentialBarangay">Barangay:</label>
+                            <select id="residentialBarangay" name="residentialBarangay" required>
+                                <option value="">Select Barangay</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="residentialSubdivision">Subdivision/Village:</label>
+                            <input type="text" id="residentialSubdivision" name="residentialSubdivision">
+                        </div>
+                        <div class="form-group">
+                            <label for="residentialStreet">Street:</label>
+                            <input type="text" id="residentialStreet" name="residentialStreet" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="residentialHouseNo">House/Block/Lot No.:</label>
+                            <input type="text" id="residentialHouseNo" name="residentialHouseNo" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="residentialZipCode">Zip Code:</label>
+                            <input type="text" id="residentialZipCode" name="residentialZipCode" required>
+                        </div>
+                    </fieldset>
+
+                    <!-- Button to Copy Address -->
+                    <button type="button" class="action-button" id="copyAddress">Same as the Residential
+                        Address</button>
+
+                    <!-- Permanent Address -->
+                    <fieldset>
+                        <legend>Permanent Address</legend>
+                        <div class="form-group">
+                            <label for="permanentProvince">Province:</label>
+                            <select id="permanentProvince" name="permanentProvince" required>
+                                <option value="">Select Province</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="permanentCity">City/Municipality:</label>
+                            <select id="permanentCity" name="permanentCity" required>
+                                <option value="">Select City/Municipality</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="permanentBarangay">Barangay:</label>
+                            <select id="permanentBarangay" name="permanentBarangay" required>
+                                <option value="">Select Barangay</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="permanentSubdivision">Subdivision/Village:</label>
+                            <input type="text" id="permanentSubdivision" name="permanentSubdivision">
+                        </div>
+                        <div class="form-group">
+                            <label for="permanentStreet">Street:</label>
+                            <input type="text" id="permanentStreet" name="permanentStreet" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="permanentHouseNo">House/Block/Lot No.:</label>
+                            <input type="text" id="permanentHouseNo" name="permanentHouseNo" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="permanentZipCode">Zip Code:</label>
+                            <input type="text" id="permanentZipCode" name="permanentZipCode" required>
+                        </div>
+                    </fieldset>
+
+                    <!-- Contact Information -->
+                    <div class="form-group">
+                        <label for="telephoneNo">Telephone No.:</label>
+                        <input type="text" id="telephoneNo" name="telephoneNo">
+                    </div>
+                    <div class="form-group">
+                        <label for="mobileNo">Mobile No.:</label>
+                        <input type="text" id="mobileNo" name="mobileNo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address (if applicable):</label>
+                        <input type="email" id="email" name="email">
+                    </div>
+                </fieldset>
+            </div> --}}
 
                 <!-- Step 2: Family Background -->
                 <div id="step2" class="form-step" style="display: none;">
@@ -653,7 +1015,7 @@
                         <button type="button" class="action-button" id="nextButton3">Next</button>
                     </div>
                 </div>
-                
+
                 <!-- Step 4: Civil Service Eligibility -->
                 <div id="step4" class="form-step" style="display: none;">
                     <fieldset>
@@ -787,3 +1149,5 @@
         </div>
     </div>
 @endsection
+
+    

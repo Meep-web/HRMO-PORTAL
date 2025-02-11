@@ -1,3 +1,4 @@
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 <header class="layout-header flex justify-between items-center px-6 py-4 bg-gray-100 shadow-md">
     <!-- Title section -->
     <h1 id="page-title" class="text-xl font-semibold">@yield('title')</h1> <!-- Default title -->

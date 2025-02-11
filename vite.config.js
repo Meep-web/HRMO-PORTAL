@@ -10,12 +10,13 @@ export default defineConfig({
             ],
             refresh: true,
         }),
-    ],
-    server: {
-        cors: {
-            origin: 'http://192.168.100.53:8000', // Allow requests from this origin
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
-            allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-        },
-    },
+    ]
+    // ,
+    // server: {
+    //     cors: {
+    //         origin: 'http://192.168.100.53:8000', // Allow requests from this origin
+    //         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+    //         allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    //     },
+    // },
 });

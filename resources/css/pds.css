@@ -1,24 +1,19 @@
 /* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Search and Upload Container */
 .search-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
     width: 100%;
-}
-
-.upload-button {
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-.upload-button:hover {
-    background-color: #0056b3;
 }
 
 .search-bar-container {
@@ -37,6 +32,21 @@
     border-radius: 5px;
 }
 
+.upload-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.upload-button:hover {
+    background-color: #0056b3;
+}
+
+/* Table Container */
 .table-container {
     display: flex;
     flex-direction: column;
@@ -72,7 +82,11 @@
     height: 50px;
 }
 
-/* Removed duplicate .action-button (first instance) */
+.salary-adjustment-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Action Button */
 .action-button {
     padding: 0.75rem 1.5rem;
     border: none;
@@ -83,160 +97,6 @@
     background-color: #007bff;
     color: #fff;
 }
-
-
-.salary-adjustment-table tr:hover {
-    background-color: #f1f1f1;
-}
-
-/* Merged Modal Styles */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-    background-color: #fff;
-    margin: 2% auto;
-    padding: 25px;
-    border-radius: 8px;
-    width: 95%;
-    max-width: 1200px;
-    height: 95vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: #666;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
-}
-
-.form-step {
-    display: grid;
-    gap: 1.5rem;
-}
-
-fieldset {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    background: #fff;
-}
-
-legend {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: #2c3e50;
-    padding: 0 10px;
-}
-
-.form-group {
-    display: grid;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-
-input,
-select {
-    padding: 0.75rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 14px;
-    width: 100%;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease;
-}
-
-input:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.radio-group {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-    padding: 0.5rem 0;
-}
-
-.radio-option {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.measurement-group,
-.govt-id-section {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-}
-
-.measurement-group .form-group,
-.govt-id-section .form-group {
-    padding: 0.75rem;
-}
-
-.required label::after {
-    content: "*";
-    color: #e74c3c;
-    margin-left: 5px;
-}
-
-.address-section {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    margin-bottom: 1.5rem;
-}
-
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    padding-top: 1.5rem;
-    margin-top: 1rem;
-    border-top: 1px solid #eee;
-}
-
-
 
 #nextButton1,
 #nextButton2,
@@ -267,13 +127,148 @@ input:focus {
     background-color: #0056b3;
 }
 
-@media (max-width: 768px) {
-    .modal-content {
-        width: 95%;
-        margin: 1% auto;
-        padding: 15px;
-    }
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
 
+.modal-content-pds {
+    background-color: #fff;
+    margin: 2% auto;
+    padding: 25px;
+    border-radius: 8px;
+    width: 95vw;
+    height: 95vh;
+    text-align: center;
+    position: relative;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #666;
+}
+
+/* Form Layout */
+.form-step {
+    display: grid;
+    gap: 1.5rem;
+}
+
+fieldset {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: #fff;
+}
+
+legend {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    padding: 0 10px;
+}
+
+.form-group {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Input and Select Styles */
+input,
+select {
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Radio Button Group */
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Measurement and Govt. ID Section */
+.measurement-group,
+.govt-id-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.measurement-group .form-group,
+.govt-id-section .form-group {
+    padding: 0.75rem;
+}
+
+/* Required Label */
+.required label::after {
+    content: "*";
+    color: #e74c3c;
+    margin-left: 5px;
+}
+
+/* Address Section */
+.address-section {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 1.5rem;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+/* Media Queries for Mobile */
+@media (max-width: 768px) {
     .form-row {
         grid-template-columns: 1fr;
     }
@@ -288,28 +283,6 @@ input:focus {
         gap: 0.75rem;
     }
 
-    .spouse-name-group {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    /* Child Entry Styling */
-    .child-entry {
-        margin-bottom: 1rem;
-    }
-
-    /* Add Another Button */
-    #addChildButton {
-        margin-top: 1rem;
-        background-color: #28a745;
-    }
-
-    #addChildButton:hover {
-        background-color: #218838;
-    }
-
-    /* Spouse's Name Group */
     .spouse-name-group,
     .father-name-group,
     .mother-name-group {
@@ -318,7 +291,6 @@ input:focus {
         gap: 1rem;
     }
 
-    /* Form Row for First Name and Name Extension */
     .form-row {
         display: flex;
         gap: 1.5rem;
@@ -354,19 +326,15 @@ input:focus {
         font-size: 1.2rem;
     }
 
-    hr {
-        border: 0;
-        height: 1px;
-        background: #ddd;
-        margin: 1.5rem 0 !important; /* Add !important to ensure it overrides other styles */
-    }
+    hr,
     .separator {
         border: 0;
         height: 1px;
         background: #ddd;
-        margin: 1.5rem 0 !important; /* Add !important to ensure it overrides other styles */
+        margin: 1.5rem 0 !important;
+        /* Ensure override */
     }
-    
+
     .citizenship-option {
         margin-bottom: 10px;
     }
@@ -381,5 +349,240 @@ input:focus {
         padding: 8px;
         margin-top: 5px;
     }
+}
+
+/* Custom Name Field Layout */
+.name-field-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.name-field.full-width {
+    width: 100%;
+}
+
+.name-field.half-width {
+    width: 74%;
+    /* Adjusted to allow for space between fields */
+}
+
+.name-field.quarter-width {
+    width: 24%;
+    /* Allows space for the other field in the same row */
+}
+
+/* Styling for the new name field containers */
+.name-field {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .name-field-row {
+        flex-direction: column;
+        /* Stack fields vertically on smaller screens */
+        gap: 1rem;
+    }
+
+    .name-field.full-width,
+    .name-field.half-width,
+    .name-field.quarter-width {
+        width: 100%;
+    }
+}
+
+
+/* This CSS will only target the section for Date of Birth, Place of Birth, Sex, and Citizenship */
+.birth-sex-citizenship {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.birth-sex-citizenship .form-group {
+    width: 48%;
+}
+
+.birth-sex-citizenship .left-column,
+.birth-sex-citizenship .right-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.birth-sex-citizenship .left-column label,
+.birth-sex-citizenship .right-column label {
+    margin-bottom: 8px;
+}
+
+/* General class for horizontal radio button layout */
+.horizontal-radio-group {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    gap: 15px; /* Space between radio buttons */
+    align-items: center; /* Center vertically */
+}
+
+/* Each radio option is aligned horizontally */
+.horizontal-radio-group .radio-option {
+    display: flex;
+    align-items: center; /* Vertically center the radio and label */
+}
+
+.horizontal-radio-group .radio-option input {
+    margin-right: 5px; /* Space between radio button and label */
+}
+
+.citizenship-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.citizenship-option input {
+    margin-right: 10px;
+}
+
+/* Right column container */
+.form-group.right-column {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Citizenship options container (initial options) */
+.form-group.right-column .citizenship-options {
+    display: flex;
+    gap: 20px; /* Adjust spacing between checkboxes */
+    align-items: flex-start;
+    position: relative; /* Needed for absolute positioning of sub-options */
+}
+
+/* Individual citizenship option */
+.form-group.right-column .citizenship-option {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Proper spacing between checkbox and label */
+}
+
+/* Ensure checkboxes are displayed properly */
+.form-group.right-column .citizenship-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0; /* Reset unwanted margin */
+}
+
+/* Ensure the sub-options are hidden initially */
+.form-group.right-column .sub-options {
+    display: none; /* Hidden by default */
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    padding-left: 25px;
+    position: absolute; /* Position absolutely to avoid layout shift */
+    top: 100%; /* Position below the checkbox */
+    width: 200%;
+    background-color: #f9f9f9;
+    z-index: 1; /* Ensure it appears above other elements */
+   
+}
+
+/* Ensure sub-options are displayed properly when shown */
+.form-group.right-column .sub-options.show {
+    display: flex;
+}
+
+/* Radio group layout */
+.form-group.right-column .radio-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Ensure select dropdown aligns properly */
+.form-group.right-column .sub-options .form-group {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Fix spacing for "Dual Citizenship" label */
+.form-group.right-column .citizenship-option label {
+    white-space: nowrap;
+}
+.form-group.right-column .form-group-country{
+    margin: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-right: 20px;
     
 }
+
+.form-row.second-row {
+    display: flex;
+    gap: 20px;
+    align-items: stretch; /* Ensures both columns stretch to the same height */
+  }
+  
+  /* For the first column in the second-row form */
+.form-row.second-row .form-column:nth-child(1) {
+    margin-right: 2.2%;
+    /* Styles for the first column */
+  }
+  
+  
+  .form-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distributes content evenly */
+  }
+  
+  /* Residential Address Two-Column Layout */
+  .residential-address-columns {
+    display: flex;
+    gap: 20px;
+    align-items: stretch; /* Ensures both address columns stretch to the same height */
+  }
+  .permanent-address-columns{
+    display: flex;
+    gap: 20px;
+    align-items: stretch; /* Ensures both address columns stretch to the same height */
+  }
+
+  .permanent-col{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distributes content evenly */
+  }
+  
+  .residential-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distributes content evenly */
+  }
+  
+
+  .form-group.civil-status-group{
+    margin-top: 13px;
+  }
+
+  .form-column.left-column .form-group-height .form-group-weight{
+    margin-top: -10px;
+  }
+  
+  .form-column.right-column .action-button{
+    margin: 5%;
+    margin-bottom: 6%;
+  }
+  
