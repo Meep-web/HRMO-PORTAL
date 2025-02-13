@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
 @section('title', 'Personal Data Sheet')
-@vite(['resources/css/pds.css', 'resources/js/pds.js','resources/js/app.js']) <!-- Include CSS & JS -->
-
+@vite(['resources/css/pds.css', 'resources/js/pds.js']) <!-- Include CSS & JS -->
+<input type="hidden" id="saveNosaRoute" value="{{ route('save.nosa') }}" />
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
@@ -18,7 +18,16 @@
         <table class="salary-adjustment-table">
             <thead>
                 <tr>
-                    <th>Employee Name</th>
+                    <th>
+                        <a href="{{ route('personalDataSheet', ['sort' => 'first_name', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                            Employee Name
+                            @if ($order === 'asc')
+                                <span>&#9650;</span>  <!-- Ascending Arrow -->
+                            @else
+                                <span>&#9660;</span>  <!-- Descending Arrow -->
+                            @endif
+                        </a>
+                    </th>
                     <th>Last Updated</th>
                     <th>Action</th>
                     <th>Updated By</th>
@@ -33,15 +42,15 @@
                             <!-- Edit Button -->
                             <button class="btn btn-primary edit-btn" data-id="{{ $personalInfo->id }}">Edit</button>
                             <!-- Print Button (No functionality yet) -->
-                            <button class="btn btn-secondary print-btn">Print</button>
+                            <button class="btn btn-secondary print-btn" data-id="{{ $personalInfo->id }}">Print</button>
                         </td>
                         <td>{{ $personalInfo->updated_by }}</td> <!-- Now fetching from pdsupdates -->
                     </tr>
                 @endforeach
             </tbody>            
-            </tbody>
         </table>
     </div>
+    
 
     <!-- Modal -->
     <div id="uploadModal" class="modal">
@@ -50,7 +59,7 @@
             <h2>Personal Data Sheet (CSC Form 212 Revised 2017)</h2>
             <form id="uploadForm">
                 <input type="hidden" id="currentEmployeeName" name="currentEmployeeName" value="{{ session('employeeName') }}" />
-
+                <input type="hidden" id="personalInfoId" name="personal_info_id" value="">
                 <!-- Step 1: Personal Information -->
                 <div id="step1" class="form-step">
                     <!-- Upload Field and Extract Data Button -->
@@ -831,8 +840,12 @@
                         <button type="button" class="action-button" id="cancelButton">Cancel</button>
                         <button type="button" class="action-button" id="prevButton5">Previous</button>
                         <button type="button" class="action-button" id="submitButton">Submit</button>
+                        <button type="button" class="action-button" id="savePDSButton" style="display: none;">Save</button>
                     </div>
+                    
                 </div>
+                
+                
 
             </form>
         </div>

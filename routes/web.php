@@ -7,6 +7,7 @@ use App\Http\Controllers\PersonalDataSheetController;
 use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\ReportController;
 
 
 
@@ -49,8 +50,14 @@ Route::get('/data/zipcodes.json', function () {
 Route::post('/submit-form', [FileController::class, 'store']);
 Route::post('/validate-form', [FileController::class, 'validateForm']);
 Route::get('/get-update-data/{id}', [FileController::class, 'getUpdateData']);
+Route::put('/update-personal-info', [FileController::class, 'updatePersonalInfo'])->name('update-personal-info');
+
+
 
 // Location routes
 Route::get('/provinces', [LocationController::class, 'getProvinces']);
 Route::get('/towns/{provinceCode}', [LocationController::class, 'getTowns']);
 Route::get('/barangays/{townCode}', [LocationController::class, 'getBarangays']);
+Route::get('/generate-report/{id}', [ReportController::class, 'generateReport']);
+
+

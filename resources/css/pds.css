@@ -86,6 +86,43 @@ body {
     background-color: #f1f1f1;
 }
 
+/* Make "Employee Name" column header link match the design */
+.salary-adjustment-table th a {
+    color: white; /* Ensure the link text is white */
+    text-decoration: none; /* No underline for the link */
+    display: inline-block;
+    position: relative;
+}
+
+/* Styling for sorting arrows */
+.salary-adjustment-table th a .sort-arrow {
+    font-size: 0.8rem;
+    margin-left: 5px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Sorting arrow directions */
+.salary-adjustment-table th a.asc .sort-arrow {
+    content: "\2191"; /* Up arrow */
+}
+
+.salary-adjustment-table th a.desc .sort-arrow {
+    content: "\2193"; /* Down arrow */
+}
+
+/* Hover effect for sortable links */
+.salary-adjustment-table th a:hover {
+    opacity: 0.8; /* Slight transparency on hover */
+}
+
+/* Active state (optional, if you want to highlight the active sort column) */
+.salary-adjustment-table th a.active {
+    font-weight: bold;
+}
+
+
 /* Action Button */
 .action-button {
     padding: 0.75rem 1.5rem;

@@ -1,9 +1,100 @@
 import * as XLSX from "xlsx";
 
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.querySelector(".search-bar");
+    const tableBody = document.querySelector(".salary-adjustment-table tbody");
+    const tableRows = Array.from(tableBody.querySelectorAll("tr"));
+
+    searchInput.addEventListener("keyup", function () {
+        const query = searchInput.value.toLowerCase().trim();
+
+        if (!query) {
+            resetTable();
+            return;
+        }
+
+        const rankedRows = tableRows.map((row) => {
+            const nameCell = row.querySelector("td:first-child"); // Employee Name column
+            if (!nameCell) return { row, score: Infinity }; // Ignore if no name column
+
+            const nameText = nameCell.textContent.toLowerCase();
+            const nameParts = nameText.split(/\s+/);
+            const queryParts = query.split(/\s+/);
+
+            let bestScore = Infinity;
+
+            // Compare each part of query against each name part
+            queryParts.forEach((queryPart) => {
+                nameParts.forEach((namePart) => {
+                    const distance = getLevenshteinDistance(
+                        namePart,
+                        queryPart
+                    );
+                    bestScore = Math.min(bestScore, distance);
+                });
+            });
+
+            return { row, score: bestScore };
+        });
+
+        // Sort rows based on score (lower = better match)
+        rankedRows.sort((a, b) => a.score - b.score);
+
+        // Reorder table rows based on sorted ranking
+        tableBody.innerHTML = ""; // Clear table
+        rankedRows.forEach(({ row, score }) => {
+            row.style.display = query.length === 1 || score <= 3 ? "" : "none";
+            tableBody.appendChild(row);
+        });
+    });
+
+    function resetTable() {
+        tableRows.forEach((row) => (row.style.display = ""));
+        tableBody.innerHTML = "";
+        tableRows.forEach((row) => tableBody.appendChild(row));
+    }
+
+    function getLevenshteinDistance(a, b) {
+        const matrix = Array.from({ length: a.length + 1 }, (_, i) => [i]).map(
+            (row, i) =>
+                row.concat(
+                    Array.from({ length: b.length }, (_, j) =>
+                        i === 0 ? j + 1 : 0
+                    )
+                )
+        );
+
+        for (let i = 1; i <= a.length; i++) {
+            for (let j = 1; j <= b.length; j++) {
+                matrix[i][j] =
+                    a[i - 1] === b[j - 1]
+                        ? matrix[i - 1][j - 1]
+                        : Math.min(
+                              matrix[i - 1][j],
+                              matrix[i][j - 1],
+                              matrix[i - 1][j - 1]
+                          ) + 1;
+            }
+        }
+
+        return matrix[a.length][b.length];
+    }
+});
+
 // Get the modal, button, and close elements
 const modal = document.getElementById("uploadModal");
 const uploadButton = document.getElementById("uploadButton");
 const closeButton = document.querySelector(".close");
+let isEditClicked = false; // Flag to track if the edit button was clicked
+
+// Add event listener to all Edit buttons
+document.querySelectorAll(".edit-btn").forEach((editButton) => {
+    editButton.addEventListener("click", function () {
+        // Set the flag to true when the Edit button is clicked
+        isEditClicked = true;
+        console.log("Edit button clicked, isEditClicked set to true");
+    });
+});
 
 // Step navigation
 let currentStep = 1;
@@ -58,13 +149,12 @@ document
     .getElementById("downloadButton")
     .addEventListener("click", function () {
         // The file path (adjust as needed)
-        const filePath =
-            "/docs/CS Form No. 212 Personal Data Sheet revised.xlsx";
+        const filePath = "/docs/ClearPDS.xlsx";
 
         // Trigger the download using the location.href method
         const link = document.createElement("a");
         link.href = filePath;
-        link.download = "CS Form No. 212 Personal Data Sheet revised.xlsx"; // Optional: specify the filename
+        link.download = "ClearPDS.xlsx"; // Optional: specify the filename
         link.click(); // Programmatically click the link to start the download
     });
 
@@ -94,6 +184,19 @@ document.getElementById("nextButton4").addEventListener("click", () => {
     if (checkRequiredFields(4)) {
         currentStep = 5;
         showStep(currentStep);
+
+        // Check if the Edit button was clicked
+        if (isEditClicked) {
+            // Show the Save button, hide the Submit button
+            document.getElementById("savePDSButton").style.display =
+                "inline-block";
+            document.getElementById("submitButton").style.display = "none";
+        } else {
+            // Show the Submit button, hide the Save button
+            document.getElementById("submitButton").style.display =
+                "inline-block";
+            document.getElementById("saveButton").style.display = "none";
+        }
     }
 });
 
@@ -189,6 +292,84 @@ document.getElementById("submitButton").addEventListener("click", async () => {
     }
 });
 
+document.getElementById("savePDSButton").addEventListener("click", async () => {
+    // Get the current employeeName from the hidden input field
+    const currentEmployeeName = document.getElementById(
+        "currentEmployeeName"
+    ).value;
+
+    const formData = collectFormData();
+
+    // Add currentEmployeeName to the formData object
+    formData.currentEmployeeName = currentEmployeeName;
+
+    console.log("Form Data collected:", formData);
+    // Ensure isEditClicked flag is reset if needed
+    if (isEditClicked) {
+        console.log("Edit button was clicked, sending data to update.");
+    } else {
+        console.log("Edit button was not clicked, sending data to create new.");
+    }
+
+    try {
+        // First, call the validation endpoint
+        const validationResponse = await fetch("/validate-form", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute("content"),
+            },
+            body: JSON.stringify(formData), // Send formData for validation
+        });
+
+        const validationData = await validationResponse.json();
+
+        if (validationResponse.ok) {
+            // If validation is successful, proceed to send the data to store or update
+            const storeResponse = await fetch("/update-personal-info", {
+                method: "PUT", // Use PUT for update operation
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                },
+                body: JSON.stringify(formData), // Send formData to store data
+            });
+
+            const storeData = await storeResponse.json();
+
+            if (storeResponse.ok) {
+                alert("Data updated successfully!");
+
+                // Optionally, close the modal here
+                const modal = document.getElementById("uploadModal");
+                modal.style.display = "none";
+
+                // Reset the flag when the modal closes (if not done earlier)
+                isEditClicked = false;
+
+                // Redirect to the /personal-data-sheet route
+                window.location.href = "/personal-data-sheet";
+                // Optionally, reload or update the data on the page
+            } else {
+                console.error("Error:", storeData);
+                alert("Failed to update data.");
+            }
+        } else {
+            // If validation fails, format and display the errors in an alert
+            console.error("Validation Error:", validationData.errors);
+            const errorMessage = formatValidationErrors(validationData.errors);
+            alert(errorMessage);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred while submitting the form.");
+    }
+});
+
 function formatValidationErrors(errors) {
     let errorMessage = "Please fill the missing fields:\n";
 
@@ -221,6 +402,8 @@ function formatValidationErrors(errors) {
 
 function collectFormData() {
     const formData = {};
+
+    formData.personal_info_id = document.getElementById("personalInfoId").value;
 
     formData.first_name = document.getElementById("firstName").value;
     formData.last_name = document.getElementById("surname").value;
@@ -1837,7 +2020,7 @@ document.addEventListener("DOMContentLoaded", function () {
     editButtons.forEach((button) => {
         button.addEventListener("click", function () {
             const updateId = this.getAttribute("data-id");
-
+            console.log(updateId);
             // Fetch the data for the selected row
             fetch(`/get-update-data/${updateId}`)
                 .then((response) => response.json())
@@ -1846,6 +2029,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Populate the modal with the fetched data
                     populateModal(data);
                     // Open the modal
+
                     openModal();
                 })
                 .catch((error) => {
@@ -1857,6 +2041,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to populate the modal with data
     function populateModal(data) {
         // Personal Information
+        console.log(data.personal_info.personal_info_id);
+        document.getElementById("personalInfoId").value =
+            data.personal_info.personal_info_id;
         document.getElementById("surname").value =
             data.personal_info.last_name || ""; // surname = last_name
         document.getElementById("firstName").value =
@@ -2196,39 +2383,46 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("motherMiddleName").value = "";
         }
 
-        if (data.educational_backgrounds && data.educational_backgrounds.length > 0) {
+        if (
+            data.educational_backgrounds &&
+            data.educational_backgrounds.length > 0
+        ) {
             data.educational_backgrounds.forEach((education) => {
                 // Convert "Graduate Studies" to "graduate" for ID generation
-                const level = education.level.toLowerCase() === "graduate studies"
-                    ? "graduate"
-                    : education.level.toLowerCase();
-        
+                const level =
+                    education.level.toLowerCase() === "graduate studies"
+                        ? "graduate"
+                        : education.level.toLowerCase();
+
                 const fields = [
                     "School",
                     "Degree",
                     "From",
                     "To",
-                    "HighestLevel",  // This should be mapped correctly
+                    "HighestLevel", // This should be mapped correctly
                     "YearGraduated", // This should be mapped correctly
                     "Honors",
                 ];
-        
+
                 fields.forEach((field) => {
-                    const fieldId = `${level}${field}`;  // ID format will be "graduateYearGraduated", "elementaryYearGraduated", etc.
+                    const fieldId = `${level}${field}`; // ID format will be "graduateYearGraduated", "elementaryYearGraduated", etc.
                     const fieldElement = document.getElementById(fieldId);
-        
+
                     if (fieldElement) {
                         let value = "";
-                        
+
                         // Adjust field name mapping for snake_case (highest_level, year_graduate)
                         if (field.toLowerCase() === "highestlevel") {
-                            value = education.highest_level || "";  // Using snake_case
+                            value = education.highest_level || ""; // Using snake_case
                         } else if (field.toLowerCase() === "yeargraduated") {
-                            value = education.year_graduated !== null ? education.year_graduated : "";  // Ensure value is a number, default to empty string if null
+                            value =
+                                education.year_graduated !== null
+                                    ? education.year_graduated
+                                    : ""; // Ensure value is a number, default to empty string if null
                         } else {
                             value = education[field.toLowerCase()] || "";
                         }
-        
+
                         fieldElement.value = value;
                     } else {
                         console.warn(`Element with id ${fieldId} not found.`);
@@ -2236,7 +2430,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
         } else {
-            console.log(data.educational_backgrounds);  // Log the educational backgrounds if no data
+            console.log(data.educational_backgrounds); // Log the educational backgrounds if no data
             // Clear educational background fields if no data
             const educationLevels = [
                 "elementary",
@@ -2244,7 +2438,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 "vocational",
                 "college",
                 "graduate",
-            ]; 
+            ];
             educationLevels.forEach((level) => {
                 const fields = [
                     "School",
@@ -2255,7 +2449,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "YearGraduated",
                     "Honors",
                 ];
-        
+
                 fields.forEach((field) => {
                     const fieldId = `${level}${field}`;
                     const fieldElement = document.getElementById(fieldId);
@@ -2267,7 +2461,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
         }
-        
 
         // Civil Service Eligibility
         const civilServiceContainer = document.querySelector(
@@ -2282,71 +2475,103 @@ document.addEventListener("DOMContentLoaded", function () {
             data.civil_service_eligibilities.forEach((eligibility, index) => {
                 const row = document.createElement("tr");
                 row.innerHTML = `
-                    <td><input type="text" value="${
-                        eligibility.eligibility_name || ""
-                    }"></td>
-                    <td><input type="text" value="${
-                        eligibility.rating || ""
-                    }"></td>
-                    <td><input type="date" value="${
-                        eligibility.date_of_exam || ""
-                    }"></td>
-                    <td><input type="text" value="${
-                        eligibility.place_of_exam || ""
-                    }"></td>
-                    <td><input type="text" value="${
-                        eligibility.license_number || ""
-                    }"></td>
-                    <td><input type="date" value="${
-                        eligibility.license_validity || ""
-                    }"></td>
-                    <td><button type="button" class="remove-row">Remove</button></td>
-                `;
+            <td><input type="text" value="${
+                eligibility.eligibility_name || ""
+            }"></td>
+            <td><input type="text" value="${eligibility.rating || ""}"></td>
+            <td><input type="date" value="${
+                eligibility.date_of_exam || ""
+            }"></td>
+            <td><input type="text" value="${
+                eligibility.place_of_exam || ""
+            }"></td>
+            <td><input type="text" value="${
+                eligibility.license_number || ""
+            }"></td>
+            <td><input type="date" value="${
+                eligibility.license_validity || ""
+            }"></td>
+            <td><button type="button" class="remove-row">Remove</button></td>
+        `;
                 civilServiceContainer.appendChild(row);
+                // Add functionality to the Remove button
+                row.querySelector(".remove-row").addEventListener(
+                    "click",
+                    function () {
+                        row.remove();
+                    }
+                );
             });
-        } else {
         }
 
-        // Work Experience
-        const workExperienceContainer = document.querySelector(
-            "#workExperienceContainer"
+        // ===== Work Experience Section =====
+        const workExperienceContainer = document.getElementById(
+            "workExperienceContainer"
         );
+        workExperienceContainer.innerHTML = ""; // Clear existing content
+
+        // Create table structure
+        const table = document.createElement("table");
+        table.classList.add("work-experience-table");
+
+        // Table header
+        table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Inclusive Dates (From)</th>
+                <th>Inclusive Dates (To)</th>
+                <th>Position Title</th>
+                <th>Department/Agency/Office/Company</th>
+                <th>Monthly Salary</th>
+                <th>Salary/Job/Pay Grade</th>
+                <th>Step Increment</th>
+                <th>Status of Appointment</th>
+                <th>Gov't Service</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="workExperienceTableBody"></tbody>
+    `;
+
+        const tbody = table.querySelector("#workExperienceTableBody");
 
         if (data.work_experiences && data.work_experiences.length > 0) {
             data.work_experiences.forEach((experience, index) => {
+                const entryNumber = index + 1;
+
                 const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td><input type="date" value="${
-                        experience.from || ""
-                    }"></td>
-                    <td><input type="date" value="${experience.to || ""}"></td>
-                    <td><input type="text" value="${
-                        experience.position_title || ""
-                    }"></td>
-                    <td><input type="text" value="${
-                        experience.department || ""
-                    }"></td>
-                    <td><input type="number" value="${
-                        experience.monthly_salary || ""
-                    }"></td>
-                    <td><input type="text" value="${
-                        experience.salary_grade || ""
-                    }"></td>
-                    <td><input type="text" value="${
-                        experience.step_increment || ""
-                    }"></td>
-                    <td><input type="text" value="${
-                        experience.appointment_status || ""
-                    }"></td>
-                    <td><input type="text" value="${
-                        experience.govt_service || ""
-                    }"></td>
-                    <td><button type="button" class="remove-row">Remove</button></td>
-                `;
-                workExperienceContainer.appendChild(row);
+row.innerHTML = `
+    <td><input type="date" id="inclusiveDatesFrom${entryNumber}" name="work_experience[${index}][from]" value="${experience.from || ""}"></td>
+    <td><input type="date" id="inclusiveDatesTo${entryNumber}" name="work_experience[${index}][to]" value="${experience.to || ""}"></td>
+    <td><input type="text" id="positionTitle${entryNumber}" name="work_experience[${index}][position_title]" value="${experience.position_title || ""}"></td>
+    <td><input type="text" id="department${entryNumber}" name="work_experience[${index}][department]" value="${experience.department || ""}"></td>
+    <td><input type="text" id="monthlySalary${entryNumber}" name="work_experience[${index}][monthly_salary]" value="${experience.monthly_salary || ""}"></td>
+    <td><input type="text" id="salaryGrade${entryNumber}" name="work_experience[${index}][salary_grade]" value="${experience.salary_grade || ""}"></td>
+    <td><input type="text" id="stepIncrement${entryNumber}" name="work_experience[${index}][step_increment]" value="${experience.step_increment || ""}"></td>
+    <td><input type="text" id="appointmentStatus${entryNumber}" name="work_experience[${index}][appointment_status]" value="${experience.appointment_status || ""}"></td>
+    <td>
+        <input type="radio" id="govtServiceYes${entryNumber}" name="govtService${entryNumber}" value="Yes" ${experience.govt_service === "Yes" ? "checked" : ""}>
+        <label for="govtServiceYes${entryNumber}">Yes</label>
+        <input type="radio" id="govtServiceNo${entryNumber}" name="govtService${entryNumber}" value="No" ${experience.govt_service === "No" ? "checked" : ""}>
+        <label for="govtServiceNo${entryNumber}">No</label>
+    </td>
+    <td><button type="button" class="remove-btn">Remove</button></td>
+`;
+
+                tbody.appendChild(row);
+
+                // Add event listener for the remove button
+                row.querySelector(".remove-btn").addEventListener(
+                    "click",
+                    function () {
+                        row.remove();
+                        // Optionally, reindex the remaining rows if needed
+                    }
+                );
             });
-        } else {
         }
+
+        workExperienceContainer.appendChild(table);
     }
 
     // Function to open the modal
@@ -2359,14 +2584,200 @@ document.addEventListener("DOMContentLoaded", function () {
     const closeModalButton = document.querySelector(".close");
     closeModalButton.addEventListener("click", function () {
         const modal = document.getElementById("uploadModal");
-        modal.style.display = "none";
+        modal.style.display = "none"; // Close the modal
+
+        // Reset the flag when the modal is closed
+        console.log("Modal closed manually, resetting isEditClicked to false");
+        isEditClicked = false;
     });
 
     // Close modal when clicking outside of it
     window.addEventListener("click", function (event) {
         const modal = document.getElementById("uploadModal");
         if (event.target === modal) {
-            modal.style.display = "none";
+            modal.style.display = "none"; // Close the modal
+
+            // Reset the flag when the modal is closed
+            console.log(
+                "Modal closed by clicking outside, resetting isEditClicked to false"
+            );
+            isEditClicked = false;
         }
+    });
+});
+
+document.querySelectorAll(".print-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+        const personalInfoId = button.getAttribute("data-id"); // Get the ID of the clicked row
+
+        // Fetch report data from the server
+        fetch(`/generate-report/${personalInfoId}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    const reportData = data.reportData;
+                    console.log(reportData);
+
+                    // Generate the HTML for the report (you can modify this to fit your design)
+                    const reportHTML = `
+                        <html>
+                            <head>
+                                <title>Personal Information Report</title>
+                                <style>
+                                    @media print {
+                                        body { font-family: Arial, sans-serif; }
+                                        .report-container { padding: 20px; }
+                                        h2, h3 { margin-bottom: 10px; }
+                                        p { margin: 5px 0; }
+                                        .no-print { display: none; }
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="report-container">
+                                    <h2>Personal Information Report</h2>
+                                    <p><strong>Name:</strong> ${
+                                        reportData.personalInfo.first_name
+                                    } ${reportData.personalInfo.middle_name} ${
+                        reportData.personalInfo.last_name
+                    }</p>
+                                    <p><strong>Birth Date:</strong> ${
+                                        reportData.personalInfo.date_of_birth
+                                    }</p>
+                                    <p><strong>Place of Birth:</strong> ${
+                                        reportData.personalInfo.place_of_birth
+                                    }</p>
+                                    <p><strong>Gender:</strong> ${
+                                        reportData.personalInfo.sex
+                                    }</p>
+                                    <p><strong>Civil Status:</strong> ${
+                                        reportData.personalInfo.civil_status
+                                    }</p>
+                                    <p><strong>Height:</strong> ${
+                                        reportData.personalInfo.height
+                                    } m</p>
+                                    <p><strong>Weight:</strong> ${
+                                        reportData.personalInfo.weight
+                                    } kg</p>
+                                    <p><strong>Blood Type:</strong> ${
+                                        reportData.personalInfo.blood_type
+                                    }</p>
+                                    <p><strong>Telephone No:</strong> ${
+                                        reportData.personalInfo.telephone_no
+                                    }</p>
+                                    <p><strong>Email:</strong> ${
+                                        reportData.personalInfo.email
+                                    }</p>
+                                    <p><strong>Citizenship:</strong> ${
+                                        reportData.personalInfo.is_filipino
+                                            ? "Filipino"
+                                            : "Non-Filipino"
+                                    }</p>
+                                    <p><strong>Dual Citizenship:</strong> ${
+                                        reportData.personalInfo.is_dual_citizen
+                                            ? "Yes"
+                                            : "No"
+                                    }</p>
+                                    ${
+                                        reportData.personalInfo.is_dual_citizen
+                                            ? `
+                                        <p><strong>Dual Citizenship Type:</strong> ${reportData.personalInfo.dual_citizen_type}</p>
+                                        <p><strong>Dual Citizenship Country:</strong> ${reportData.personalInfo.dual_citizen_country}</p>
+                                    `
+                                            : ""
+                                    }
+
+                                    <h3>Addresses</h3>
+                                        ${reportData.addresses
+                                            .map(
+                                                (address) => `
+                                            <p><strong>Type:</strong> ${
+                                                address.type === "residential"
+                                                    ? "Residential Address"
+                                                    : "Permanent Address"
+                                            }</p>
+                                            <p><strong>House No:</strong> ${
+                                                address.house_no
+                                            }</p>
+                                            <p><strong>Street:</strong> ${
+                                                address.street
+                                            }</p>
+                                            <p><strong>Subdivision:</strong> ${
+                                                address.subdivision
+                                            }</p>
+                                            <p><strong>Barangay:</strong> ${
+                                                address.barangay
+                                            }</p>
+                                            <p><strong>City:</strong> ${
+                                                address.city
+                                            }</p>
+                                            <p><strong>Province:</strong> ${
+                                                address.province
+                                            }</p>
+                                            <p><strong>Zip Code:</strong> ${
+                                                address.zip_code
+                                            }</p>
+                                            <hr>
+                                        `
+                                            )
+                                            .join("")}
+                                    <h3>Family Background</h3>
+                                    ${reportData.familyBackgrounds
+                                        .map(
+                                            (family) => `
+                                        <p><strong>Spouse:</strong> ${family.spouse_surname} ${family.spouse_first_name} ${family.spouse_middle_name}</p>
+                                        <p><strong>Spouse Occupation:</strong> ${family.spouse_occupation}</p>
+                                        <p><strong>Spouse Employer:</strong> ${family.spouse_employer}</p>
+                                        <p><strong>Spouse Telephone:</strong> ${family.spouse_telephone}</p>
+                                        <p><strong>Father:</strong> ${family.father_surname} ${family.father_first_name} ${family.father_middle_name}</p>
+                                        <p><strong>Mother:</strong> ${family.mother_surname} ${family.mother_first_name} ${family.mother_middle_name}</p>
+                                    `
+                                        )
+                                        .join("")}
+
+                                    <h3>Educational Background</h3>
+                                        ${reportData.education
+                                            .map(
+                                                (edu) => `
+                                            <p><strong>Level:</strong> ${edu.level}</p>
+                                            <p><strong>School:</strong> ${edu.school}</p>
+                                            <p><strong>Degree:</strong> ${edu.degree}</p>
+                                            <p><strong>Period:</strong> ${edu.from} to ${edu.to}</p>
+                                            <p><strong>Highest Level:</strong> ${edu.highest_level}</p>
+                                            <p><strong>Year Graduated:</strong> ${edu.year_graduated}</p>
+                                            <p><strong>Honors:</strong> ${edu.honors}</p>
+                                            <hr>
+                                        `
+                                            )
+                                            .join("")}
+
+                                    <h3>Work Experience</h3>
+                                    ${reportData.workExperiences
+                                        .map(
+                                            (work) => `
+                                        <p><strong>Position Title:</strong> ${work.positionTitle}</p>
+                                    `
+                                        )
+                                        .join("")}
+                                </div>
+                            </body>
+                        </html>`;
+
+                    // Open a new window and print the report
+                    const printWindow = window.open(
+                        "",
+                        "",
+                        "width=800,height=600"
+                    );
+                    printWindow.document.write(reportHTML);
+                    printWindow.document.close();
+                    printWindow.print();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching report data:", error);
+            });
     });
 });
