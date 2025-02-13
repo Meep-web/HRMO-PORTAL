@@ -8,7 +8,7 @@
 
 
     <!-- Nosa Button -->
-    <a href="{{ route('noticeOfSalaryAdjustment') }}" class="nosa-button" data-title="NOTICE OF SALARY ADJUSTMENT">
+    <a href="{{ route('noticeOfSalaryAdjustment') }}" class="nosa-button" data-title="Notice of Salary Adjustment">
         <img src="{{ asset('nosa.png') }}" alt="Nosa" class="sidebar-nosa">
     </a>
 

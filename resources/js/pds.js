@@ -36,26 +36,51 @@ function showStep(step) {
             i === step ? "block" : "none";
     }
 }
+// Function to check if required fields in a step are filled
+function checkRequiredFields(step) {
+    let allFieldsFilled = true;
 
-// Next button functionality
+    // Get all required inputs in the current step
+    const requiredFields = document.querySelectorAll(`#step${step} .required`);
+
+    requiredFields.forEach((field) => {
+        if (!field.value.trim()) {
+            allFieldsFilled = false;
+            field.focus(); // Focus on the first empty required field
+            return; // Exit the loop once an empty field is found
+        }
+    });
+
+    return allFieldsFilled;
+}
+
+// Next button functionality with check
 document.getElementById("nextButton1").addEventListener("click", () => {
-    currentStep = 2;
-    showStep(currentStep);
+    if (checkRequiredFields(1)) {
+        currentStep = 2;
+        showStep(currentStep);
+    }
 });
 
 document.getElementById("nextButton2").addEventListener("click", () => {
-    currentStep = 3;
-    showStep(currentStep);
+    if (checkRequiredFields(2)) {
+        currentStep = 3;
+        showStep(currentStep);
+    }
 });
 
 document.getElementById("nextButton3").addEventListener("click", () => {
-    currentStep = 4;
-    showStep(currentStep);
+    if (checkRequiredFields(3)) {
+        currentStep = 4;
+        showStep(currentStep);
+    }
 });
 
 document.getElementById("nextButton4").addEventListener("click", () => {
-    currentStep = 5;
-    showStep(currentStep);
+    if (checkRequiredFields(4)) {
+        currentStep = 5;
+        showStep(currentStep);
+    }
 });
 
 // Previous button functionality
@@ -87,250 +112,289 @@ document.querySelectorAll("#cancelButton").forEach((button) => {
     });
 });
 
-// Submit button functionality
-document.getElementById("submitButton").addEventListener("click", () => {
-    // Collect all form data
+document.getElementById("submitButton").addEventListener("click", async () => {
+    // Get the current employeeName from the hidden input field
+    const currentEmployeeName = document.getElementById(
+        "currentEmployeeName"
+    ).value;
+
+    // Collect form data
     const formData = collectFormData();
 
-    // Log the form data to the console
-    console.log("Form Data:", formData);
+    // Add currentEmployeeName to the formData object
+    formData.currentEmployeeName = currentEmployeeName;
 
-    // Show success message
-    alert("Form submitted successfully!");
+    try {
+        // First, call the validation endpoint
+        const validationResponse = await fetch("/validate-form", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute("content"),
+            },
+            body: JSON.stringify(formData), // Send formData with currentEmployeeName
+        });
 
-    // Close the modal and reset the form
-    modal.style.display = "none";
-    resetForm();
+        const validationData = await validationResponse.json();
+
+        if (validationResponse.ok) {
+            // If validation is successful, proceed to submit the form
+            const storeResponse = await fetch("/submit-form", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                },
+                body: JSON.stringify(formData), // Send formData with currentEmployeeName
+            });
+
+            const storeData = await storeResponse.json();
+
+            if (storeResponse.ok) {
+                alert("Data submitted successfully!");
+
+                // Redirect to the /personal-data-sheet route
+                window.location.href = "/personal-data-sheet";
+            } else {
+                console.error("Error:", storeData);
+                alert("Failed to submit data.");
+            }
+        } else {
+            // If validation fails, format and display the errors in an alert
+            console.error("Validation Error:", validationData.errors);
+            const errorMessage = formatValidationErrors(validationData.errors);
+            alert(errorMessage);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred while submitting the form.");
+    }
 });
+
+function formatValidationErrors(errors) {
+    let errorMessage = "Please fill the missing fields:\n";
+
+    // Convert errors object to an array of [field, messages] pairs
+    const errorEntries = Object.entries(errors);
+
+    // Limit the number of fields to display
+    const maxFieldsToShow = 6;
+    const fieldsToShow = errorEntries.slice(0, maxFieldsToShow);
+    const remainingFields = errorEntries.length - maxFieldsToShow;
+
+    for (const [field, messages] of fieldsToShow) {
+        // Convert snake case and nested fields to a more readable format
+        const readableField = field
+            .replace(/_/g, " ") // Replace underscores with spaces
+            .replace(/\./g, " ") // Replace dots with spaces
+            .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
+
+        // Add the field to the alert message
+        errorMessage += `\n- ${readableField}`;
+    }
+
+    // Add an ellipsis if there are more fields than the limit
+    if (remainingFields > 0) {
+        errorMessage += `\n...`;
+    }
+
+    return errorMessage;
+}
 
 function collectFormData() {
     const formData = {};
-    console.log(formData);
 
-    // Step 1: Personal Information
-    formData.personalInfo = {
-        firstName: document.getElementById("firstName").value,
-        lastName: document.getElementById("surname").value,
-        middleName: document.getElementById("middleName").value,
-        nameExtension: document.getElementById("nameExtension").value,
-        dateOfBirth: document.getElementById("dateOfBirth").value,
-        placeOfBirth: document.getElementById("placeOfBirth").value,
-        sex: document.querySelector('input[name="sex"]:checked')?.value || "",
-        civilStatus:
-            document.querySelector('input[name="civilStatus"]:checked')
-                ?.value || "",
-        height: document.getElementById("height").value,
-        weight: document.getElementById("weight").value,
-        bloodType: document.getElementById("bloodType").value,
-        gsisId: document.getElementById("gsisId").value,
-        pagibigId: document.getElementById("pagibigId").value,
-        philhealthId: document.getElementById("philhealthId").value,
-        sssNo: document.getElementById("sssNo").value,
-        tinNo: document.getElementById("tinNo").value,
-        agencyEmployeeNo: document.getElementById("agencyEmployeeNo").value,
+    // Personal Information
+    formData.first_name = document.getElementById("firstName").value;
+    formData.last_name = document.getElementById("surname").value;
+    formData.middle_name = document.getElementById("middleName").value;
+    formData.name_extension = document.getElementById("nameExtension").value;
+    formData.date_of_birth = document.getElementById("dateOfBirth").value;
+    formData.place_of_birth = document.getElementById("placeOfBirth").value;
+    formData.sex =
+        document.querySelector('input[name="sex"]:checked')?.value || "";
+    formData.civil_status =
+        document.querySelector('input[name="civilStatus"]:checked')?.value ||
+        "";
+    formData.height = document.getElementById("height").value;
+    formData.weight = document.getElementById("weight").value;
+    formData.blood_type = document.getElementById("bloodType").value;
+    formData.gsis_id = document.getElementById("gsisId").value;
+    formData.pagibig_id = document.getElementById("pagibigId").value;
+    formData.philhealth_id = document.getElementById("philhealthId").value;
+    formData.sss_no = document.getElementById("sssNo").value;
+    formData.tin_no = document.getElementById("tinNo").value;
+    formData.agency_employee_no =
+        document.getElementById("agencyEmployeeNo").value;
+    formData.telephone_no = document.getElementById("telephoneNo").value;
+    formData.mobile_no = document.getElementById("mobileNo").value;
+    formData.email = document.getElementById("email").value;
 
-        // Updated Citizenship Section
-        citizenship: {
-            isFilipino: document.getElementById("filipino").checked,
-            isDualCitizen: document.getElementById("dualCitizenship").checked,
-            dualCitizenType:
-                document.querySelector('input[name="dualCitizenType"]:checked')
-                    ?.value || "",
-            dualCitizenCountry: document.getElementById("countrySelect").value,
-        },
-
-        // Residential Address
-        residentialAddress: {
-            houseNo: document.getElementById("residentialHouseNo").value,
-            street: document.getElementById("residentialStreet").value,
-            subdivision: document.getElementById("residentialSubdivision")
-                .value,
-            barangay: document.getElementById("residentialBarangay").value,
-            city: document.getElementById("residentialCity").value,
-            province: document.getElementById("residentialProvince").value,
-            zipCode: document.getElementById("residentialZipCode").value,
-        },
-
-        // Permanent Address
-        permanentAddress: {
-            houseNo: document.getElementById("permanentHouseNo").value,
-            street: document.getElementById("permanentStreet").value,
-            subdivision: document.getElementById("permanentSubdivision").value,
-            barangay: document.getElementById("permanentBarangay").value,
-            city: document.getElementById("permanentCity").value,
-            province: document.getElementById("permanentProvince").value,
-            zipCode: document.getElementById("permanentZipCode").value,
-        },
-
-        // Contact Information
-        telephoneNo: document.getElementById("telephoneNo").value,
-        mobileNo: document.getElementById("mobileNo").value,
-        email: document.getElementById("email").value,
+    // Residential Address
+    formData.residential_address = {
+        type: "residential",
+        house_no: document.getElementById("residentialHouseNo").value,
+        street: document.getElementById("residentialStreet").value,
+        subdivision: document.getElementById("residentialSubdivision").value,
+        barangay: document.getElementById("residentialBarangay").value,
+        city: document.getElementById("residentialCity").value,
+        province: document.getElementById("residentialProvince").value,
+        zip_code: document.getElementById("residentialZipCode").value,
     };
 
-    // Step 2: Family Background
-    formData.familyBackground = {
-        // Spouse's Information
-        spouse: {
-            surname: document.getElementById("spouseSurname").value,
-            firstName: document.getElementById("spouseFirstName").value,
-            middleName: document.getElementById("spouseMiddleName").value,
-            nameExtension: document.getElementById("spouseNameExtension").value,
-            occupation: document.getElementById("spouseOccupation").value,
-            employer: document.getElementById("spouseEmployer").value,
-            telephone: document.getElementById("spouseTelephone").value,
-        },
-
-        // Children Information
-        children: (() => {
-            let childrenArray = [];
-            let childEntries = document.querySelectorAll(
-                "#childrenContainer .child-entry"
-            );
-            childEntries.forEach((entry, index) => {
-                let name =
-                    entry.querySelector(`#childName${index + 1}`)?.value || "";
-                let dob =
-                    entry.querySelector(`#childDOB${index + 1}`)?.value || "";
-                if (name.trim()) {
-                    childrenArray.push({ name, dateOfBirth: dob });
-                }
-            });
-            return childrenArray;
-        })(),
-
-        // Father's Information
-        father: {
-            surname: document.getElementById("fatherSurname").value,
-            firstName: document.getElementById("fatherFirstName").value,
-            middleName: document.getElementById("fatherMiddleName").value,
-            nameExtension: document.getElementById("fatherNameExtension").value,
-        },
-
-        // Mother's Information
-        mother: {
-            surname: document.getElementById("motherSurname").value,
-            firstName: document.getElementById("motherFirstName").value,
-            middleName: document.getElementById("motherMiddleName").value,
-        },
+    // Permanent Address
+    formData.permanent_address = {
+        type: "permanent",
+        house_no: document.getElementById("permanentHouseNo").value,
+        street: document.getElementById("permanentStreet").value,
+        subdivision: document.getElementById("permanentSubdivision").value,
+        barangay: document.getElementById("permanentBarangay").value,
+        city: document.getElementById("permanentCity").value,
+        province: document.getElementById("permanentProvince").value,
+        zip_code: document.getElementById("permanentZipCode").value,
     };
 
-    // Step 3: Educational Background
-    formData.educationalBackground = {
-        elementary: {
-            school: document.getElementById("elementarySchool")?.value || "",
-            degree: document.getElementById("elementaryDegree")?.value || "",
-            from: document.getElementById("elementaryFrom")?.value || "",
-            to: document.getElementById("elementaryTo")?.value || "",
-            highestLevel:
-                document.getElementById("elementaryHighestLevel")?.value || "",
-            yearGraduated:
-                document.getElementById("elementaryYearGraduated")?.value || "",
-            honors: document.getElementById("elementaryHonors")?.value || "",
-        },
-        secondary: {
-            school: document.getElementById("secondarySchool")?.value || "",
-            degree: document.getElementById("secondaryDegree")?.value || "",
-            from: document.getElementById("secondaryFrom")?.value || "",
-            to: document.getElementById("secondaryTo")?.value || "",
-            highestLevel:
-                document.getElementById("secondaryHighestLevel")?.value || "",
-            yearGraduated:
-                document.getElementById("secondaryYearGraduated")?.value || "",
-            honors: document.getElementById("secondaryHonors")?.value || "",
-        },
-        vocational: {
-            school: document.getElementById("vocationalSchool")?.value || "",
-            degree: document.getElementById("vocationalDegree")?.value || "",
-            from: document.getElementById("vocationalFrom")?.value || "",
-            to: document.getElementById("vocationalTo")?.value || "",
-            highestLevel:
-                document.getElementById("vocationalHighestLevel")?.value || "",
-            yearGraduated:
-                document.getElementById("vocationalYearGraduated")?.value || "",
-            honors: document.getElementById("vocationalHonors")?.value || "",
-        },
-        college: {
-            school: document.getElementById("collegeSchool")?.value || "",
-            degree: document.getElementById("collegeDegree")?.value || "",
-            from: document.getElementById("collegeFrom")?.value || "",
-            to: document.getElementById("collegeTo")?.value || "",
-            highestLevel:
-                document.getElementById("collegeHighestLevel")?.value || "",
-            yearGraduated:
-                document.getElementById("collegeYearGraduated")?.value || "",
-            honors: document.getElementById("collegeHonors")?.value || "",
-        },
-        graduate: {
-            school: document.getElementById("graduateSchool")?.value || "",
-            degree: document.getElementById("graduateDegree")?.value || "",
-            from: document.getElementById("graduateFrom")?.value || "",
-            to: document.getElementById("graduateTo")?.value || "",
-            highestLevel:
-                document.getElementById("graduateHighestLevel")?.value || "",
-            yearGraduated:
-                document.getElementById("graduateYearGraduated")?.value || "",
-            honors: document.getElementById("graduateHonors")?.value || "",
-        },
+    // Family Background
+    formData.family_background = {
+        spouse_surname: document.getElementById("spouseSurname").value,
+        spouse_first_name: document.getElementById("spouseFirstName").value,
+        spouse_middle_name: document.getElementById("spouseMiddleName").value,
+        spouse_name_extension: document.getElementById("spouseNameExtension")
+            .value,
+        spouse_occupation: document.getElementById("spouseOccupation").value,
+        spouse_employer: document.getElementById("spouseEmployer").value,
+        spouse_telephone: document.getElementById("spouseTelephone").value,
+        father_surname: document.getElementById("fatherSurname").value,
+        father_first_name: document.getElementById("fatherFirstName").value,
+        father_middle_name: document.getElementById("fatherMiddleName").value,
+        father_name_extension: document.getElementById("fatherNameExtension")
+            .value,
+        mother_surname: document.getElementById("motherSurname").value,
+        mother_first_name: document.getElementById("motherFirstName").value,
+        mother_middle_name: document.getElementById("motherMiddleName").value,
     };
 
-    // Step 4: Civil Service Eligibility
-    formData.civilServiceEligibility = [];
-    const civilServiceContainer = document.getElementById(
-        "civilServiceContainer"
-    );
-    const civilServiceEntries = civilServiceContainer.querySelectorAll(
-        ".civil-service-entry"
-    );
-    civilServiceEntries.forEach((entry, index) => {
-        formData.civilServiceEligibility.push({
-            eligibilityName: entry.querySelector(`#eligibilityName${index + 1}`)
-                .value,
-            rating: entry.querySelector(`#rating${index + 1}`).value,
-            dateOfExam: entry.querySelector(`#dateOfExam${index + 1}`).value,
-            placeOfExam: entry.querySelector(`#placeOfExam${index + 1}`).value,
-            licenseNumber: entry.querySelector(`#licenseNumber${index + 1}`)
-                .value,
-            licenseValidity: entry.querySelector(`#licenseValidity${index + 1}`)
-                .value,
+    // Educational Background
+    formData.elementary = {
+        level: "Elementary",
+        school: document.getElementById("elementarySchool").value,
+        degree: document.getElementById("elementaryDegree").value,
+        from: document.getElementById("elementaryFrom").value,
+        to: document.getElementById("elementaryTo").value,
+        highestLevel: document.getElementById("elementaryHighestLevel").value,
+        yearGraduated: document.getElementById("elementaryYearGraduated").value,
+        honors: document.getElementById("elementaryHonors").value,
+    };
+
+    formData.secondary = {
+        level: "Secondary",
+        school: document.getElementById("secondarySchool").value,
+        degree: document.getElementById("secondaryDegree").value,
+        from: document.getElementById("secondaryFrom").value,
+        to: document.getElementById("secondaryTo").value,
+        highestLevel: document.getElementById("secondaryHighestLevel").value,
+        yearGraduated: document.getElementById("secondaryYearGraduated").value,
+        honors: document.getElementById("secondaryHonors").value,
+    };
+
+    formData.vocational = {
+        level: "Vocational",
+        school: document.getElementById("vocationalSchool").value,
+        degree: document.getElementById("vocationalDegree").value,
+        from: document.getElementById("vocationalFrom").value,
+        to: document.getElementById("vocationalTo").value,
+        highestLevel: document.getElementById("vocationalHighestLevel").value,
+        yearGraduated: document.getElementById("vocationalYearGraduated").value,
+        honors: document.getElementById("vocationalHonors").value,
+    };
+
+    formData.college = {
+        level: "College",
+        school: document.getElementById("collegeSchool").value,
+        degree: document.getElementById("collegeDegree").value,
+        from: document.getElementById("collegeFrom").value,
+        to: document.getElementById("collegeTo").value,
+        highestLevel: document.getElementById("collegeHighestLevel").value,
+        yearGraduated: document.getElementById("collegeYearGraduated").value,
+        honors: document.getElementById("collegeHonors").value,
+    };
+
+    formData.graduateStudies = {
+        level: "Graduate Studies",
+        school: document.getElementById("graduateSchool").value,
+        degree: document.getElementById("graduateDegree").value,
+        from: document.getElementById("graduateFrom").value,
+        to: document.getElementById("graduateTo").value,
+        highestLevel: document.getElementById("graduateHighestLevel").value,
+        yearGraduated: document.getElementById("graduateYearGraduated").value,
+        honors: document.getElementById("graduateHonors").value,
+    };
+
+    // Civil Service Eligibility
+const civilServiceContainer = document.querySelector("#civilServiceContainer");
+const civilServiceRows = civilServiceContainer.querySelectorAll("tr");
+
+if (civilServiceRows.length > 0) {
+    formData.civil_service_eligibility = [];
+    civilServiceRows.forEach((row, index) => {
+        // Get the input elements within the row
+        const inputs = row.querySelectorAll("input");
+
+        // Push the data into the formData object
+        formData.civil_service_eligibility.push({
+            eligibility_name: inputs[0].value, // Eligibility Name
+            rating: inputs[1].value, // Rating
+            date_of_exam: inputs[2].value, // Date of Exam/Conferment
+            place_of_exam: inputs[3].value, // Place of Exam/Conferment
+            license_number: inputs[4].value, // License Number
+            license_validity: inputs[5].value, // Date of Validity
         });
     });
+} else {
+    formData.civil_service_eligibility = []; // Ensure the array is initialized
+}
 
-    // Step 5: Work Experience
-    formData.workExperience = [];
-    document
-        .querySelectorAll(".work-experience-entry")
-        .forEach((entry, index) => {
-            formData.workExperience.push({
+    // Work Experience
+    const workExperienceTable = document.querySelector("#step5 tbody");
+    const workExperienceRows = workExperienceTable.querySelectorAll("tr");
+
+    if (workExperienceRows.length > 0) {
+        formData.work_experience = [];
+        workExperienceRows.forEach((row, index) => {
+            formData.work_experience.push({
                 from:
-                    entry.querySelector(`#inclusiveDatesFrom${index + 1}`)
+                    row.querySelector(`#inclusiveDatesFrom${index + 1}`)
                         ?.value || "",
                 to:
-                    entry.querySelector(`#inclusiveDatesTo${index + 1}`)
-                        ?.value || "",
-                positionTitle:
-                    entry.querySelector(`#positionTitle${index + 1}`)?.value ||
+                    row.querySelector(`#inclusiveDatesTo${index + 1}`)?.value ||
+                    "",
+                position_title:
+                    row.querySelector(`#positionTitle${index + 1}`)?.value ||
                     "",
                 department:
-                    entry.querySelector(`#department${index + 1}`)?.value || "",
-                monthlySalary:
-                    entry.querySelector(`#monthlySalary${index + 1}`)?.value ||
+                    row.querySelector(`#department${index + 1}`)?.value || "",
+                monthly_salary:
+                    row.querySelector(`#monthlySalary${index + 1}`)?.value ||
                     "",
-                salaryGrade:
-                    entry.querySelector(`#salaryGrade${index + 1}`)?.value ||
+                salary_grade:
+                    row.querySelector(`#salaryGrade${index + 1}`)?.value || "",
+                step_increment:
+                    row.querySelector(`#stepIncrement${index + 1}`)?.value ||
                     "",
-                stepIncrement:
-                    entry.querySelector(`#stepIncrement${index + 1}`)?.value ||
-                    "",
-                appointmentStatus:
-                    entry.querySelector(`#appointmentStatus${index + 1}`)
+                appointment_status:
+                    row.querySelector(`#appointmentStatus${index + 1}`)
                         ?.value || "",
-                govtService:
-                    entry.querySelector(
+                govt_service:
+                    row.querySelector(
                         `input[name="govtService${index + 1}"]:checked`
                     )?.value || "",
             });
         });
+    }
 
     return formData;
 }
@@ -341,151 +405,79 @@ function resetForm() {
     document.getElementById("uploadForm").reset(); // Reset the form, not the modal
 }
 
-// Add Another Child Button Functionality
-document
-    .getElementById("addChildButton")
-    .addEventListener("click", function () {
-        const childrenContainer = document.getElementById("childrenContainer");
-        const childCount = childrenContainer.children.length + 1;
-
-        const childEntry = document.createElement("div");
-        childEntry.classList.add("child-entry");
-
-        childEntry.innerHTML = `
-        <div class="form-row">
-            <div class="form-group">
-                <label for="childName${childCount}">Child's Name:</label>
-                <input type="text" id="childName${childCount}" name="childName${childCount}">
-            </div>
-            <div class="form-group">
-                <label for="childDOB${childCount}">Date of Birth:</label>
-                <input type="date" id="childDOB${childCount}" name="childDOB${childCount}">
-            </div>
-        </div>
-    `;
-
-        childrenContainer.appendChild(childEntry);
-    });
-
 document
     .getElementById("addCivilServiceButton")
     .addEventListener("click", function () {
-        const container = document.getElementById("civilServiceContainer");
-        const entryNumber = container.children.length + 1; // Next entry number
+        const tbody = document.querySelector("#step4 table tbody");
 
-        const template = `
-            <div class="civil-service-entry">
-                <div class="form-group">
-                    <label for="eligibilityName${entryNumber}">Eligibility Name:</label>
-                    <input type="text" id="eligibilityName${entryNumber}" name="eligibilityName${entryNumber}">
-                </div>
-                <div class="form-group">
-                    <label for="rating${entryNumber}">Rating (if applicable):</label>
-                    <input type="text" id="rating${entryNumber}" name="rating${entryNumber}">
-                </div>
-                <div class="form-group">
-                    <label for="dateOfExam${entryNumber}">Date of Exam/Conferment:</label>
-                    <input type="date" id="dateOfExam${entryNumber}" name="dateOfExam${entryNumber}">
-                </div>
-                <div class="form-group">
-                    <label for="placeOfExam${entryNumber}">Place of Exam/Conferment:</label>
-                    <input type="text" id="placeOfExam${entryNumber}" name="placeOfExam${entryNumber}">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="licenseNumber${entryNumber}">License Number (if applicable):</label>
-                        <input type="text" id="licenseNumber${entryNumber}" name="licenseNumber${entryNumber}">
-                    </div>
-                    <div class="form-group">
-                        <label for="licenseValidity${entryNumber}">Date of Validity:</label>
-                        <input type="date" id="licenseValidity${entryNumber}" name="licenseValidity${entryNumber}">
-                    </div>
-                </div>
-                <hr> <!-- Horizontal line to separate entries -->
-            </div>
+        if (!tbody) {
+            console.error("Error: Table tbody not found.");
+            return;
+        }
+
+        const entryNumber = tbody.children.length + 1; // Get next entry number
+
+        const row = document.createElement("tr");
+        row.classList.add("civil-service-entry");
+
+        row.innerHTML = `
+            <td><input type="text" id="eligibilityName${entryNumber}" name="eligibilityName${entryNumber}"></td>
+            <td><input type="text" id="rating${entryNumber}" name="rating${entryNumber}"></td>
+            <td><input type="date" id="dateOfExam${entryNumber}" name="dateOfExam${entryNumber}"></td>
+            <td><input type="text" id="placeOfExam${entryNumber}" name="placeOfExam${entryNumber}"></td>
+            <td><input type="text" id="licenseNumber${entryNumber}" name="licenseNumber${entryNumber}"></td>
+            <td><input type="date" id="licenseValidity${entryNumber}" name="licenseValidity${entryNumber}"></td>
+            <td><button type="button" class="remove-btn">Remove</button></td>
         `;
 
-        container.insertAdjacentHTML("beforeend", template);
+        tbody.appendChild(row);
+
+        // Add functionality to the remove button
+        row.querySelector(".remove-btn").addEventListener("click", function () {
+            row.remove();
+        });
     });
 
 // Add Another Work Experience Entry
 document
     .getElementById("addWorkExperienceButton")
     .addEventListener("click", function () {
-        const workExperienceContainer = document.getElementById(
-            "workExperienceContainer"
+        const tableBody = document.querySelector(
+            ".work-experience-table tbody"
         );
-        const entryCount = workExperienceContainer.children.length + 1;
+        const entryCount = tableBody.children.length + 1;
 
-        const workExperienceEntry = document.createElement("div");
-        workExperienceEntry.classList.add("work-experience-entry");
+        // Create a new table row for the work experience entry
+        const workExperienceRow = document.createElement("tr");
 
-        workExperienceEntry.innerHTML = `
-        <!-- Inclusive Dates (From and To) -->
-        <div class="form-row">
-            <div class="form-group">
-                <label for="inclusiveDatesFrom${entryCount}">Inclusive Dates (From):</label>
-                <input type="date" id="inclusiveDatesFrom${entryCount}" name="inclusiveDatesFrom${entryCount}">
-            </div>
-            <div class="form-group">
-                <label for="inclusiveDatesTo${entryCount}">Inclusive Dates (To):</label>
-                <input type="date" id="inclusiveDatesTo${entryCount}" name="inclusiveDatesTo${entryCount}">
-            </div>
-        </div>
+        // Add the HTML for each field in the row
+        workExperienceRow.innerHTML = `
+            <td><input type="date" id="inclusiveDatesFrom${entryCount}" name="inclusiveDatesFrom${entryCount}"></td>
+            <td><input type="date" id="inclusiveDatesTo${entryCount}" name="inclusiveDatesTo${entryCount}"></td>
+            <td><input type="text" id="positionTitle${entryCount}" name="positionTitle${entryCount}"></td>
+            <td><input type="text" id="department${entryCount}" name="department${entryCount}"></td>
+            <td><input type="text" id="monthlySalary${entryCount}" name="monthlySalary${entryCount}"></td>
+            <td><input type="text" id="salaryGrade${entryCount}" name="salaryGrade${entryCount}"></td>
+            <td><input type="text" id="stepIncrement${entryCount}" name="stepIncrement${entryCount}"></td>
+            <td><input type="text" id="appointmentStatus${entryCount}" name="appointmentStatus${entryCount}"></td>
+            <td>
+                <input type="radio" id="govtServiceYes${entryCount}" name="govtService${entryCount}" value="Yes">
+                <label for="govtServiceYes${entryCount}">Yes</label>
+                <input type="radio" id="govtServiceNo${entryCount}" name="govtService${entryCount}" value="No">
+                <label for="govtServiceNo${entryCount}">No</label>
+            </td>
+            <td><button type="button" class="remove-btn">Remove</button></td>
+        `;
 
-        <!-- Position Title -->
-        <div class="form-group">
-            <label for="positionTitle${entryCount}">Position Title:</label>
-            <input type="text" id="positionTitle${entryCount}" name="positionTitle${entryCount}">
-        </div>
+        // Append the new row to the table body
+        tableBody.appendChild(workExperienceRow);
 
-        <!-- Department/Agency/Office/Company -->
-        <div class="form-group">
-            <label for="department${entryCount}">Department/Agency/Office/Company:</label>
-            <input type="text" id="department${entryCount}" name="department${entryCount}">
-        </div>
-
-        <!-- Monthly Salary -->
-        <div class="form-group">
-            <label for="monthlySalary${entryCount}">Monthly Salary:</label>
-            <input type="text" id="monthlySalary${entryCount}" name="monthlySalary${entryCount}">
-        </div>
-
-        <!-- Salary/Job/Pay Grade & Step Increment -->
-        <div class="form-group">
-            <label for="salaryGrade${entryCount}">Salary/Job/Pay Grade:</label>
-            <input type="text" id="salaryGrade${entryCount}" name="salaryGrade${entryCount}">
-        </div>
-        <div class="form-group">
-            <label for="stepIncrement${entryCount}">Step Increment:</label>
-            <input type="text" id="stepIncrement${entryCount}" name="stepIncrement${entryCount}">
-        </div>
-
-        <!-- Status of Appointment -->
-        <div class="form-group">
-            <label for="appointmentStatus${entryCount}">Status of Appointment:</label>
-            <input type="text" id="appointmentStatus${entryCount}" name="appointmentStatus${entryCount}">
-        </div>
-
-        <!-- Gov't Service (Yes or No) -->
-        <div class="form-group">
-            <label>Gov't Service:</label>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <input type="radio" id="govtServiceYes${entryCount}" name="govtService${entryCount}" value="Yes">
-                    <label for="govtServiceYes${entryCount}">Yes</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="govtServiceNo${entryCount}" name="govtService${entryCount}" value="No">
-                    <label for="govtServiceNo${entryCount}">No</label>
-                </div>
-            </div>
-        </div>
-
-        <hr class="separator"> <!-- Horizontal line to separate entries -->
-    `;
-
-        workExperienceContainer.appendChild(workExperienceEntry);
+        // Add functionality to the remove button for each entry
+        workExperienceRow
+            .querySelector(".remove-btn")
+            .addEventListener("click", function () {
+                workExperienceRow.remove();
+            });
     });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -498,7 +490,8 @@ document.addEventListener("DOMContentLoaded", function () {
             const file = excelUpload.files[0];
 
             if (!file) {
-                console.log("Please select a file first.");
+                
+                alert("Please select a file first.");
                 return;
             }
 
@@ -723,11 +716,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         safeDateFormat(getCellValue(firstSheet, `K${row}`));
                     document.getElementById(prefix + "HighestLevel").value =
                         getCellValue(firstSheet, `L${row}`);
+                    document.getElementById(prefix + "YearGraduated").value =
+                        getCellValue(firstSheet, `M${row}`);
                     document.getElementById(prefix + "Honors").value =
                         getCellValue(firstSheet, `N${row}`);
                 });
-
-                
 
                 function extractCivilServiceEligibility(sheet) {
                     const eligibilityData = [];
@@ -799,12 +792,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 // Assign values to variables for existing fields
                 const surname = surnameCell ? surnameCell.v : "";
-                const firstname = firstnameCell
-                    ? firstnameCell.v
-                    : "";
-                const middlename = middlenameCell
-                    ? middlenameCell.v
-                    : "";
+                const firstname = firstnameCell ? firstnameCell.v : "";
+                const middlename = middlenameCell ? middlenameCell.v : "";
                 const nameExtension = nameExtensionCell
                     ? nameExtensionCell.v
                     : "";
@@ -910,21 +899,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Extract additional fields (height, weight, etc.)
                 const height = heightCell ? heightCell.v : "";
                 const weight = weightCell ? weightCell.v : "";
-                const bloodType = bloodTypeCell
-                    ? bloodTypeCell.v
-                    : "";
+                const bloodType = bloodTypeCell ? bloodTypeCell.v : "";
                 const gsisId = gsisIdCell ? gsisIdCell.v : "";
-                const pagIbigId = pagIbigIdCell
-                    ? pagIbigIdCell.v
-                    : "";
-                const philhealthNo = philhealthNoCell
-                    ? philhealthNoCell.v
-                    : "";
+                const pagIbigId = pagIbigIdCell ? pagIbigIdCell.v : "";
+                const philhealthNo = philhealthNoCell ? philhealthNoCell.v : "";
                 const sssNo = sssNoCell ? sssNoCell.v : "";
                 const tinNo = tinNoCell ? tinNoCell.v : "";
-                const agencyEmpNo = agencyEmpNoCell
-                    ? agencyEmpNoCell.v
-                    : "";
+                const agencyEmpNo = agencyEmpNoCell ? agencyEmpNoCell.v : "";
 
                 // Determine citizenship values
                 const isFilipino = filipinoCheckboxCell
@@ -969,10 +950,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     ? residentialBarangayCell.v.toString().trim()
                     : "";
 
-                       
-                    
-                    
-
                 // Assign values to permanent address variables
                 const permanentHouseBlockLot = permanentHouseBlockLotCell
                     ? permanentHouseBlockLotCell.v
@@ -1005,12 +982,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 const telephoneNumber = telephoneNumberCell
                     ? telephoneNumberCell.v
                     : "";
-                const mobileNumber = mobileNumberCell
-                    ? mobileNumberCell.v
-                    : "";
-                const emailAddress = emailAddressCell
-                    ? emailAddressCell.v
-                    : "";
+                const mobileNumber = mobileNumberCell ? mobileNumberCell.v : "";
+                const emailAddress = emailAddressCell ? emailAddressCell.v : "";
 
                 // Populate the form fields
                 document.getElementById("surname").value = surname;
@@ -1071,13 +1044,10 @@ document.addEventListener("DOMContentLoaded", function () {
                                             new Event("change")
                                         );
                                         break;
-                                        
                                     }
                                 }
                                 // Wait for barangays to load after city change
-                                if (
-                                    excelResidentialBarangay !== ""
-                                ) {
+                                if (excelResidentialBarangay !== "") {
                                     getZipCode();
                                     setTimeout(() => {
                                         const resBarangaySelect =
@@ -1100,9 +1070,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }, 500);
                 }
-                // document.getElementById("residentialZipCode").value =
-                //     residentialZipCode;
-                
+
                 document.getElementById("permanentHouseNo").value =
                     permanentHouseBlockLot;
                 document.getElementById("permanentStreet").value =
@@ -1144,10 +1112,8 @@ document.addEventListener("DOMContentLoaded", function () {
                                     }
                                 }
                                 // Wait for barangays to load after city change
-                                if (
-                                    excelPermanentBarangay !== ""
-                                ) {
-                                    getPermanentZipCode()
+                                if (excelPermanentBarangay !== "") {
+                                    getPermanentZipCode();
                                     setTimeout(() => {
                                         const permBarangaySelect =
                                             document.getElementById(
@@ -1277,6 +1243,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 let childCount = 0; // Keep track of how many children we need to add
                 familyBackground.children.forEach((child, index) => {
                     childCount++;
+
                     const childNameInput = document.getElementById(
                         `childName${childCount}`
                     );
@@ -1294,21 +1261,21 @@ document.addEventListener("DOMContentLoaded", function () {
                         const newChildDiv = document.createElement("div");
                         newChildDiv.classList.add("child-entry");
                         newChildDiv.innerHTML = `
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="childName${childCount}">Child's Name:</label>
-                        <input type="text" id="childName${childCount}" name="childName${childCount}" value="${
+            <div class="form-row">
+                <div class="form-group child-name">
+                    <label for="childName${childCount}">Child's Name:</label>
+                    <input type="text" id="childName${childCount}" name="childName${childCount}" value="${
                             child.name
                         }">
-                    </div>
-                    <div class="form-group">
-                        <label for="childDOB${childCount}">Date of Birth:</label>
-                        <input type="date" id="childDOB${childCount}" name="childDOB${childCount}" value="${excelSerialToJSDate(
+                </div>
+                <div class="form-group child-dob">
+                    <label for="childDOB${childCount}">Date of Birth:</label>
+                    <input type="date" id="childDOB${childCount}" name="childDOB${childCount}" value="${excelSerialToJSDate(
                             child.birthdate
                         )}">
-                    </div>
                 </div>
-            `;
+            </div>
+        `;
                         document
                             .getElementById("childrenContainer")
                             .appendChild(newChildDiv);
@@ -1316,59 +1283,52 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 function populateCivilServiceEligibility(data) {
-                    const container = document.getElementById(
-                        "civilServiceContainer"
-                    );
-                    container.innerHTML = ""; // Clear existing content
+                    const tbody = document.querySelector("#step4 table tbody");
+
+                    if (!tbody) {
+                        console.error("Error: Table tbody not found.");
+                        return;
+                    }
+
+                    tbody.innerHTML = ""; // Clear existing rows
 
                     data.forEach((item, index) => {
                         const entryNumber = index + 1; // Start numbering from 1
 
-                        const template = `
-                            <div class="civil-service-entry">
-                                <div class="form-group">
-                                    <label for="eligibilityName${entryNumber}">Eligibility Name:</label>
-                                    <input type="text" id="eligibilityName${entryNumber}" name="eligibilityName${entryNumber}" value="${
+                        const row = document.createElement("tr");
+                        row.classList.add("civil-service-entry");
+
+                        row.innerHTML = `
+                            <td><input type="text" id="eligibilityName${entryNumber}" name="eligibilityName${entryNumber}" value="${
                             item.careerService
-                        }">
-                                </div>
-                                <div class="form-group">
-                                    <label for="rating${entryNumber}">Rating (if applicable):</label>
-                                    <input type="text" id="rating${entryNumber}" name="rating${entryNumber}" value="${
+                        }"></td>
+                            <td><input type="text" id="rating${entryNumber}" name="rating${entryNumber}" value="${
                             item.rating
-                        }">
-                                </div>
-                                <div class="form-group">
-                                    <label for="dateOfExam${entryNumber}">Date of Exam/Conferment:</label>
-                                    <input type="date" id="dateOfExam${entryNumber}" name="dateOfExam${entryNumber}" value="${safeDateFormat(
+                        }"></td>
+                            <td><input type="date" id="dateOfExam${entryNumber}" name="dateOfExam${entryNumber}" value="${safeDateFormat(
                             item.examinationDate
-                        )}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="placeOfExam${entryNumber}">Place of Exam/Conferment:</label>
-                                    <input type="text" id="placeOfExam${entryNumber}" name="placeOfExam${entryNumber}" value="${
+                        )}"></td>
+                            <td><input type="text" id="placeOfExam${entryNumber}" name="placeOfExam${entryNumber}" value="${
                             item.examinationPlace
-                        }">
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="licenseNumber${entryNumber}">License Number (if applicable):</label>
-                                        <input type="text" id="licenseNumber${entryNumber}" name="licenseNumber${entryNumber}" value="${
+                        }"></td>
+                            <td><input type="text" id="licenseNumber${entryNumber}" name="licenseNumber${entryNumber}" value="${
                             item.licenseNumber
-                        }">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="licenseValidity${entryNumber}">Date of Validity:</label>
-                                        <input type="date" id="licenseValidity${entryNumber}" name="licenseValidity${entryNumber}" value="${safeDateFormat(
+                        }"></td>
+                            <td><input type="date" id="licenseValidity${entryNumber}" name="licenseValidity${entryNumber}" value="${safeDateFormat(
                             item.validityDate
-                        )}">
-                                    </div>
-                                </div>
-                                <hr> <!-- Horizontal line to separate entries -->
-                            </div>
+                        )}"></td>
+                            <td><button type="button" class="remove-btn">Remove</button></td>
                         `;
 
-                        container.insertAdjacentHTML("beforeend", template);
+                        tbody.appendChild(row);
+
+                        // Add functionality to the remove button
+                        row.querySelector(".remove-btn").addEventListener(
+                            "click",
+                            function () {
+                                row.remove();
+                            }
+                        );
                     });
                 }
 
@@ -1376,94 +1336,85 @@ document.addEventListener("DOMContentLoaded", function () {
                     const container = document.getElementById(
                         "workExperienceContainer"
                     );
-                    container.innerHTML = ""; // Clear existing content
+                    container.innerHTML = ""; // Clear existing table content
+
+                    // Create table structure
+                    const table = document.createElement("table");
+                    table.classList.add("work-experience-table");
+
+                    // Table header
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Inclusive Dates (From)</th>
+                                <th>Inclusive Dates (To)</th>
+                                <th>Position Title</th>
+                                <th>Department/Agency/Office/Company</th>
+                                <th>Monthly Salary</th>
+                                <th>Salary/Job/Pay Grade</th>
+                                <th>Step Increment</th>
+                                <th>Status of Appointment</th>
+                                <th>Gov't Service</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="workExperienceTableBody"></tbody>
+                    `;
+
+                    const tbody = table.querySelector(
+                        "#workExperienceTableBody"
+                    );
 
                     data.forEach((item, index) => {
-                        const entryNumber = index + 1; // Start numbering from 1
+                        const entryNumber = index + 1;
 
-                        const template = `
-                            <div class="work-experience-entry">
-                                <!-- Inclusive Dates (From and To) -->
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="inclusiveDatesFrom${entryNumber}">Inclusive Dates (From):</label>
-                                        <input type="date" id="inclusiveDatesFrom${entryNumber}" name="inclusiveDatesFrom${entryNumber}" value="${safeDateFormat(
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td><input type="date" id="inclusiveDatesFrom${entryNumber}" name="inclusiveDatesFrom${entryNumber}" value="${safeDateFormat(
                             item.inclusiveDatesFrom
-                        )}">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="inclusiveDatesTo${entryNumber}">Inclusive Dates (To):</label>
-                                        <input type="date" id="inclusiveDatesTo${entryNumber}" name="inclusiveDatesTo${entryNumber}" value="${safeDateFormat(
+                        )}"></td>
+                            <td><input type="date" id="inclusiveDatesTo${entryNumber}" name="inclusiveDatesTo${entryNumber}" value="${safeDateFormat(
                             item.inclusiveDatesTo
-                        )}">
-                                    </div>
-                                </div>
-                
-                                <!-- Position Title -->
-                                <div class="form-group">
-                                    <label for="positionTitle${entryNumber}">Position Title:</label>
-                                    <input type="text" id="positionTitle${entryNumber}" name="positionTitle${entryNumber}" value="${
+                        )}"></td>
+                            <td><input type="text" id="positionTitle${entryNumber}" name="positionTitle${entryNumber}" value="${
                             item.positionTitle
-                        }">
-                                </div>
-                
-                                <!-- Department/Agency/Office/Company -->
-                                <div class="form-group">
-                                    <label for="department${entryNumber}">Department/Agency/Office/Company:</label>
-                                    <input type="text" id="department${entryNumber}" name="department${entryNumber}" value="${
+                        }"></td>
+                            <td><input type="text" id="department${entryNumber}" name="department${entryNumber}" value="${
                             item.department
-                        }">
-                                </div>
-                
-                                <!-- Monthly Salary -->
-                                <div class="form-group">
-                                    <label for="monthlySalary${entryNumber}">Monthly Salary:</label>
-                                    <input type="text" id="monthlySalary${entryNumber}" name="monthlySalary${entryNumber}" value="${
+                        }"></td>
+                            <td><input type="text" id="monthlySalary${entryNumber}" name="monthlySalary${entryNumber}" value="${
                             item.monthlySalary
-                        }">
-                                </div>
-                
-                                <!-- Salary/Job/Pay Grade -->
-                                <div class="form-group">
-                                    <label for="salaryGrade${entryNumber}">Salary/Job/Pay Grade:</label>
-                                    <input type="text" id="salaryGrade${entryNumber}" name="salaryGrade${entryNumber}" value="${
+                        }"></td>
+                            <td><input type="text" id="salaryGrade${entryNumber}" name="salaryGrade${entryNumber}" value="${
                             item.salaryGrade
-                        }">
-                                </div>
-                
-                                <!-- Status of Appointment -->
-                                <div class="form-group">
-                                    <label for="appointmentStatus${entryNumber}">Status of Appointment:</label>
-                                    <input type="text" id="appointmentStatus${entryNumber}" name="appointmentStatus${entryNumber}" value="${
+                        }"></td>
+                            <td><input type="text" id="stepIncrement${entryNumber}" name="stepIncrement${entryNumber}" value="${
+                            item.stepIncrement || ""
+                        }"></td>
+                            <td><input type="text" id="appointmentStatus${entryNumber}" name="appointmentStatus${entryNumber}" value="${
                             item.appointmentStatus
-                        }">
-                                </div>
-                
-                                <!-- Gov't Service (Yes or No) -->
-                                <div class="form-group">
-                                    <label>Gov't Service:</label>
-                                    <div class="radio-group">
-                                        <div class="radio-option">
-                                            <input type="radio" id="govtServiceYes${entryNumber}" name="govtService${entryNumber}" value="Yes" ${
+                        }"></td>
+                            <td>
+                                <label><input type="radio" id="govtServiceYes${entryNumber}" name="govtService${entryNumber}" value="Yes" ${
                             item.govtService === "Y" ? "checked" : ""
-                        }>
-                                            <label for="govtServiceYes${entryNumber}">Yes</label>
-                                        </div>
-                                        <div class="radio-option">
-                                            <input type="radio" id="govtServiceNo${entryNumber}" name="govtService${entryNumber}" value="No" ${
+                        }> Yes</label>
+                                <label><input type="radio" id="govtServiceNo${entryNumber}" name="govtService${entryNumber}" value="No" ${
                             item.govtService === "N" ? "checked" : ""
-                        }>
-                                            <label for="govtServiceNo${entryNumber}">No</label>
-                                        </div>
-                                    </div>
-                                </div>
-                
-                                <hr class="separator"> <!-- Horizontal line to separate entries -->
-                            </div>
+                        }> No</label>
+                            </td>
+                            <td><button type="button" class="remove-btn">Remove</button></td>
                         `;
 
-                        container.insertAdjacentHTML("beforeend", template);
+                        tbody.appendChild(row);
                     });
+
+                    container.appendChild(table);
+                }
+
+                // Remove function
+                function removeWorkExperience(button) {
+                    const row = button.closest("tr");
+                    row.remove();
                 }
 
                 // Ensure Step 1 stays visible
@@ -1525,9 +1476,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         option.textContent = town.townName;
                         option.dataset.townName = town.townName; // Store townName in data attribute
                         citySelect.appendChild(option);
-                        
                     });
-    
                 });
         }
 
@@ -1543,9 +1492,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         option.value = barangay.barangayCode;
                         option.textContent = barangay.barangayName;
                         barangaySelect.appendChild(option);
-
-                       
-                       
                     });
                 });
         }
@@ -1566,7 +1512,6 @@ document.addEventListener("DOMContentLoaded", function () {
         residentialCity.addEventListener("change", function () {
             const townCode = this.value;
             fetchBarangays(townCode, residentialBarangay);
-            
         });
 
         // Event listener for permanent province change
@@ -1636,7 +1581,6 @@ function initializeForm() {
     toggleDualCitizenshipOptions();
 }
 
-
 // Run the initialization when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", initializeForm);
 
@@ -1695,28 +1639,31 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 });
 
-
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
     // Attach the change event handler after the DOM is loaded
-    document.getElementById('residentialCity').addEventListener('change', updateCityText);
-    document.getElementById('cityTextField').addEventListener('blur', getZipCode); // Trigger ZIP code lookup on blur
+    document
+        .getElementById("residentialCity")
+        .addEventListener("change", updateCityText);
+    document
+        .getElementById("cityTextField")
+        .addEventListener("blur", getZipCode); // Trigger ZIP code lookup on blur
 });
 
 function updateCityText() {
     // Get the selected city name
-    var citySelect = document.getElementById('residentialCity');
+    var citySelect = document.getElementById("residentialCity");
     var selectedCity = citySelect.options[citySelect.selectedIndex].text;
 
     // Capitalize the first letter of every word
     var capitalizedCity = selectedCity
-        .split(' ') // Split the string into an array by spaces
-        .map(function(word) {
+        .split(" ") // Split the string into an array by spaces
+        .map(function (word) {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(); // Capitalize the first letter of each word
         })
-        .join(' '); // Join the words back with spaces
+        .join(" "); // Join the words back with spaces
 
     // Get the text field and set its value to the formatted city name
-    var cityTextField = document.getElementById('cityTextField');
+    var cityTextField = document.getElementById("cityTextField");
     cityTextField.value = capitalizedCity;
     getZipCode();
 }
@@ -1724,48 +1671,53 @@ function updateCityText() {
 // Function to get the ZIP code based on the city name
 function getZipCode() {
     // Get the city name from the text field
-    var cityName = document.getElementById('cityTextField').value;
+    var cityName = document.getElementById("cityTextField").value;
 
     // Load the ZIP code data from the JSON file
-    fetch('/data/zipcodes.json')
-        .then(response => response.json())
-        .then(zipcodes => {
+    fetch("/data/zipcodes.json")
+        .then((response) => response.json())
+        .then((zipcodes) => {
             // Loop through the zipcodes and check for a match
             for (let [zipcode, town] of Object.entries(zipcodes)) {
                 if (town.includes(cityName)) {
                     // If match is found, set the ZIP code in the text field
-                    document.getElementById('residentialZipCode').value = zipcode;
+                    document.getElementById("residentialZipCode").value =
+                        zipcode;
                     return; // Exit the loop once we find the match
                 }
             }
 
             // If no match is found, clear the ZIP code field
-            document.getElementById('residentialZipCode').value = '';
+            document.getElementById("residentialZipCode").value = "";
         })
-        .catch(error => console.error('Error fetching ZIP codes:', error));
+        .catch((error) => console.error("Error fetching ZIP codes:", error));
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
     // Attach the change event handler after the DOM is loaded for permanent city
-    document.getElementById('permanentCity').addEventListener('change', updatePermanentCityText);
-    document.getElementById('permanentCityTextField').addEventListener('blur', getPermanentZipCode); // Trigger ZIP code lookup on blur
+    document
+        .getElementById("permanentCity")
+        .addEventListener("change", updatePermanentCityText);
+    document
+        .getElementById("permanentCityTextField")
+        .addEventListener("blur", getPermanentZipCode); // Trigger ZIP code lookup on blur
 });
 
 function updatePermanentCityText() {
     // Get the selected city name from permanent city dropdown
-    var citySelect = document.getElementById('permanentCity');
+    var citySelect = document.getElementById("permanentCity");
     var selectedCity = citySelect.options[citySelect.selectedIndex].text;
 
     // Capitalize the first letter of every word
     var capitalizedCity = selectedCity
-        .split(' ') // Split the string into an array by spaces
-        .map(function(word) {
+        .split(" ") // Split the string into an array by spaces
+        .map(function (word) {
             return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(); // Capitalize the first letter of each word
         })
-        .join(' '); // Join the words back with spaces
+        .join(" "); // Join the words back with spaces
 
     // Get the text field and set its value to the formatted city name
-    var cityTextField = document.getElementById('permanentCityTextField');
+    var cityTextField = document.getElementById("permanentCityTextField");
     cityTextField.value = capitalizedCity;
 
     getPermanentZipCode();
@@ -1774,26 +1726,539 @@ function updatePermanentCityText() {
 // Function to get the ZIP code based on the permanent city name
 function getPermanentZipCode() {
     // Get the city name from the text field
-    var cityName = document.getElementById('permanentCityTextField').value;
+    var cityName = document.getElementById("permanentCityTextField").value;
 
     // Load the ZIP code data from the JSON file
-    fetch('/data/zipcodes.json')
-        .then(response => response.json())
-        .then(zipcodes => {
-            
+    fetch("/data/zipcodes.json")
+        .then((response) => response.json())
+        .then((zipcodes) => {
             // Loop through the zipcodes and check for a match
             for (let [zipcode, town] of Object.entries(zipcodes)) {
                 if (town.includes(cityName)) {
                     // If match is found, set the ZIP code in the text field
-                    document.getElementById('permanentZipCode').value = zipcode;
+                    document.getElementById("permanentZipCode").value = zipcode;
                     return; // Exit the loop once we find the match
                 }
             }
 
             // If no match is found, clear the ZIP code field
-            document.getElementById('permanentZipCode').value = '';
+            document.getElementById("permanentZipCode").value = "";
         })
-        .catch(error => console.error('Error fetching ZIP codes:', error));
+        .catch((error) => console.error("Error fetching ZIP codes:", error));
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    const childrenContainer = document.getElementById("childrenContainer");
+    const addChildButton = document.getElementById("addChildButton");
+    const removeChildButton = document.getElementById("removeChildButton");
 
+    let childCount = 1; // Track number of children
+
+    // Function to add a new child entry
+    addChildButton.addEventListener("click", function () {
+        childCount++;
+        const newChild = document.createElement("div");
+        newChild.classList.add("child-entry");
+        newChild.innerHTML = `
+            <div class="form-row">
+                <div class="form-group child-name">
+                    <label for="childName${childCount}">Child's Name:</label>
+                    <input type="text" id="childName${childCount}" name="childName${childCount}">
+                </div>
+                <div class="form-group child-dob">
+                    <label for="childDOB${childCount}">Date of Birth:</label>
+                    <input type="date" id="childDOB${childCount}" name="childDOB${childCount}">
+                </div>
+            </div>
+        `;
+        childrenContainer.appendChild(newChild);
+    });
+
+    // Function to remove the last child entry
+    removeChildButton.addEventListener("click", function () {
+        const childEntries = document.querySelectorAll(".child-entry");
+        if (childEntries.length > 1) {
+            childEntries[childEntries.length - 1].remove();
+            childCount--;
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const editButtons = document.querySelectorAll(".edit-btn");
+
+    editButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+            const updateId = this.getAttribute("data-id");
+
+            // Fetch the data for the selected row
+            fetch(`/get-update-data/${updateId}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data);
+                    // Populate the modal with the fetched data
+                    populateModal(data);
+                    // Open the modal
+                    openModal();
+                })
+                .catch((error) => {
+                    console.error("Error fetching data:", error);
+                });
+        });
+    });
+
+    // Function to populate the modal with data
+    function populateModal(data) {
+        // Personal Information
+        document.getElementById("surname").value =
+            data.personal_info.last_name || ""; // surname = last_name
+        document.getElementById("firstName").value =
+            data.personal_info.first_name || "";
+        document.getElementById("middleName").value =
+            data.personal_info.middle_name || "";
+        document.getElementById("dateOfBirth").value =
+            data.personal_info.date_of_birth || "";
+        document.getElementById("placeOfBirth").value =
+            data.personal_info.place_of_birth || "";
+            document.getElementById("height").value =
+            data.personal_info.height || "";
+            document.getElementById("weight").value =
+            data.personal_info.weight || "";
+            document.getElementById("bloodType").value =
+            data.personal_info.blood_type || "";
+            document.getElementById("gsisId").value =
+            data.personal_info.gsis_id || "";
+            document.getElementById("philhealthId").value =
+            data.personal_info.philhealth_id || "";
+            document.getElementById("pagibigId").value =
+            data.personal_info.pagibig_id || "";
+            document.getElementById("sssNo").value =
+            data.personal_info.sss_no || "";
+            document.getElementById("tinNo").value =
+            data.personal_info.tin_no || "";
+            document.getElementById("agencyEmployeeNo").value =
+            data.personal_info.agency_employee_no || "";
+            document.getElementById("telephoneNo").value =
+            data.personal_info.telephone_no || "";
+            document.getElementById("mobileNo").value =
+            data.personal_info.mobile_no || "";
+            document.getElementById("email").value =
+            data.personal_info.email || "";
+
+
+        document.getElementById("sexMale").checked =
+            data.personal_info.sex === "Male";
+        document.getElementById("sexFemale").checked =
+            data.personal_info.sex === "Female";
+
+        // Civil Status
+        const civilStatus = data.personal_info.civil_status || ""; // Get the civil status value
+        console.log(civilStatus);
+        if (civilStatus) {
+            const civilStatusRadio = document.querySelector(
+                `input[name="civilStatus"][value="${civilStatus}"]`
+            );
+            if (civilStatusRadio) {
+                civilStatusRadio.checked = true; // Check the corresponding radio button
+            } else {
+                console.warn(
+                    `Civil status value "${civilStatus}" does not match any radio button.`
+                );
+            }
+        } else {
+            console.warn("No civil status data found.");
+        }
+
+        // Residential Address
+        if (data.residential_address) {
+            // Set values without delay
+            document.getElementById("residentialHouseNo").value =
+                data.residential_address.house_no || "";
+            document.getElementById("residentialStreet").value =
+                data.residential_address.street || "";
+            document.getElementById("residentialSubdivision").value =
+                data.residential_address.subdivision || "";
+        
+            // Set Province, City, and Barangay with delay and proper flow
+            const residentialProvince = data.residential_address.province || ""; // e.g., "0434"
+            const residentialCity = data.residential_address.city || ""; // e.g., "043419"
+            const residentialBarangay = data.residential_address.barangay || ""; // e.g., "043419014"
+        
+            if (residentialProvince !== "") {
+                setTimeout(() => {
+                    const resProvinceSelect = document.getElementById("residentialProvince");
+                    // Find the option with the matching value (code)
+                    for (let option of resProvinceSelect.options) {
+                        if (option.value === residentialProvince) {
+                            resProvinceSelect.value = option.value;
+                            resProvinceSelect.dispatchEvent(new Event("change"));
+                            break;
+                        }
+                    }
+        
+                    // Wait for cities to load after province change
+                    if (residentialCity !== "") {
+                        setTimeout(() => {
+                            const resCitySelect = document.getElementById("residentialCity");
+                            // Find the option with the matching value (code)
+                            for (let option of resCitySelect.options) {
+                                if (option.value === residentialCity) {
+                                    resCitySelect.value = option.value;
+                                    resCitySelect.dispatchEvent(new Event("change"));
+                                    break;
+                                }
+                            }
+        
+                            // Wait for barangays to load after city change
+                            if (residentialBarangay !== "") {
+                                setTimeout(() => {
+                                    const resBarangaySelect = document.getElementById("residentialBarangay");
+                                    // Find the option with the matching value (code)
+                                    for (let option of resBarangaySelect.options) {
+                                        if (option.value === residentialBarangay) {
+                                            resBarangaySelect.value = option.value;
+                                            break;
+                                        }
+                                    }
+                                }, 500); // 500ms delay after setting city
+                            }
+                        }, 500); // 500ms delay after setting province
+                    }
+                }, 500); // Initial 500ms delay
+            }
+        
+            // Set Zip Code without delay
+            document.getElementById("residentialZipCode").value =
+                data.residential_address.zip_code || "";
+        } else {
+            // Clear residential address fields if no data
+            document.getElementById("residentialHouseNo").value = "";
+            document.getElementById("residentialStreet").value = "";
+            document.getElementById("residentialSubdivision").value = "";
+            document.getElementById("residentialBarangay").value = "";
+            document.getElementById("residentialCity").value = "";
+            document.getElementById("residentialProvince").value = "";
+            document.getElementById("residentialZipCode").value = "";
+        }
+
+        // Permanent Address
+        if (data.permanent_address) {
+            // Set values without delay
+            document.getElementById("permanentHouseNo").value =
+                data.permanent_address.house_no || "";
+            document.getElementById("permanentStreet").value =
+                data.permanent_address.street || "";
+            document.getElementById("permanentSubdivision").value =
+                data.permanent_address.subdivision || "";
+        
+            // Set Province, City, and Barangay with delay and proper flow
+            const permanentProvince = data.permanent_address.province || ""; // e.g., "0434"
+            const permanentCity = data.permanent_address.city || ""; // e.g., "043419"
+            const permanentBarangay = data.permanent_address.barangay || ""; // e.g., "043419014"
+        
+           
+        
+            if (permanentProvince !== "") {
+                setTimeout(() => {
+                    const permProvinceSelect = document.getElementById("permanentProvince");
+                    
+        
+                    if (permProvinceSelect) {
+                        let provinceFound = false;
+                        for (let option of permProvinceSelect.options) {
+                            
+                            if (option.value === permanentProvince) {
+                                permProvinceSelect.value = option.value;
+                                permProvinceSelect.dispatchEvent(new Event("change"));
+                                provinceFound = true;
+                                break;
+                            }
+                        }
+                        if (!provinceFound) {
+                            console.warn("No matching province found for:", permanentProvince);
+                        }
+                    } else {
+                        console.error("Permanent Province Select element not found.");
+                    }
+        
+                    // Wait for cities to load after province change
+                    if (permanentCity !== "") {
+                        setTimeout(() => {
+                            const permCitySelect = document.getElementById("permanentCity");
+                           
+        
+                            if (permCitySelect) {
+                                let cityFound = false;
+                                for (let option of permCitySelect.options) {
+                                    
+                                    if (option.value === permanentCity) {
+                                        
+                                        permCitySelect.value = option.value;
+                                        permCitySelect.dispatchEvent(new Event("change"));
+                                        cityFound = true;
+                                        break;
+                                    }
+                                }
+                                if (!cityFound) {
+                                    console.warn("No matching city found for:", permanentCity);
+                                }
+                            } else {
+                                console.error("Permanent City Select element not found.");
+                            }
+        
+                            // Wait for barangays to load after city change
+                            if (permanentBarangay !== "") {
+                                setTimeout(() => {
+                                    const permBarangaySelect = document.getElementById("permanentBarangay");
+                                    
+        
+                                    if (permBarangaySelect) {
+                                        let barangayFound = false;
+                                        for (let option of permBarangaySelect.options) {
+                                            
+                                            if (option.value === permanentBarangay) {
+                                               
+                                                permBarangaySelect.value = option.value;
+                                                barangayFound = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!barangayFound) {
+                                            console.warn("No matching barangay found for:", permanentBarangay);
+                                        }
+                                    } else {
+                                        console.error("Permanent Barangay Select element not found.");
+                                    }
+                                }, 500); // 500ms delay after setting city
+                            }
+                        }, 500); // 500ms delay after setting province
+                    }
+                }, 1500); // Initial 500ms delay
+            }
+        
+            // Set Zip Code without delay
+            document.getElementById("permanentZipCode").value =
+                data.permanent_address.zip_code || "";
+        } else {
+            // Clear permanent address fields if no data
+            document.getElementById("permanentHouseNo").value = "";
+            document.getElementById("permanentStreet").value = "";
+            document.getElementById("permanentSubdivision").value = "";
+            document.getElementById("permanentBarangay").value = "";
+            document.getElementById("permanentCity").value = "";
+            document.getElementById("permanentProvince").value = "";
+            document.getElementById("permanentZipCode").value = "";
+        }
+
+        // Family Background
+        if (data.family_background) {
+            document.getElementById("spouseSurname").value =
+                data.family_background.spouse_surname || "";
+            document.getElementById("spouseFirstName").value =
+                data.family_background.spouse_first_name || "";
+            document.getElementById("spouseMiddleName").value =
+                data.family_background.spouse_middle_name || "";
+            document.getElementById("spouseNameExtension").value =
+                data.family_background.spouse_name_extension || "";
+            document.getElementById("spouseOccupation").value =
+                data.family_background.spouse_occupation || "";
+            document.getElementById("spouseEmployer").value =
+                data.family_background.spouse_employer || "";
+            document.getElementById("spouseTelephone").value =
+                data.family_background.spouse_telephone || "";
+            document.getElementById("fatherSurname").value =
+                data.family_background.father_surname || "";
+            document.getElementById("fatherFirstName").value =
+                data.family_background.father_first_name || "";
+            document.getElementById("fatherMiddleName").value =
+                data.family_background.father_middle_name || "";
+            document.getElementById("motherSurname").value =
+                data.family_background.mother_surname || "";
+            document.getElementById("motherFirstName").value =
+                data.family_background.mother_first_name || "";
+            document.getElementById("motherMiddleName").value =
+                data.family_background.mother_middle_name || "";
+        } else {
+            // Clear family background fields if no data
+            document.getElementById("spouseSurname").value = "";
+            document.getElementById("spouseFirstName").value = "";
+            document.getElementById("spouseMiddleName").value = "";
+            document.getElementById("spouseNameExtension").value = "";
+            document.getElementById("spouseOccupation").value = "";
+            document.getElementById("spouseEmployer").value = "";
+            document.getElementById("spouseTelephone").value = "";
+            document.getElementById("fatherSurname").value = "";
+            document.getElementById("fatherFirstName").value = "";
+            document.getElementById("fatherMiddleName").value = "";
+            document.getElementById("motherSurname").value = "";
+            document.getElementById("motherFirstName").value = "";
+            document.getElementById("motherMiddleName").value = "";
+        }
+
+        if (
+            data.educational_backgrounds &&
+            data.educational_backgrounds.length > 0
+        ) {
+            data.educational_backgrounds.forEach((education) => {
+                // Convert "graduateStudies" to "graduate" for ID generation
+                const level =
+                    education.level.toLowerCase() === "graduatestudies"
+                        ? "graduate"
+                        : education.level.toLowerCase();
+                const fields = [
+                    "School",
+                    "Degree",
+                    "From",
+                    "To",
+                    "HighestLevel",
+                    "YearGraduated",
+                    "Honors",
+                ];
+
+                fields.forEach((field) => {
+                    const fieldId = `${level}${field}`;
+                    const fieldElement = document.getElementById(fieldId);
+                    if (fieldElement) {
+                        fieldElement.value =
+                            education[field.toLowerCase()] || "";
+                    } else {
+                        console.warn(`Element with id ${fieldId} not found.`);
+                    }
+                });
+            });
+        } else {
+            // Clear educational background fields if no data
+            const educationLevels = [
+                "elementary",
+                "secondary",
+                "vocational",
+                "college",
+                "graduate",
+            ]; // Use "graduate" here
+            educationLevels.forEach((level) => {
+                const fields = [
+                    "School",
+                    "Degree",
+                    "From",
+                    "To",
+                    "HighestLevel",
+                    "YearGraduated",
+                    "Honors",
+                ];
+
+                fields.forEach((field) => {
+                    const fieldId = `${level}${field}`;
+                    const fieldElement = document.getElementById(fieldId);
+                    if (fieldElement) {
+                        fieldElement.value = "";
+                    } else {
+                        console.warn(`Element with id ${fieldId} not found.`);
+                    }
+                });
+            });
+        }
+
+        // Civil Service Eligibility
+        const civilServiceContainer = document.querySelector(
+            "#civilServiceContainer"
+        );
+        civilServiceContainer.innerHTML = ""; // Clear existing rows
+
+        if (
+            data.civil_service_eligibilities &&
+            data.civil_service_eligibilities.length > 0
+        ) {
+            data.civil_service_eligibilities.forEach((eligibility, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><input type="text" value="${
+                        eligibility.eligibility_name || ""
+                    }"></td>
+                    <td><input type="text" value="${
+                        eligibility.rating || ""
+                    }"></td>
+                    <td><input type="date" value="${
+                        eligibility.date_of_exam || ""
+                    }"></td>
+                    <td><input type="text" value="${
+                        eligibility.place_of_exam || ""
+                    }"></td>
+                    <td><input type="text" value="${
+                        eligibility.license_number || ""
+                    }"></td>
+                    <td><input type="date" value="${
+                        eligibility.license_validity || ""
+                    }"></td>
+                    <td><button type="button" class="remove-row">Remove</button></td>
+                `;
+                civilServiceContainer.appendChild(row);
+            });
+        } else {
+           
+        }
+
+        // Work Experience
+        const workExperienceContainer = document.querySelector(
+            "#workExperienceContainer"
+        );
+       
+
+        if (data.work_experiences && data.work_experiences.length > 0) {
+            data.work_experiences.forEach((experience, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td><input type="date" value="${
+                        experience.from || ""
+                    }"></td>
+                    <td><input type="date" value="${experience.to || ""}"></td>
+                    <td><input type="text" value="${
+                        experience.position_title || ""
+                    }"></td>
+                    <td><input type="text" value="${
+                        experience.department || ""
+                    }"></td>
+                    <td><input type="number" value="${
+                        experience.monthly_salary || ""
+                    }"></td>
+                    <td><input type="text" value="${
+                        experience.salary_grade || ""
+                    }"></td>
+                    <td><input type="text" value="${
+                        experience.step_increment || ""
+                    }"></td>
+                    <td><input type="text" value="${
+                        experience.appointment_status || ""
+                    }"></td>
+                    <td><input type="text" value="${
+                        experience.govt_service || ""
+                    }"></td>
+                    <td><button type="button" class="remove-row">Remove</button></td>
+                `;
+                workExperienceContainer.appendChild(row);
+            });
+        } else {
+           
+        }
+    }
+
+    // Function to open the modal
+    function openModal() {
+        const modal = document.getElementById("uploadModal");
+        modal.style.display = "block";
+    }
+
+    // Function to close the modal
+    const closeModalButton = document.querySelector(".close");
+    closeModalButton.addEventListener("click", function () {
+        const modal = document.getElementById("uploadModal");
+        modal.style.display = "none";
+    });
+
+    // Close modal when clicking outside of it
+    window.addEventListener("click", function (event) {
+        const modal = document.getElementById("uploadModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+});

@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'NOTICE OF SALARY ADJUSTMENT')
+@section('title', 'Notice of Salary Adjustment')
 
 @section('content')
     @vite(['resources/css/nosa.css', 'resources/js/app.js']) <!-- Include your CSS and JS -->

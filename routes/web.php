@@ -6,6 +6,7 @@ use App\Http\Controllers\NoticeOfSalaryAdjustmentController;
 use App\Http\Controllers\PersonalDataSheetController;
 use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\File;
+use App\Http\Controllers\FileController;
 
 
 
@@ -37,13 +38,19 @@ Route::middleware('auth')->group(function () {
 
     // Personal Data Sheet route
     Route::get('/personal-data-sheet', [PersonalDataSheetController::class, 'index'])->name('personalDataSheet');
-
-    // Location routes
-    Route::get('/provinces', [LocationController::class, 'getProvinces']);
-    Route::get('/towns/{provinceCode}', [LocationController::class, 'getTowns']);
-    Route::get('/barangays/{townCode}', [LocationController::class, 'getBarangays']);
+    Route::get('/personal-data-sheet/{id}', [PersonalDataSheetController::class, 'show'])->name('personal-data-sheet.show');
+    
 });
 
 Route::get('/data/zipcodes.json', function () {
     return response()->json(json_decode(File::get(public_path('data/zipcodes.json'))));
 });
+
+Route::post('/submit-form', [FileController::class, 'store']);
+Route::post('/validate-form', [FileController::class, 'validateForm']);
+Route::get('/get-update-data/{id}', [FileController::class, 'getUpdateData']);
+
+// Location routes
+Route::get('/provinces', [LocationController::class, 'getProvinces']);
+Route::get('/towns/{provinceCode}', [LocationController::class, 'getTowns']);
+Route::get('/barangays/{townCode}', [LocationController::class, 'getBarangays']);

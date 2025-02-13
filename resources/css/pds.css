@@ -585,4 +585,272 @@ input:focus {
     margin: 5%;
     margin-bottom: 6%;
   }
+
+
+
+  .inline-fields {
+    display: flex;
+    align-items: flex-end; 
+    gap: 10px; /* Adjust spacing as needed */
+  }
+  .inline-fields .first-name {
+    flex: 0 0 75%;
+  }
+  .inline-fields .name-extension {
+    flex: 0 0 25%;
+  }
+
+  /* Styling specific to the Family Step 2 container */
+.family-step2-form-step {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+  
+  /* Two-column layout within Step 2 */
+  .family-step2-form-step .family-columns {
+    display: flex;
+    gap: 20px; /* Space between columns */
+  }
+  
+  .family-step2-form-step .family-column {
+    flex: 1;
+  }
+  
+  /* Inline fields: First Name (75%) and Name Extension (25%) */
+  .inline-fields {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end; /* Align labels/inputs along the bottom */
+  }
+  
+  .inline-fields .first-name {
+    flex: 0 0 75%;
+  }
+  
+  .inline-fields .name-extension {
+    flex: 0 0 25%;
+  }
+  
+  /* Children row: display Child's Name and Date of Birth side by side */
+  /* Child's Name: 60% width, Date of Birth: 40% width */
+  .family-step2-form-step .child-entry .form-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end; /* Align labels/inputs along the bottom */
+  }
+  
+  .family-step2-form-step .child-entry .child-name {
+    flex: 0 0 60%;
+  }
+  
+  .family-step2-form-step .child-entry .child-dob {
+    flex: 0 0 40%;
+  }
+  
+  /* Basic spacing for form groups */
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  /* Styling for form actions */
+  .form-actions {
+    margin-top: 20px;
+    text-align: right;
+  }
+
+  .education-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.education-table th {
+    background-color: #ffda66;
+    color: 000;
+    padding: 10px;
+    text-align: left;
+}
+
+.education-table td {
+    padding: 8px;
+    border: 1px solid #000;
+}
+.education-table tr:nth-child(even) td {
+    border-color: #000;
+}
+
+.education-table tr:nth-child(odd) td {
+    border-color: #fff;
+}
+
+.education-table input {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #000;
+}
+
+.education-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+    color: #000;
+}
+.education-table tr:nth-child(odd) {
+    background-color: #000;
+    color: #f9f9f9;
+}
+
+.civilServiceContainer {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.civilServiceContainer th {
+    background-color: #ffda66;
+    color: 000;
+    padding: 10px;
+    text-align: left;
+}
+
+.civilServiceContainer td {
+    padding: 8px;
+    border: 1px solid #000;
+}
+.civilServiceContainer tr:nth-child(even) td {
+    border-color: #000;
+}
+
+.civilServiceContainer tr:nth-child(odd) td {
+    border-color: #fff;
+}
+
+.civilServiceContainer input {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #000;
+}
+
+.civilServiceContainer tr:nth-child(even) {
+    background-color: #f9f9f9;
+    color: #000;
+}
+.civilServiceContainer tr:nth-child(odd) {
+    background-color: #000;
+    color: #f9f9f9;
+}
+
+ 
+
+.remove-btn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.remove-btn:hover {
+    background-color: darkred;
+}
+
+
+/* General Table Styling */
+.work-experience-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.work-experience-table th {
+    background-color: #ffda66;
+    color: #000;
+    padding: 10px;
+    text-align: left;
+}
+
+.work-experience-table td {
+    padding: 8px;
+    border: 1px solid #000;
+}
+
+.work-experience-table tr:nth-child(even) td {
+    border-color: #000;
+}
+
+.work-experience-table tr:nth-child(odd) td {
+    border-color: #fff;
+}
+
+.work-experience-table input {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #000;
+}
+
+.work-experience-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+    color: #000;
+}
+
+.work-experience-table tr:nth-child(odd) {
+    background-color: #000;
+    color: #f9f9f9;
+}
+
+/* Remove Button Styling */
+.work-experience-table .remove-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.work-experience-table .remove-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Add Button Styling */
+#addWorkExperienceButton {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#addWorkExperienceButton:hover {
+    background-color: #2980b9;
+}
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 768px) {
+    .work-experience-table th, .work-experience-table td {
+        padding: 8px;
+    }
+
+    .work-experience-table input[type="text"],
+    .work-experience-table input[type="date"] {
+        width: 100%;
+    }
+}
+
+.error-message {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Optional: Add a class to highlight missing fields */
+input.error {
+    border: 1px solid red !important;
+}
+
+
   
