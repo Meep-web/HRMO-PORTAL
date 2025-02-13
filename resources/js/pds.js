@@ -54,6 +54,20 @@ function checkRequiredFields(step) {
     return allFieldsFilled;
 }
 
+document
+    .getElementById("downloadButton")
+    .addEventListener("click", function () {
+        // The file path (adjust as needed)
+        const filePath =
+            "/docs/CS Form No. 212 Personal Data Sheet revised.xlsx";
+
+        // Trigger the download using the location.href method
+        const link = document.createElement("a");
+        link.href = filePath;
+        link.download = "CS Form No. 212 Personal Data Sheet revised.xlsx"; // Optional: specify the filename
+        link.click(); // Programmatically click the link to start the download
+    });
+
 // Next button functionality with check
 document.getElementById("nextButton1").addEventListener("click", () => {
     if (checkRequiredFields(1)) {
@@ -208,7 +222,6 @@ function formatValidationErrors(errors) {
 function collectFormData() {
     const formData = {};
 
-    // Personal Information
     formData.first_name = document.getElementById("firstName").value;
     formData.last_name = document.getElementById("surname").value;
     formData.middle_name = document.getElementById("middleName").value;
@@ -233,6 +246,23 @@ function collectFormData() {
     formData.telephone_no = document.getElementById("telephoneNo").value;
     formData.mobile_no = document.getElementById("mobileNo").value;
     formData.email = document.getElementById("email").value;
+
+    // Citizenship Information
+    formData.is_filipino = document.getElementById("filipino").checked; // true if checked
+    formData.is_dual_citizen =
+        document.getElementById("dualCitizenship").checked; // true if checked
+
+    // Dual Citizenship Type (Only if Dual Citizenship is checked)
+    if (formData.is_dual_citizen) {
+        formData.dual_citizen_type =
+            document.querySelector('input[name="dualCitizenType"]:checked')
+                ?.value || "";
+        formData.dual_citizen_country =
+            document.getElementById("countrySelect").value;
+    } else {
+        formData.dual_citizen_type = null;
+        formData.dual_citizen_country = null;
+    }
 
     // Residential Address
     formData.residential_address = {
@@ -285,8 +315,9 @@ function collectFormData() {
         degree: document.getElementById("elementaryDegree").value,
         from: document.getElementById("elementaryFrom").value,
         to: document.getElementById("elementaryTo").value,
-        highestLevel: document.getElementById("elementaryHighestLevel").value,
-        yearGraduated: document.getElementById("elementaryYearGraduated").value,
+        highest_level: document.getElementById("elementaryHighestLevel").value,
+        year_graduated: document.getElementById("elementaryYearGraduated")
+            .value,
         honors: document.getElementById("elementaryHonors").value,
     };
 
@@ -296,8 +327,8 @@ function collectFormData() {
         degree: document.getElementById("secondaryDegree").value,
         from: document.getElementById("secondaryFrom").value,
         to: document.getElementById("secondaryTo").value,
-        highestLevel: document.getElementById("secondaryHighestLevel").value,
-        yearGraduated: document.getElementById("secondaryYearGraduated").value,
+        highest_level: document.getElementById("secondaryHighestLevel").value,
+        year_graduated: document.getElementById("secondaryYearGraduated").value,
         honors: document.getElementById("secondaryHonors").value,
     };
 
@@ -307,8 +338,9 @@ function collectFormData() {
         degree: document.getElementById("vocationalDegree").value,
         from: document.getElementById("vocationalFrom").value,
         to: document.getElementById("vocationalTo").value,
-        highestLevel: document.getElementById("vocationalHighestLevel").value,
-        yearGraduated: document.getElementById("vocationalYearGraduated").value,
+        highest_level: document.getElementById("vocationalHighestLevel").value,
+        year_graduated: document.getElementById("vocationalYearGraduated")
+            .value,
         honors: document.getElementById("vocationalHonors").value,
     };
 
@@ -318,8 +350,8 @@ function collectFormData() {
         degree: document.getElementById("collegeDegree").value,
         from: document.getElementById("collegeFrom").value,
         to: document.getElementById("collegeTo").value,
-        highestLevel: document.getElementById("collegeHighestLevel").value,
-        yearGraduated: document.getElementById("collegeYearGraduated").value,
+        highest_level: document.getElementById("collegeHighestLevel").value,
+        year_graduated: document.getElementById("collegeYearGraduated").value,
         honors: document.getElementById("collegeHonors").value,
     };
 
@@ -329,34 +361,36 @@ function collectFormData() {
         degree: document.getElementById("graduateDegree").value,
         from: document.getElementById("graduateFrom").value,
         to: document.getElementById("graduateTo").value,
-        highestLevel: document.getElementById("graduateHighestLevel").value,
-        yearGraduated: document.getElementById("graduateYearGraduated").value,
+        highest_level: document.getElementById("graduateHighestLevel").value,
+        year_graduated: document.getElementById("graduateYearGraduated").value,
         honors: document.getElementById("graduateHonors").value,
     };
 
     // Civil Service Eligibility
-const civilServiceContainer = document.querySelector("#civilServiceContainer");
-const civilServiceRows = civilServiceContainer.querySelectorAll("tr");
+    const civilServiceContainer = document.querySelector(
+        "#civilServiceContainer"
+    );
+    const civilServiceRows = civilServiceContainer.querySelectorAll("tr");
 
-if (civilServiceRows.length > 0) {
-    formData.civil_service_eligibility = [];
-    civilServiceRows.forEach((row, index) => {
-        // Get the input elements within the row
-        const inputs = row.querySelectorAll("input");
+    if (civilServiceRows.length > 0) {
+        formData.civil_service_eligibility = [];
+        civilServiceRows.forEach((row, index) => {
+            // Get the input elements within the row
+            const inputs = row.querySelectorAll("input");
 
-        // Push the data into the formData object
-        formData.civil_service_eligibility.push({
-            eligibility_name: inputs[0].value, // Eligibility Name
-            rating: inputs[1].value, // Rating
-            date_of_exam: inputs[2].value, // Date of Exam/Conferment
-            place_of_exam: inputs[3].value, // Place of Exam/Conferment
-            license_number: inputs[4].value, // License Number
-            license_validity: inputs[5].value, // Date of Validity
+            // Push the data into the formData object
+            formData.civil_service_eligibility.push({
+                eligibility_name: inputs[0].value, // Eligibility Name
+                rating: inputs[1].value, // Rating
+                date_of_exam: inputs[2].value, // Date of Exam/Conferment
+                place_of_exam: inputs[3].value, // Place of Exam/Conferment
+                license_number: inputs[4].value, // License Number
+                license_validity: inputs[5].value, // Date of Validity
+            });
         });
-    });
-} else {
-    formData.civil_service_eligibility = []; // Ensure the array is initialized
-}
+    } else {
+        formData.civil_service_eligibility = []; // Ensure the array is initialized
+    }
 
     // Work Experience
     const workExperienceTable = document.querySelector("#step5 tbody");
@@ -490,7 +524,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const file = excelUpload.files[0];
 
             if (!file) {
-                
                 alert("Please select a file first.");
                 return;
             }
@@ -1064,11 +1097,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                                 break;
                                             }
                                         }
-                                    }, 500);
+                                    }, 750);
                                 }
-                            }, 500);
+                            }, 750);
                         }
-                    }, 500);
+                    }, 750);
                 }
 
                 document.getElementById("permanentHouseNo").value =
@@ -1283,16 +1316,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 function populateCivilServiceEligibility(data) {
-                    const tbody = document.querySelector("#step4 table tbody");
+                    const tbody = document.querySelector(
+                        "#civilServiceContainer"
+                    );
 
                     if (!tbody) {
                         console.error("Error: Table tbody not found.");
                         return;
                     }
 
-                    tbody.innerHTML = ""; // Clear existing rows
+                    // Check if data exists and has the civil_service_eligibility key with at least one entry
+                    if (
+                        !data ||
+                        !data.civil_service_eligibility ||
+                        data.civil_service_eligibility.length === 0
+                    ) {
+                        // Exit the function without modifying the table
+                        return;
+                    }
 
-                    data.forEach((item, index) => {
+                    // Clear existing rows only if there is data
+                    tbody.innerHTML = "";
+
+                    // Iterate over the civil_service_eligibility array and populate the table
+                    data.civil_service_eligibility.forEach((item, index) => {
                         const entryNumber = index + 1; // Start numbering from 1
 
                         const row = document.createElement("tr");
@@ -1300,22 +1347,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
                         row.innerHTML = `
                             <td><input type="text" id="eligibilityName${entryNumber}" name="eligibilityName${entryNumber}" value="${
-                            item.careerService
+                            item.careerService || ""
                         }"></td>
                             <td><input type="text" id="rating${entryNumber}" name="rating${entryNumber}" value="${
-                            item.rating
+                            item.rating || ""
                         }"></td>
                             <td><input type="date" id="dateOfExam${entryNumber}" name="dateOfExam${entryNumber}" value="${safeDateFormat(
-                            item.examinationDate
+                            item.examinationDate || ""
                         )}"></td>
                             <td><input type="text" id="placeOfExam${entryNumber}" name="placeOfExam${entryNumber}" value="${
-                            item.examinationPlace
+                            item.examinationPlace || ""
                         }"></td>
                             <td><input type="text" id="licenseNumber${entryNumber}" name="licenseNumber${entryNumber}" value="${
-                            item.licenseNumber
+                            item.licenseNumber || ""
                         }"></td>
                             <td><input type="date" id="licenseValidity${entryNumber}" name="licenseValidity${entryNumber}" value="${safeDateFormat(
-                            item.validityDate
+                            item.validityDate || ""
                         )}"></td>
                             <td><button type="button" class="remove-btn">Remove</button></td>
                         `;
@@ -1634,8 +1681,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (selectedBarangayValue && selectedBarangayValue !== "") {
                         permBarangaySelect.value = selectedBarangayValue;
                     }
-                }, 500);
-            }, 500);
+                }, 750);
+            }, 750);
         });
 });
 
@@ -1820,31 +1867,54 @@ document.addEventListener("DOMContentLoaded", function () {
             data.personal_info.date_of_birth || "";
         document.getElementById("placeOfBirth").value =
             data.personal_info.place_of_birth || "";
-            document.getElementById("height").value =
+        document.getElementById("height").value =
             data.personal_info.height || "";
-            document.getElementById("weight").value =
+        document.getElementById("weight").value =
             data.personal_info.weight || "";
-            document.getElementById("bloodType").value =
+        document.getElementById("bloodType").value =
             data.personal_info.blood_type || "";
-            document.getElementById("gsisId").value =
+        document.getElementById("gsisId").value =
             data.personal_info.gsis_id || "";
-            document.getElementById("philhealthId").value =
+        document.getElementById("philhealthId").value =
             data.personal_info.philhealth_id || "";
-            document.getElementById("pagibigId").value =
+        document.getElementById("pagibigId").value =
             data.personal_info.pagibig_id || "";
-            document.getElementById("sssNo").value =
+        document.getElementById("sssNo").value =
             data.personal_info.sss_no || "";
-            document.getElementById("tinNo").value =
+        document.getElementById("tinNo").value =
             data.personal_info.tin_no || "";
-            document.getElementById("agencyEmployeeNo").value =
+        document.getElementById("agencyEmployeeNo").value =
             data.personal_info.agency_employee_no || "";
-            document.getElementById("telephoneNo").value =
+        document.getElementById("telephoneNo").value =
             data.personal_info.telephone_no || "";
-            document.getElementById("mobileNo").value =
+        document.getElementById("mobileNo").value =
             data.personal_info.mobile_no || "";
-            document.getElementById("email").value =
-            data.personal_info.email || "";
+        document.getElementById("email").value = data.personal_info.email || "";
 
+        // Citizenship Fields
+        document.getElementById("filipino").checked =
+            data.personal_info.is_filipino || false;
+        document.getElementById("dualCitizenship").checked =
+            data.personal_info.is_dual_citizen || false;
+
+        // Set the dual citizen type based on the value (byBirth or byNaturalization)
+        if (data.personal_info.dual_citizen_type === "byBirth") {
+            document.getElementById("byBirth").checked = true;
+        } else if (
+            data.personal_info.dual_citizen_type === "byNaturalization"
+        ) {
+            document.getElementById("byNaturalization").checked = true;
+        }
+
+        document.getElementById("countrySelect").value =
+            data.personal_info.dual_citizen_country || "";
+
+        // Directly show/hide dual citizenship fields based on the value of `is_dual_citizen`
+        if (data.personal_info.is_dual_citizen) {
+            document.querySelector(".sub-options").classList.add("show");
+        } else {
+            document.querySelector(".sub-options").classList.remove("show");
+        }
 
         document.getElementById("sexMale").checked =
             data.personal_info.sex === "Male";
@@ -1878,45 +1948,58 @@ document.addEventListener("DOMContentLoaded", function () {
                 data.residential_address.street || "";
             document.getElementById("residentialSubdivision").value =
                 data.residential_address.subdivision || "";
-        
+
             // Set Province, City, and Barangay with delay and proper flow
             const residentialProvince = data.residential_address.province || ""; // e.g., "0434"
             const residentialCity = data.residential_address.city || ""; // e.g., "043419"
             const residentialBarangay = data.residential_address.barangay || ""; // e.g., "043419014"
-        
+
             if (residentialProvince !== "") {
                 setTimeout(() => {
-                    const resProvinceSelect = document.getElementById("residentialProvince");
+                    const resProvinceSelect = document.getElementById(
+                        "residentialProvince"
+                    );
                     // Find the option with the matching value (code)
                     for (let option of resProvinceSelect.options) {
                         if (option.value === residentialProvince) {
                             resProvinceSelect.value = option.value;
-                            resProvinceSelect.dispatchEvent(new Event("change"));
+                            resProvinceSelect.dispatchEvent(
+                                new Event("change")
+                            );
                             break;
                         }
                     }
-        
+
                     // Wait for cities to load after province change
                     if (residentialCity !== "") {
                         setTimeout(() => {
-                            const resCitySelect = document.getElementById("residentialCity");
+                            const resCitySelect =
+                                document.getElementById("residentialCity");
                             // Find the option with the matching value (code)
                             for (let option of resCitySelect.options) {
                                 if (option.value === residentialCity) {
                                     resCitySelect.value = option.value;
-                                    resCitySelect.dispatchEvent(new Event("change"));
+                                    resCitySelect.dispatchEvent(
+                                        new Event("change")
+                                    );
                                     break;
                                 }
                             }
-        
+
                             // Wait for barangays to load after city change
                             if (residentialBarangay !== "") {
                                 setTimeout(() => {
-                                    const resBarangaySelect = document.getElementById("residentialBarangay");
+                                    const resBarangaySelect =
+                                        document.getElementById(
+                                            "residentialBarangay"
+                                        );
                                     // Find the option with the matching value (code)
                                     for (let option of resBarangaySelect.options) {
-                                        if (option.value === residentialBarangay) {
-                                            resBarangaySelect.value = option.value;
+                                        if (
+                                            option.value === residentialBarangay
+                                        ) {
+                                            resBarangaySelect.value =
+                                                option.value;
                                             break;
                                         }
                                     }
@@ -1926,7 +2009,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }, 500); // Initial 500ms delay
             }
-        
+
             // Set Zip Code without delay
             document.getElementById("residentialZipCode").value =
                 data.residential_address.zip_code || "";
@@ -1950,84 +2033,102 @@ document.addEventListener("DOMContentLoaded", function () {
                 data.permanent_address.street || "";
             document.getElementById("permanentSubdivision").value =
                 data.permanent_address.subdivision || "";
-        
+
             // Set Province, City, and Barangay with delay and proper flow
             const permanentProvince = data.permanent_address.province || ""; // e.g., "0434"
             const permanentCity = data.permanent_address.city || ""; // e.g., "043419"
             const permanentBarangay = data.permanent_address.barangay || ""; // e.g., "043419014"
-        
-           
-        
+
             if (permanentProvince !== "") {
                 setTimeout(() => {
-                    const permProvinceSelect = document.getElementById("permanentProvince");
-                    
-        
+                    const permProvinceSelect =
+                        document.getElementById("permanentProvince");
+
                     if (permProvinceSelect) {
                         let provinceFound = false;
                         for (let option of permProvinceSelect.options) {
-                            
                             if (option.value === permanentProvince) {
                                 permProvinceSelect.value = option.value;
-                                permProvinceSelect.dispatchEvent(new Event("change"));
+                                permProvinceSelect.dispatchEvent(
+                                    new Event("change")
+                                );
                                 provinceFound = true;
                                 break;
                             }
                         }
                         if (!provinceFound) {
-                            console.warn("No matching province found for:", permanentProvince);
+                            console.warn(
+                                "No matching province found for:",
+                                permanentProvince
+                            );
                         }
                     } else {
-                        console.error("Permanent Province Select element not found.");
+                        console.error(
+                            "Permanent Province Select element not found."
+                        );
                     }
-        
+
                     // Wait for cities to load after province change
                     if (permanentCity !== "") {
                         setTimeout(() => {
-                            const permCitySelect = document.getElementById("permanentCity");
-                           
-        
+                            const permCitySelect =
+                                document.getElementById("permanentCity");
+
                             if (permCitySelect) {
                                 let cityFound = false;
                                 for (let option of permCitySelect.options) {
-                                    
                                     if (option.value === permanentCity) {
-                                        
                                         permCitySelect.value = option.value;
-                                        permCitySelect.dispatchEvent(new Event("change"));
+                                        permCitySelect.dispatchEvent(
+                                            new Event("change")
+                                        );
                                         cityFound = true;
                                         break;
                                     }
                                 }
                                 if (!cityFound) {
-                                    console.warn("No matching city found for:", permanentCity);
+                                    console.warn(
+                                        "No matching city found for:",
+                                        permanentCity
+                                    );
                                 }
                             } else {
-                                console.error("Permanent City Select element not found.");
+                                console.error(
+                                    "Permanent City Select element not found."
+                                );
                             }
-        
+
                             // Wait for barangays to load after city change
                             if (permanentBarangay !== "") {
                                 setTimeout(() => {
-                                    const permBarangaySelect = document.getElementById("permanentBarangay");
-                                    
-        
+                                    const permBarangaySelect =
+                                        document.getElementById(
+                                            "permanentBarangay"
+                                        );
+
                                     if (permBarangaySelect) {
                                         let barangayFound = false;
                                         for (let option of permBarangaySelect.options) {
-                                            
-                                            if (option.value === permanentBarangay) {
-                                               
-                                                permBarangaySelect.value = option.value;
+                                            if (
+                                                option.value ===
+                                                permanentBarangay
+                                            ) {
+                                                permBarangaySelect.value =
+                                                    option.value;
                                                 barangayFound = true;
                                                 break;
                                             }
                                         }
                                         if (!barangayFound) {
-                                            console.warn("No matching barangay found for:", permanentBarangay);
+                                            console.warn(
+                                                "No matching barangay found for:",
+                                                permanentBarangay
+                                            );
                                         }
                                     } else {
-                                        console.error("Permanent Barangay Select element not found.");
+                                        console.error(
+                                            "Permanent Barangay Select element not found."
+                                        );
                                     }
                                 }, 500); // 500ms delay after setting city
                             }
@@ -2035,7 +2136,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 }, 1500); // Initial 500ms delay
             }
-        
+
             // Set Zip Code without delay
             document.getElementById("permanentZipCode").value =
                 data.permanent_address.zip_code || "";
@@ -2095,38 +2196,47 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("motherMiddleName").value = "";
         }
 
-        if (
-            data.educational_backgrounds &&
-            data.educational_backgrounds.length > 0
-        ) {
+        if (data.educational_backgrounds && data.educational_backgrounds.length > 0) {
             data.educational_backgrounds.forEach((education) => {
-                // Convert "graduateStudies" to "graduate" for ID generation
-                const level =
-                    education.level.toLowerCase() === "graduatestudies"
-                        ? "graduate"
-                        : education.level.toLowerCase();
+                // Convert "Graduate Studies" to "graduate" for ID generation
+                const level = education.level.toLowerCase() === "graduate studies"
+                    ? "graduate"
+                    : education.level.toLowerCase();
+        
                 const fields = [
                     "School",
                     "Degree",
                     "From",
                     "To",
-                    "HighestLevel",
-                    "YearGraduated",
+                    "HighestLevel",  // This should be mapped correctly
+                    "YearGraduated", // This should be mapped correctly
                     "Honors",
                 ];
-
+        
                 fields.forEach((field) => {
-                    const fieldId = `${level}${field}`;
+                    const fieldId = `${level}${field}`;  // ID format will be "graduateYearGraduated", "elementaryYearGraduated", etc.
                     const fieldElement = document.getElementById(fieldId);
+        
                     if (fieldElement) {
-                        fieldElement.value =
-                            education[field.toLowerCase()] || "";
+                        let value = "";
+                        
+                        // Adjust field name mapping for snake_case (highest_level, year_graduate)
+                        if (field.toLowerCase() === "highestlevel") {
+                            value = education.highest_level || "";  // Using snake_case
+                        } else if (field.toLowerCase() === "yeargraduated") {
+                            value = education.year_graduated !== null ? education.year_graduated : "";  // Ensure value is a number, default to empty string if null
+                        } else {
+                            value = education[field.toLowerCase()] || "";
+                        }
+        
+                        fieldElement.value = value;
                     } else {
                         console.warn(`Element with id ${fieldId} not found.`);
                     }
                 });
             });
         } else {
+            console.log(data.educational_backgrounds);  // Log the educational backgrounds if no data
             // Clear educational background fields if no data
             const educationLevels = [
                 "elementary",
@@ -2134,7 +2244,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 "vocational",
                 "college",
                 "graduate",
-            ]; // Use "graduate" here
+            ]; 
             educationLevels.forEach((level) => {
                 const fields = [
                     "School",
@@ -2145,7 +2255,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     "YearGraduated",
                     "Honors",
                 ];
-
+        
                 fields.forEach((field) => {
                     const fieldId = `${level}${field}`;
                     const fieldElement = document.getElementById(fieldId);
@@ -2157,6 +2267,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
         }
+        
 
         // Civil Service Eligibility
         const civilServiceContainer = document.querySelector(
@@ -2194,14 +2305,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 civilServiceContainer.appendChild(row);
             });
         } else {
-           
         }
 
         // Work Experience
         const workExperienceContainer = document.querySelector(
             "#workExperienceContainer"
         );
-       
 
         if (data.work_experiences && data.work_experiences.length > 0) {
             data.work_experiences.forEach((experience, index) => {
@@ -2237,7 +2346,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 workExperienceContainer.appendChild(row);
             });
         } else {
-           
         }
     }
 

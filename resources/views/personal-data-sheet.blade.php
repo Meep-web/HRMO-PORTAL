@@ -28,16 +28,17 @@
                 @foreach ($personalInfos as $personalInfo)
                     <tr>
                         <td>{{ $personalInfo->first_name }} {{ $personalInfo->last_name }}</td>
-                        <td>{{ $personalInfo->updated_at->format('Y-m-d H:i:s') }}</td>
+                        <td>{{ $personalInfo->updated_at ? $personalInfo->updated_at->format('F j, Y h:i A') : 'N/A' }}</td>
                         <td>
                             <!-- Edit Button -->
                             <button class="btn btn-primary edit-btn" data-id="{{ $personalInfo->id }}">Edit</button>
                             <!-- Print Button (No functionality yet) -->
                             <button class="btn btn-secondary print-btn">Print</button>
                         </td>
-                        <td>{{ $personalInfo->updated_by }}</td> <!-- Assuming you have an updated_by field -->
+                        <td>{{ $personalInfo->updated_by }}</td> <!-- Now fetching from pdsupdates -->
                     </tr>
                 @endforeach
+            </tbody>            
             </tbody>
         </table>
     </div>
@@ -54,16 +55,15 @@
                 <div id="step1" class="form-step">
                     <!-- Upload Field and Extract Data Button -->
                     <div class="form-group">
-                        <label for="excelUpload">Upload Excel File:</label>
+                        <label for="excelUpload">Upload Personal Data Sheet Excel File:</label>
                         <input type="file" id="excelUpload" name="excelUpload" accept=".xlsx, .xls">
 
                         <!-- Extract Data Button -->
                         <button type="button" class="action-button" id="extractDataButton">Extract Data</button>
 
                         <!-- Download PDS Excel Button -->
-                        <a href="{{ asset('docs/CS Form No. 212 Personal Data Sheet revised.xlsx') }}" download>
-                            <button type="button" class="action-button" id="downloadButton">Download PDS Excel</button>
-                        </a>
+                        <button type="button" class="action-button" id="downloadButton">Download PDS Excel</button>
+
                     </div>
 
                     <hr>

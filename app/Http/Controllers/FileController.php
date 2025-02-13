@@ -21,25 +21,31 @@ class FileController extends Controller
         $rules = [
             // Personal Info Validation
             'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'middle_name' => 'nullable|string|max:255',
-            'name_extension' => 'nullable|string|max:10',
-            'date_of_birth' => 'required|date',
-            'place_of_birth' => 'required|string|max:255',
-            'sex' => 'required|string|max:10',
-            'civil_status' => 'required|string|max:50',
-            'height' => 'required|numeric',
-            'weight' => 'required|numeric',
-            'blood_type' => 'nullable|string|max:5',
-            'gsis_id' => 'nullable|string|max:50',
-            'pagibig_id' => 'nullable|string|max:50',
-            'philhealth_id' => 'nullable|string|max:50',
-            'sss_no' => 'nullable|string|max:50',
-            'tin_no' => 'nullable|string|max:50',
-            'agency_employee_no' => 'nullable|string|max:50',
-            'telephone_no' => 'nullable|string|max:50',
-            'mobile_no' => 'nullable|string|max:50',
-            'email' => 'required|email|max:255',
+        'last_name' => 'required|string|max:255',
+        'middle_name' => 'nullable|string|max:255',
+        'name_extension' => 'nullable|string|max:10',
+        'date_of_birth' => 'required|date',
+        'place_of_birth' => 'required|string|max:255',
+        'sex' => 'required|string|max:10',
+        'civil_status' => 'required|string|max:50',
+        'height' => 'required|numeric',
+        'weight' => 'required|numeric',
+        'blood_type' => 'nullable|string|max:5',
+        'gsis_id' => 'nullable|string|max:50',
+        'pagibig_id' => 'nullable|string|max:50',
+        'philhealth_id' => 'nullable|string|max:50',
+        'sss_no' => 'nullable|string|max:50',
+        'tin_no' => 'nullable|string|max:50',
+        'agency_employee_no' => 'nullable|string|max:50',
+        'telephone_no' => 'nullable|string|max:50',
+        'mobile_no' => 'nullable|string|max:50',
+        'email' => 'required|email|max:255',
+
+        // Citizenship Validation
+        'is_filipino' => 'sometimes|boolean', // True if Filipino
+        'is_dual_citizen' => 'sometimes|boolean', // True if Dual Citizen
+        'dual_citizen_type' => 'nullable|string|in:byBirth,byNaturalization', // Must be either "byBirth" or "byNaturalization"
+        'dual_citizen_country' => 'nullable|required_if:is_dual_citizen,true|string|max:100', // Required if Dual Citizen is true
 
             // Address Validation
             'residential_address.house_no' => 'required|string|max:50',
@@ -124,194 +130,190 @@ class FileController extends Controller
 
     // Store form data into the database
     public function store(Request $request)
+{
+    try {
+        DB::beginTransaction();
+
+        // Validate the request data
+        $validatedData = $this->validateRequest($request);
+
+        // Save Personal Info (including citizenship)
+        $personalInfo = PersonalInfo::create([
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'middle_name' => $validatedData['middle_name'] ?? null,
+            'name_extension' => $validatedData['name_extension'] ?? null,
+            'date_of_birth' => $validatedData['date_of_birth'],
+            'place_of_birth' => $validatedData['place_of_birth'],
+            'sex' => $validatedData['sex'],
+            'civil_status' => $validatedData['civil_status'],
+            'height' => $validatedData['height'],
+            'weight' => $validatedData['weight'],
+            'blood_type' => $validatedData['blood_type'] ?? null,
+            'gsis_id' => $validatedData['gsis_id'] ?? null,
+            'pagibig_id' => $validatedData['pagibig_id'] ?? null,
+            'philhealth_id' => $validatedData['philhealth_id'] ?? null,
+            'sss_no' => $validatedData['sss_no'] ?? null,
+            'tin_no' => $validatedData['tin_no'] ?? null,
+            'agency_employee_no' => $validatedData['agency_employee_no'] ?? null,
+            'telephone_no' => $validatedData['telephone_no'] ?? null,
+            'mobile_no' => $validatedData['mobile_no'] ?? null,
+            'email' => $validatedData['email'],
+            // Citizenship
+            'is_filipino' => $validatedData['is_filipino'] ?? false,
+            'is_dual_citizen' => $validatedData['is_dual_citizen'] ?? false,
+            'dual_citizen_type' => $validatedData['dual_citizen_type'] ?? null,
+            'dual_citizen_country' => $validatedData['dual_citizen_country'] ?? null,
+        ]);
+
+        // Save Residential Address
+        Address::create([
+            'personal_info_id' => $personalInfo->id,
+            'type' => 'residential',
+            'house_no' => $request->input('residential_address.house_no'),
+            'street' => $request->input('residential_address.street'),
+            'subdivision' => $request->input('residential_address.subdivision'),
+            'barangay' => $request->input('residential_address.barangay'),
+            'city' => $request->input('residential_address.city'),
+            'province' => $request->input('residential_address.province'),
+            'zip_code' => $request->input('residential_address.zip_code'),
+        ]);
+
+        // Save Permanent Address
+        Address::create([
+            'personal_info_id' => $personalInfo->id,
+            'type' => 'permanent',
+            'house_no' => $request->input('permanent_address.house_no'),
+            'street' => $request->input('permanent_address.street'),
+            'subdivision' => $request->input('permanent_address.subdivision'),
+            'barangay' => $request->input('permanent_address.barangay'),
+            'city' => $request->input('permanent_address.city'),
+            'province' => $request->input('permanent_address.province'),
+            'zip_code' => $request->input('permanent_address.zip_code'),
+        ]);
+
+        // Save Family Background
+        if ($request->has('family_background')) {
+            FamilyBackground::create(array_merge(
+                ['personal_info_id' => $personalInfo->id],
+                $validatedData['family_background']
+            ));
+        }
+
+        // Save Educational Background
+        $educationLevels = ['elementary', 'secondary', 'vocational', 'college', 'graduateStudies'];
+        foreach ($educationLevels as $level) {
+            if ($request->has($level)) {
+                EducationalBackground::create(array_merge(
+                    ['personal_info_id' => $personalInfo->id, 'level' => $level],
+                    $request->input($level)
+                ));
+            }
+        }
+
+        // Save Civil Service Eligibility
+        if ($request->has('civil_service_eligibility')) {
+            foreach ($request->input('civil_service_eligibility') as $eligibility) {
+                CivilServiceEligibility::create(array_merge(
+                    ['personal_info_id' => $personalInfo->id],
+                    $eligibility
+                ));
+            }
+        }
+
+        // Save Work Experience
+        if ($request->has('work_experience')) {
+            foreach ($request->input('work_experience') as $experience) {
+                WorkExperience::create(array_merge(
+                    ['personal_info_id' => $personalInfo->id],
+                    $experience
+                ));
+            }
+        }
+
+        // Save PDS Update
+        PdsUpdate::create([
+            'employeeName' => $request->input('currentEmployeeName'), 
+            'PDSId' => $personalInfo->id, 
+        ]);
+
+        DB::commit();
+
+        return response()->json(['message' => 'Data saved successfully']);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        logger()->error('Error storing PDS data: ' . $e->getMessage());
+        return response()->json(['error' => 'An error occurred while saving data.'], 500);
+    }
+}
+
+
+    public function getUpdateData($id)
     {
         try {
-            DB::beginTransaction();
+            // Fetch the PersonalInfo record
+            $personalInfo = PersonalInfo::find($id);
 
-            // Validate the request data
-            $validatedData = $this->validateRequest($request);
-
-            // Save personal info
-            $personalInfo = PersonalInfo::create($validatedData);
-
-            // Save Residential Address
-            Address::create([
-                'personal_info_id' => $personalInfo->id,
-                'type' => 'residential',
-                'house_no' => $request->input('residential_address.house_no'),
-                'street' => $request->input('residential_address.street'),
-                'subdivision' => $request->input('residential_address.subdivision'),
-                'barangay' => $request->input('residential_address.barangay'),
-                'city' => $request->input('residential_address.city'),
-                'province' => $request->input('residential_address.province'),
-                'zip_code' => $request->input('residential_address.zip_code'),
-            ]);
-
-            // Save Permanent Address
-            Address::create([
-                'personal_info_id' => $personalInfo->id,
-                'type' => 'permanent',
-                'house_no' => $request->input('permanent_address.house_no'),
-                'street' => $request->input('permanent_address.street'),
-                'subdivision' => $request->input('permanent_address.subdivision'),
-                'barangay' => $request->input('permanent_address.barangay'),
-                'city' => $request->input('permanent_address.city'),
-                'province' => $request->input('permanent_address.province'),
-                'zip_code' => $request->input('permanent_address.zip_code'),
-            ]);
-
-            // Save Family Background
-            if ($request->has('family_background')) {
-                FamilyBackground::create([
-                    'personal_info_id' => $personalInfo->id,
-                    'spouse_surname' => $validatedData['family_background']['spouse_surname'] ?? null,
-                    'spouse_first_name' => $validatedData['family_background']['spouse_first_name'] ?? null,
-                    'spouse_middle_name' => $validatedData['family_background']['spouse_middle_name'] ?? null,
-                    'spouse_name_extension' => $validatedData['family_background']['spouse_name_extension'] ?? null,
-                    'spouse_occupation' => $validatedData['family_background']['spouse_occupation'] ?? null,
-                    'spouse_employer' => $validatedData['family_background']['spouse_employer'] ?? null,
-                    'spouse_telephone' => $validatedData['family_background']['spouse_telephone'] ?? null,
-                    'father_surname' => $validatedData['family_background']['father_surname'],
-                    'father_first_name' => $validatedData['family_background']['father_first_name'],
-                    'father_middle_name' => $validatedData['family_background']['father_middle_name'] ?? null,
-                    'father_name_extension' => $validatedData['family_background']['father_name_extension'] ?? null,
-                    'mother_surname' => $validatedData['family_background']['mother_surname'],
-                    'mother_first_name' => $validatedData['family_background']['mother_first_name'],
-                    'mother_middle_name' => $validatedData['family_background']['mother_middle_name'] ?? null,
-                ]);
+            if (!$personalInfo) {
+                return response()->json(['error' => 'Record not found'], 404);
             }
 
-            // Save Education Background
-            $educationLevels = ['elementary', 'secondary', 'vocational', 'college', 'graduateStudies'];
-            foreach ($educationLevels as $level) {
-                if ($request->has($level)) {
-                    EducationalBackground::create([
-                        'personal_info_id' => $personalInfo->id,
-                        'level' => $level,
-                        'school' => $validatedData[$level]['school'],
-                        'degree' => $validatedData[$level]['degree'] ?? null,
-                        'from' => $validatedData[$level]['from'] ?? null,
-                        'to' => $validatedData[$level]['to'] ?? null,
-                        'highest_level' => $validatedData[$level]['highestLevel'] ?? null,
-                        'year_graduated' => $validatedData[$level]['yearGraduated'] ?? null,
-                        'honors' => $validatedData[$level]['honors'] ?? null,
-                    ]);
-                }
-            }
+            // Fetch related data using personal_info_id
+            $residentialAddress = Address::where('personal_info_id', $personalInfo->id)
+                ->where('type', 'residential')
+                ->first();
 
-            // Save Civil Service Eligibility
-            if ($request->has('civil_service_eligibility')) {
-                foreach ($validatedData['civil_service_eligibility'] as $eligibility) {
-                    CivilServiceEligibility::create([
-                        'personal_info_id' => $personalInfo->id,
-                        'eligibility_name' => $eligibility['eligibility_name'],
-                        'rating' => $eligibility['rating'],
-                        'date_of_exam' => $eligibility['date_of_exam'],
-                        'place_of_exam' => $eligibility['place_of_exam'],
-                        'license_number' => $eligibility['license_number'] ?? null,
-                        'license_validity' => $eligibility['license_validity'] ?? null,
-                    ]);
-                }
-            }
+            $permanentAddress = Address::where('personal_info_id', $personalInfo->id)
+                ->where('type', 'permanent')
+                ->first();
 
-            // Save Work Experience
-            if ($request->has('work_experience')) {
-                foreach ($validatedData['work_experience'] as $experience) {
-                    WorkExperience::create([
-                        'personal_info_id' => $personalInfo->id,
-                        'from' => $experience['from'],
-                        'to' => $experience['to'],
-                        'position_title' => $experience['position_title'],
-                        'department' => $experience['department'],
-                        'monthly_salary' => $experience['monthly_salary'],
-                        'salary_grade' => $experience['salary_grade'] ?? null,
-                        'step_increment' => $experience['step_increment'] ?? null,
-                        'appointment_status' => $experience['appointment_status'],
-                        'govt_service' => $experience['govt_service'],
-                    ]);
-                }
-            }
+            $familyBackground = FamilyBackground::where('personal_info_id', $personalInfo->id)->first();
+            $educationalBackgrounds = EducationalBackground::where('personal_info_id', $personalInfo->id)->get();
+            $civilServiceEligibilities = CivilServiceEligibility::where('personal_info_id', $personalInfo->id)->get();
+            $workExperiences = WorkExperience::where('personal_info_id', $personalInfo->id)->get();
 
-            // Fetch the employeeName from the hidden input field
-            $employeeName = $request->input('currentEmployeeName');
+            // Format the data for the frontend
+            $data = [
+                'personal_info' => [
+                    'last_name' => $personalInfo->last_name, // surname in the modal
+                    'first_name' => $personalInfo->first_name,
+                    'middle_name' => $personalInfo->middle_name,
+                    'date_of_birth' => $personalInfo->date_of_birth,
+                    'place_of_birth' => $personalInfo->place_of_birth,
+                    'sex' => $personalInfo->sex,
+                    'civil_status' => $personalInfo->civil_status,
+                    'height' => $personalInfo->height,
+                    'weight' => $personalInfo->weight,
+                    'blood_type' => $personalInfo->blood_type,
+                    'gsis_id' => $personalInfo->gsis_id,
+                    'pagibig_id' => $personalInfo->pagibig_id,
+                    'philhealth_id' => $personalInfo->philhealth_id,
+                    'sss_no' => $personalInfo->sss_no,
+                    'tin_no' => $personalInfo->tin_no,
+                    'agency_employee_no' => $personalInfo->agency_employee_no,
+                    'telephone_no' => $personalInfo->telephone_no,
+                    'mobile_no' => $personalInfo->mobile_no,
+                    'email' => $personalInfo->email,
 
-            // Debug: Log the employeeName
-            logger('Employee Name:', ['employeeName' => $employeeName]);
+                     // Citizenship Validation
+                'is_filipino' => $personalInfo->is_filipino,
+                'is_dual_citizen' => $personalInfo->is_dual_citizen,
+                'dual_citizen_type' => $personalInfo->dual_citizen_type,
+                'dual_citizen_country' => $personalInfo->dual_citizen_country,
 
-            // Save PDS Update
-            PdsUpdate::create([
-                'employeeName' => $employeeName, // Use the employeeName from the hidden input
-                'PDSId' => $personalInfo->id, // Use the ID of the newly created PersonalInfo record
-            ]);
-            DB::commit();
+                ],
+                'residential_address' => $residentialAddress,
+                'permanent_address' => $permanentAddress,
+                'family_background' => $familyBackground,
+                'educational_backgrounds' => $educationalBackgrounds,
+                'civil_service_eligibilities' => $civilServiceEligibilities,
+                'work_experiences' => $workExperiences,
+            ];
 
-            return response()->json(['message' => 'Data saved successfully']);
-
+            return response()->json($data);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-    public function getUpdateData($id)
-{
-    try {
-        // Fetch the PersonalInfo record
-        $personalInfo = PersonalInfo::find($id);
-
-        if (!$personalInfo) {
-            return response()->json(['error' => 'Record not found'], 404);
-        }
-
-        // Fetch related data using personal_info_id
-        $residentialAddress = Address::where('personal_info_id', $personalInfo->id)
-            ->where('type', 'residential')
-            ->first();
-
-        $permanentAddress = Address::where('personal_info_id', $personalInfo->id)
-            ->where('type', 'permanent')
-            ->first();
-
-        $familyBackground = FamilyBackground::where('personal_info_id', $personalInfo->id)->first();
-        $educationalBackgrounds = EducationalBackground::where('personal_info_id', $personalInfo->id)->get();
-        $civilServiceEligibilities = CivilServiceEligibility::where('personal_info_id', $personalInfo->id)->get();
-        $workExperiences = WorkExperience::where('personal_info_id', $personalInfo->id)->get();
-
-        // Format the data for the frontend
-        $data = [
-            'personal_info' => [
-                'last_name' => $personalInfo->last_name, // surname in the modal
-                'first_name' => $personalInfo->first_name,
-                'middle_name' => $personalInfo->middle_name,
-                'date_of_birth' => $personalInfo->date_of_birth,
-                'place_of_birth' => $personalInfo->place_of_birth,
-                'sex' => $personalInfo->sex,
-                'civil_status'=>$personalInfo->civil_status,
-                'height'=>$personalInfo->height,
-                'weight'=>$personalInfo->weight,
-                'blood_type'=>$personalInfo->blood_type,
-                'gsis_id'=>$personalInfo->gsis_id,
-                'pagibig_id'=>$personalInfo->pagibig_id,
-                'philhealth_id'=>$personalInfo->philhealth_id,
-                'sss_no'=>$personalInfo->sss_no,
-                'tin_no'=>$personalInfo->tin_no,
-                'agency_employee_no'=>$personalInfo->agency_employee_no,
-                'telephone_no'=>$personalInfo->telephone_no,
-                'mobile_no'=>$personalInfo->mobile_no,
-                'email'=>$personalInfo->email,
-                
-            ],
-            'residential_address' => $residentialAddress,
-            'permanent_address' => $permanentAddress,
-            'family_background' => $familyBackground,
-            'educational_backgrounds' => $educationalBackgrounds,
-            'civil_service_eligibilities' => $civilServiceEligibilities,
-            'work_experiences' => $workExperiences,
-        ];
-
-        return response()->json($data);
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-}
 }

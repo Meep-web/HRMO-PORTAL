@@ -28,6 +28,13 @@ return new class extends Migration {
             $table->string('telephone_no')->nullable();
             $table->string('mobile_no')->nullable();
             $table->string('email')->nullable();
+
+            // Citizenship-related columns
+            $table->boolean('is_filipino')->default(false); // True if Filipino
+            $table->boolean('is_dual_citizen')->default(false); // True if dual citizen
+            $table->string('dual_citizen_type')->nullable(); // "byBirth" or "byNaturalization"
+            $table->string('dual_citizen_country')->nullable(); // Country of dual citizenship
+
             $table->timestamps();
         });
     }

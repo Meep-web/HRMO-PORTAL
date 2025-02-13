@@ -9,19 +9,23 @@ use App\Models\PersonalInfo;
 class PersonalDataSheetController extends Controller
 {
     public function index()
-    {
-        // Fetch data from pdsUpdates table
-        $pdsUpdates = PdsUpdate::all();
+{
+    // Fetch personal_info data with the latest update from pdsupdates
+    $personalInfos = PersonalInfo::all()->map(function ($personalInfo) {
+        $latestUpdate = PdsUpdate::where('PDSId', $personalInfo->id)
+                                 ->latest('updated_at')
+                                 ->first();
+        $personalInfo->updated_by = $latestUpdate ? $latestUpdate->employeeName : 'N/A';
+        return $personalInfo;
+    });
+
+    // Pass the data to the view
+    return view('personal-data-sheet', [
+        'personalInfos' => $personalInfos,
+    ]);
+}
+
     
-        // Fetch data from personal_info table
-        $personalInfos = PersonalInfo::all();
-    
-        // Pass the data to the view
-        return view('personal-data-sheet', [
-            'pdsUpdates' => $pdsUpdates,
-            'personalInfos' => $personalInfos,
-        ]);
-    }
 
     
 }

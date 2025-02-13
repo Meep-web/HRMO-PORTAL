@@ -30,7 +30,14 @@ class PersonalInfo extends Model
         'telephone_no',
         'mobile_no',
         'email',
+        
+        // Citizenship-related fields
+        'is_filipino',
+        'is_dual_citizen',
+        'dual_citizen_type',
+        'dual_citizen_country',
     ];
+    
 
     // Define the relationships
     public function residentialAddress()

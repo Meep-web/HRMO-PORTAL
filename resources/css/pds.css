@@ -852,5 +852,32 @@ input.error {
     border: 1px solid red !important;
 }
 
+/* Styling for Edit Button */
+.edit-btn {
+    background-color: #007bff; /* Bootstrap primary blue */
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
 
-  
+.edit-btn:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Styling for Print Button */
+.print-btn {
+    background-color: #6c757d; /* Bootstrap secondary gray */
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.print-btn:hover {
+    background-color: #545b62; /* Darker gray on hover */
+}
