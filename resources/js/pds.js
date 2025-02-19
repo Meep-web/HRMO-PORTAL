@@ -158,6 +158,13 @@ document
         link.click(); // Programmatically click the link to start the download
     });
 
+  
+    document.getElementById("downloadMultipleButton").addEventListener("click", function () {
+        window.location.href = "/docs/MultiplePersonalDataSheetFormat.xlsx";
+    });
+
+
+
 // Next button functionality with check
 document.getElementById("nextButton1").addEventListener("click", () => {
     if (checkRequiredFields(1)) {

@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title', 'Personal Data Sheet')
-@vite(['resources/css/pds.css', 'resources/js/pds.js']) <!-- Include CSS & JS -->
+@vite(['resources/css/pds.css', 'resources/js/pds.js', 'resources/js/multiplePDShandling.js']) <!-- Include CSS & JS -->
 <input type="hidden" id="saveNosaRoute" value="{{ route('save.nosa') }}" />
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -13,18 +13,19 @@
         </div>
         <button class="upload-button" id="uploadButton">Upload</button>
     </div>
-   
+
     <div class="table-container">
         <table class="salary-adjustment-table">
             <thead>
                 <tr>
                     <th>
-                        <a href="{{ route('personalDataSheet', ['sort' => 'first_name', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
+                        <a
+                            href="{{ route('personalDataSheet', ['sort' => 'first_name', 'order' => $order === 'asc' ? 'desc' : 'asc']) }}">
                             Employee Name
                             @if ($order === 'asc')
-                                <span>&#9650;</span>  <!-- Ascending Arrow -->
+                                <span>&#9650;</span> <!-- Ascending Arrow -->
                             @else
-                                <span>&#9660;</span>  <!-- Descending Arrow -->
+                                <span>&#9660;</span> <!-- Descending Arrow -->
                             @endif
                         </a>
                     </th>
@@ -47,10 +48,10 @@
                         <td>{{ $personalInfo->updated_by }}</td> <!-- Now fetching from pdsupdates -->
                     </tr>
                 @endforeach
-            </tbody>            
+            </tbody>
         </table>
     </div>
-    
+
 
     <!-- Modal -->
     <div id="uploadModal" class="modal">
@@ -58,7 +59,8 @@
             <span class="close">&times;</span>
             <h2>Personal Data Sheet (CSC Form 212 Revised 2017)</h2>
             <form id="uploadForm">
-                <input type="hidden" id="currentEmployeeName" name="currentEmployeeName" value="{{ session('employeeName') }}" />
+                <input type="hidden" id="currentEmployeeName" name="currentEmployeeName"
+                    value="{{ session('employeeName') }}" />
                 <input type="hidden" id="personalInfoId" name="personal_info_id" value="">
                 <!-- Step 1: Personal Information -->
                 <div id="step1" class="form-step">
@@ -67,13 +69,21 @@
                         <label for="excelUpload">Upload Personal Data Sheet Excel File:</label>
                         <input type="file" id="excelUpload" name="excelUpload" accept=".xlsx, .xls">
 
-                        <!-- Extract Data Button -->
-                        <button type="button" class="action-button" id="extractDataButton">Extract Data</button>
+                        <div class="button-container">
+                            <button type="button" class="action-button" id="extractDataButton">Extract Data</button>
+                            <button type="button" class="action-button" id="extractMultipleDataButton">Extract Multiple
+                                Data</button>
+                        </div>
 
-                        <!-- Download PDS Excel Button -->
-                        <button type="button" class="action-button" id="downloadButton">Download PDS Excel</button>
+                        <div class="button-container">
+                            <button type="button" class="action-button" id="downloadButton">Download PDS Excel</button>
+                            <button type="button" class="action-button" id="downloadMultipleButton">Download Multiple Data
+                                Excel Format</button>
 
+                        </div>
                     </div>
+
+
 
                     <hr>
                     <fieldset>
@@ -840,14 +850,227 @@
                         <button type="button" class="action-button" id="cancelButton">Cancel</button>
                         <button type="button" class="action-button" id="prevButton5">Previous</button>
                         <button type="button" class="action-button" id="submitButton">Submit</button>
-                        <button type="button" class="action-button" id="savePDSButton" style="display: none;">Save</button>
+                        <button type="button" class="action-button" id="savePDSButton"
+                            style="display: none;">Save</button>
                     </div>
-                    
+
                 </div>
-                
-                
+
+
 
             </form>
         </div>
     </div>
+
+    <!-- Updated Multiple PDS Modal with Tabs -->
+    <div id="multiplePDSModal" class="modal multiple-pds-modal">
+        <div class="modal-content-multiple-pds">
+            <span class="close multiple-pds-close">&times;</span>
+            <h2>Multiple PDS Extraction</h2>
+
+            <!-- Tab Navigation -->
+            <div class="multiple-pds-tabs">
+                <button class="tab-button active" data-tab="personal">Personal Info</button>
+                <button class="tab-button" data-tab="family">Family Background</button>
+                <button class="tab-button" data-tab="education">Education</button>
+                <button class="tab-button" data-tab="civil-service">Civil Service</button>
+                <button class="tab-button" data-tab="work-experience">Work Experience</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="multiple-pds-tab-content">
+                <!-- Personal Info Tab -->
+                <div id="personal-tab" class="tab-pane active">
+                    <div class="multiple-pds-table-container">
+                        <table class="multiple-pds-preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th> <!-- Combined column -->
+                                    <th>Date of Birth</th>
+                                    <th>Place of Birth</th>
+                                    <th>Sex</th>
+                                    <th>Civil Status</th>
+                                    <th>Height</th>
+                                    <th>Weight</th>
+                                    <th>Blood Type</th>
+                                    <th>GSIS ID</th>
+                                    <th>PAG-IBIG ID</th>
+                                    <th>PhilHealth No.</th>
+                                    <th>SSS No.</th>
+                                    <th>TIN No.</th>
+                                    <th>Agency Employee No.</th>
+                                    <th>Filipino</th>
+                                    <th>Dual Citizenship</th>
+                                    <th>Dual Citizenship Country</th>
+                                    <!-- Residential Address Columns -->
+                                    <th>Residential House Block/Lot No.</th>
+                                    <th>Residential Street</th>
+                                    <th>Residential Subdivision/Village</th>
+                                    <th>Residential Barangay</th>
+                                    <th>Residential City/Municipality</th>
+                                    <th>Residential Province</th>
+                                    <!-- Permanent Address Columns -->
+                                    <th>Permanent House Block/Lot No.</th>
+                                    <th>Permanent Street</th>
+                                    <th>Permanent Subdivision/Village</th>
+                                    <th>Permanent Barangay</th>
+                                    <th>Permanent City/Municipality</th>
+                                    <th>Permanent Province</th>
+                                    <th>Telephone No.</th>
+                                    <th>Mobile No.</th>
+                                    <th>Email Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="personalPreview">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Family Background Tab -->
+                <div id="family-tab" class="tab-pane">
+                    <div class="multiple-pds-table-container">
+                        <table class="multiple-pds-preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th> <!-- Combined column -->
+                                    <th>Spouse Surname</th>
+                                    <th>Spouse First Name</th>
+                                    <th>Spouse Middle Name</th>
+                                    <th>Spouse Name Extension</th>
+                                    <th>Spouse Occupation</th>
+                                    <th>Spouse Employer/Business Name</th>
+                                    <th>Spouse Business Address</th>
+                                    <th>Spouse Telephone No.</th>
+                                    <th>Children Names</th>
+                                    <th>Children Birthdates</th>
+                                    <th>Father Surname</th>
+                                    <th>Father First Name</th>
+                                    <th>Father Middle Name</th>
+                                    <th>Father Name Extension</th>
+                                    <th>Mother Surname</th>
+                                    <th>Mother First Name</th>
+                                    <th>Mother Middle Name</th>
+                                </tr>
+                            </thead>
+                            <tbody id="familyPreview">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Education Tab -->
+                <div id="education-tab" class="tab-pane">
+                    <div class="multiple-pds-table-container">
+                        <table class="multiple-pds-preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Elementary - School</th>
+                                    <th>Degree</th>
+                                    <th>Period From</th>
+                                    <th>Period To</th>
+                                    <th>Highest Level/Units</th>
+                                    <th>Year Graduated</th>
+                                    <th>Honors Recieved</th>
+
+                                    <th>Secondary - School</th>
+                                    <th>Degree</th>
+                                    <th>Period From</th>
+                                    <th>Period To</th>
+                                    <th>Highest Level/Units</th>
+                                    <th>Year Graduated</th>
+                                    <th>Honors Recieved</th>
+
+                                    <th>Vocational - School</th>
+                                    <th>Degree</th>
+                                    <th>Period From</th>
+                                    <th>Period To</th>
+                                    <th>Highest Level/Units</th>
+                                    <th>Year Graduated</th>
+                                    <th>Honors Recieved</th>
+
+                                    <th>College - School</th>
+                                    <th>Degree</th>
+                                    <th>Period From</th>
+                                    <th>Period To</th>
+                                    <th>Highest Level/Units</th>
+                                    <th>Year Graduated</th>
+                                    <th>Honors Recieved</th>
+
+                                    <th>Graduate Studies - School</th>
+                                    <th>Degree</th>
+                                    <th>Period From</th>
+                                    <th>Period To</th>
+                                    <th>Highest Level/Units</th>
+                                    <th>Year Graduated</th>
+                                    <th>Honors Recieved</th>
+                                </tr>
+                            </thead>
+                            <tbody id="educationPreview">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+                <!-- Civil Service Tab -->
+                <div id="civil-service-tab" class="tab-pane">
+                    <div class="multiple-pds-table-container">
+                        <table class="multiple-pds-preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th> <!-- Combined column -->
+                                    <th>Eligibility Name</th>
+                                    <th>Rating</th>
+                                    <th>Date of Examination</th>
+                                    <th>Place of Examination</th>
+                                    <th>License Number</th>
+                                    <th>Date of Validity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="civilServicePreview">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Work Experience Tab -->
+                <div id="work-experience-tab" class="tab-pane">
+                    <div class="multiple-pds-table-container">
+                        <table class="multiple-pds-preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th> <!-- Combined column -->
+                                    <th>Inclusive Dates (From)</th>
+                                    <th>Inclusive Dates (To)</th>
+                                    <th>Position Title</th>
+                                    <th>Department/Agency</th>
+                                    <th>Monthly Salary</th>
+                                    <th>Salary/JOB Pay Grade</th>
+                                    <th>Step Increment</th>
+                                    <th>Status of Appointment</th>
+                                    <th>Government Service</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workExperiencePreview">
+                                <!-- Data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="multiple-pds-actions">
+                <button type="button" class="action-button multiple-pds-cancel">Cancel</button>
+                <button type="button" class="action-button multiple-pds-confirm">Confirm Extraction</button>
+            </div>
+        </div>
+    </div>
+
 @endsection

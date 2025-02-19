@@ -133,7 +133,31 @@ body {
     transition: all 0.3s ease;
     background-color: #007bff;
     color: #fff;
+    width: 50%; /* Each button takes up half the modal width */
+    text-align: center; /* Ensure text is centered */
 }
+
+/* Hover Effect */
+.action-button:hover {
+    background-color: #0056b3;
+}
+
+/* Align buttons in a row */
+.button-container {
+    display: flex;
+    gap: 10px; /* Add spacing between buttons */
+    justify-content: space-between; /* Ensure buttons share space equally */
+    width: 100%;
+}
+
+/* Ensure file input and buttons are properly spaced */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
 
 #nextButton1,
 #nextButton2,
@@ -917,4 +941,168 @@ input.error {
 
 .print-btn:hover {
     background-color: #545b62; /* Darker gray on hover */
+}
+
+/* Full-Screen Modal Styles */
+.multiple-pds-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+    z-index: 1000; /* Ensure it's on top of other content */
+    overflow: auto; /* Enable scrolling if content exceeds screen height */
+    padding: 2rem; /* Add padding to the modal */
+    box-sizing: border-box; /* Include padding in width and height */
+}
+
+.multiple-pds-modal .modal-content-multiple-pds {
+    width: 90vw; /* 90% of viewport width */
+    height: 90vh; /* 90% of viewport height */
+    background: #f9f9f9;
+    border-radius: 8px; /* Keep border-radius for a polished look */
+    padding: 2rem; /* Inner padding */
+    box-sizing: border-box; /* Include padding in height calculation */
+    overflow: hidden; /* Prevent inner content from overflowing */
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    margin: auto; /* Center the modal */
+}
+
+/* Table Container */
+.multiple-pds-table-container {
+    flex-grow: 1; /* Take up remaining space */
+    overflow: auto; /* Enable both vertical and horizontal scrolling */
+    margin: 1rem 0; /* Add some margin for spacing */
+    width: 100%; /* Ensure the container takes full width */
+}
+
+/* Table Styles */
+.multiple-pds-preview-table th,
+.multiple-pds-preview-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    white-space: nowrap; /* Prevent text wrapping */
+    color: black; /* Set text color to black */
+}
+
+.multiple-pds-preview-table th,
+.multiple-pds-preview-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Sticky headers */
+.multiple-pds-preview-table th {
+    background-color: #004445;
+    color: white;
+    position: sticky;
+    top: 0; /* Make headers sticky */
+    z-index: 1; /* Ensure headers stay above the table content */
+}
+
+/* Sticky Full Name column */
+.multiple-pds-preview-table th:nth-child(1),
+.multiple-pds-preview-table td:nth-child(1) {
+    position: sticky;
+    left: 0; /* Stick to the left edge */
+    background-color: #f9f9f9; /* Match the background color */
+    z-index: 2; /* Ensure sticky column stays above other content */
+    min-width: 300px; /* Set a minimum width to ensure full visibility */
+    white-space: normal; /* Allow text to wrap if necessary */
+    word-wrap: break-word; /* Break long words to prevent overflow */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better visibility */
+}
+
+/* Add a shadow to the sticky column for better visibility */
+.multiple-pds-preview-table th:nth-child(1),
+.multiple-pds-preview-table td:nth-child(1) {
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+}
+
+/* Ensure sticky column header has a consistent background color */
+.multiple-pds-preview-table th:nth-child(1) {
+    background-color: #004445; /* Match the header background color */
+    color: white; /* Ensure text is readable */
+}
+
+/* Tab Styles */
+.multiple-pds-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #ddd;
+    overflow-x: auto; /* Enable horizontal scrolling for tabs if needed */
+}
+
+.multiple-pds-tabs .tab-button {
+    padding: 0.75rem 1.5rem;
+    background: #f1f1f1;
+    border: none;
+    border-radius: 4px 4px 0 0;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease;
+    white-space: nowrap; /* Prevent text wrapping in tabs */
+}
+
+.multiple-pds-tabs .tab-button.active {
+    background: #004445;
+    color: white;
+}
+
+.multiple-pds-tabs .tab-button:hover {
+    background: #ddd;
+}
+
+/* Tab Content */
+.multiple-pds-tab-content {
+    flex-grow: 1; /* Take up remaining space */
+    display: flex;
+    flex-direction: column;
+}
+
+.multiple-pds-tab-content .tab-pane {
+    display: none;
+    flex-grow: 1; /* Take up remaining space */
+    overflow: hidden; /* Prevent inner content from overflowing */
+}
+
+.multiple-pds-tab-content .tab-pane.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Action Buttons */
+.multiple-pds-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+.multiple-pds-preview-table input {
+    width: 100%; /* Make input fields take up full cell width */
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding in width calculation */
+    font-size: 14px;
+    background-color: transparent; /* Match table background */
+}
+
+.multiple-pds-preview-table input:read-only {
+    background-color: #f1f1f1; /* Gray background for read-only fields */
+    cursor: not-allowed; /* Disable cursor for read-only fields */
+}
+
+.multiple-pds-preview-table input:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: #004445; /* Highlight focused input */
+    box-shadow: 0 0 5px rgba(0, 68, 69, 0.3); /* Add a subtle shadow */
 }
