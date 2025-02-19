@@ -919,6 +919,11 @@
                                     <th>Telephone No.</th>
                                     <th>Mobile No.</th>
                                     <th>Email Address</th>
+
+                                    <!-- Hidden Columns for Individual Name Parts -->
+                                    <th class="hidden-column">First Name</th>
+                                    <th class="hidden-column">Middle Name</th>
+                                    <th class="hidden-column">Surname</th>
                                 </tr>
                             </thead>
                             <tbody id="personalPreview">
@@ -1072,5 +1077,8 @@
             </div>
         </div>
     </div>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @endsection

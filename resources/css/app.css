@@ -20,7 +20,7 @@ body, html {
     height: 100%; /* Full height */
 }
 
-/* Sidebar */
+/* 1bar */
 .layout-sidebar {
     background-color: #fff3cc; /* Updated background color */
     width: 250px; /* Fixed sidebar width */
@@ -30,7 +30,15 @@ body, html {
     align-items: center;
     padding-top: 20px;
     color: #111; /* Text color to contrast the background */
+    overflow-y: auto; /* Allow scrolling */
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
 }
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+.layout-sidebar::-webkit-scrollbar {
+    display: none;
+}
+
 
 /* Main wrapper */
 .layout-main-wrapper {
@@ -97,7 +105,7 @@ body, html {
 
 .nosa-button img {
     width: 150%;
-    max-width: 125px;
+    max-width: 130px;
     height: auto;
     transition: transform 0.2s ease;
 }
@@ -118,9 +126,11 @@ body, html {
 
 .service-records-button img {
     width: 100%; /* Adjust the size */
-    max-width: 135px; /* Maintain a consistent max size */
+    max-width: 130px; /* Maintain a consistent max size */
     height: auto; /* Keep aspect ratio */
     transition: transform 0.2s ease;
+    scale: 1.5;
+    margin-bottom: 10%;
 }
 
 .service-records-button:hover img {
@@ -139,7 +149,7 @@ body, html {
 
 .leave-credits-button img {
     width: 100%; /* Adjust size */
-    max-width: 135px; /* Maintain a consistent max size */
+    max-width: 130px; /* Maintain a consistent max size */
     height: auto; /* Keep aspect ratio */
     transition: transform 0.2s ease;
 }
@@ -158,8 +168,8 @@ body, html {
 }
 
 .personalDataSheet-button img {
-    width: 100%; /* Adjust size */
-    max-width: 135px; /* Maintain a consistent max size */
+    width: 100vw; /* Adjust size */
+    max-width: 130px; /* Maintain a consistent max size */
     height: auto; /* Keep aspect ratio */
     transition: transform 0.2s ease;
 }
@@ -180,9 +190,10 @@ body, html {
 
 .account-management-button img {
     width: 100%; /* Adjust the size */
-    max-width: 125px; /* Maintain a consistent max size */
+    max-width: 130px; /* Maintain a consistent max size */
     height: auto; /* Keep aspect ratio */
     transition: transform 0.2s ease;
+    scale: 1.5;
 }
 
 .account-management-button:hover img {
@@ -415,7 +426,7 @@ p {
     padding: 5px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    margin-top: 5px;
+    margin-top: 3%;
 }
 
 /* Show the dropdown when hovering over the user icon/button */
@@ -456,7 +467,7 @@ p {
 
 /* Person icon styling */
 #userDropdownButton i {
-    font-size: 24px; /* Adjust icon size */
+    font-size: 50px; /* Adjust icon size */
     color: #333; /* Default color */
 }
 

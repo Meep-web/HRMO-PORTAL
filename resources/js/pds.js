@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import Swal from "sweetalert2";
 
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector(".search-bar");
@@ -279,23 +280,40 @@ document.getElementById("submitButton").addEventListener("click", async () => {
             const storeData = await storeResponse.json();
 
             if (storeResponse.ok) {
-                alert("Data submitted successfully!");
-
-                // Redirect to the /personal-data-sheet route
-                window.location.href = "/personal-data-sheet";
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: "Data submitted successfully!",
+                }).then(() => {
+                    window.location.href = "/personal-data-sheet";
+                });
             } else {
-                console.error("Error:", storeData);
-                alert("Failed to submit data.");
+                
+                Swal.fire({
+                    icon: "error",
+                    title: "Submission Failed",
+                    text: "Failed to submit data.",
+                });
             }
         } else {
-            // If validation fails, format and display the errors in an alert
+            
             console.error("Validation Error:", validationData.errors);
             const errorMessage = formatValidationErrors(validationData.errors);
-            alert(errorMessage);
+            Swal.fire({
+                icon: "error",
+                title: "Validation Error",
+                text: errorMessage,
+            });
+            
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred while submitting the form.");
+        Swal.fire({
+            icon: "error",
+            title: "Submission Error",
+            text: "An error occurred while submitting the form.",
+        });
+        
     }
 });
 
@@ -349,7 +367,11 @@ document.getElementById("savePDSButton").addEventListener("click", async () => {
             const storeData = await storeResponse.json();
 
             if (storeResponse.ok) {
-                alert("Data updated successfully!");
+                Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: "Data updated successfully!",
+                });                
 
                 // Optionally, close the modal here
                 const modal = document.getElementById("uploadModal");
@@ -363,17 +385,32 @@ document.getElementById("savePDSButton").addEventListener("click", async () => {
                 // Optionally, reload or update the data on the page
             } else {
                 console.error("Error:", storeData);
-                alert("Failed to update data.");
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to update data.",
+                });
+                
             }
         } else {
-            // If validation fails, format and display the errors in an alert
+            
             console.error("Validation Error:", validationData.errors);
             const errorMessage = formatValidationErrors(validationData.errors);
-            alert(errorMessage);
+            Swal.fire({
+                icon: "error",
+                title: "Validation Error",
+                text: errorMessage,
+            });
+            
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred while submitting the form.");
+        Swal.fire({
+            icon: "error",
+            title: "Submission Error",
+            text: "An error occurred while submitting the form.",
+        });
+        
     }
 });
 
@@ -395,7 +432,7 @@ function formatValidationErrors(errors) {
             .replace(/\./g, " ") // Replace dots with spaces
             .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
 
-        // Add the field to the alert message
+        
         errorMessage += `\n- ${readableField}`;
     }
 
@@ -714,7 +751,11 @@ document.addEventListener("DOMContentLoaded", function () {
             const file = excelUpload.files[0];
 
             if (!file) {
-                alert("Please select a file first.");
+                Swal.fire({
+                    icon: "warning",
+                    title: "No File Selected",
+                    text: "Please select a file first.",
+                });                
                 return;
             }
 
@@ -752,6 +793,20 @@ document.addEventListener("DOMContentLoaded", function () {
             reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: "array" });
+
+                // Get the first sheet's name
+                const firstSheetName = workbook.SheetNames[0];
+
+                if (firstSheetName !== "C1") {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Invalid File Format",
+                        html: `Please upload the proper format of data.<br>
+                               To get the correct template, use the <b>Download</b> button.`,
+                    });
+                    return; // Stop execution if the sheet name is incorrect
+                }
+    
                 // Access the first sheet (existing logic)
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
@@ -2780,7 +2835,12 @@ document.querySelectorAll(".print-btn").forEach((button) => {
                     printWindow.document.close();
                     printWindow.print();
                 } else {
-                    alert("Error: " + data.message);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message,
+                    });
+                    
                 }
             })
             .catch((error) => {

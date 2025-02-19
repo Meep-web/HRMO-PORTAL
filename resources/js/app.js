@@ -1,5 +1,6 @@
 import "./bootstrap";
 import { PDFDocument, rgb } from "pdf-lib";
+import Swal from "sweetalert2";
 
 document.addEventListener("DOMContentLoaded", function () {
     // Get all sidebar buttons
@@ -127,7 +128,11 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             if (!isValid) {
-                alert("Please fill out all fields before saving."); // Simple alert for validation
+                Swal.fire({
+                    icon: "warning",
+                    title: "Incomplete Form",
+                    text: "Please fill out all fields before saving.",
+                });                
                 return; // Stop the function if validation fails
             }
 
@@ -174,15 +179,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .then((data) => {
                     if (data.success) {
-                        alert("Data saved successfully!"); // Simple success message
+                        Swal.fire({
+                            icon: "success",
+                            title: "Success",
+                            text: "Data saved successfully!",
+                        });
+                        
                         window.location.reload(); // Reload the page
                     } else {
-                        alert("Failed to save data: " + data.message); // Simple error message
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "Failed to save data: " + data.message,
+                        });
+                        
                     }
                 })
                 .catch((error) => {
                     console.error("Error:", error);
-                    alert("An error occurred while saving data."); // Simple error message
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "An error occurred while saving data. ",
+                    });
+                    
                 })
                 .finally(() => {
                     // Re-enable the save button
@@ -249,7 +269,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
                 .catch((error) => {
                     console.error("Error fetching data:", error);
-                    alert("Failed to fetch data. Please try again.");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "An error occurred while saving data.",
+                    });
+                    
                 });
         });
     });
@@ -562,14 +587,22 @@ document.addEventListener("DOMContentLoaded", function () {
                         })
                         .catch((error) => {
                             console.error("Error modifying PDF:", error);
-                            alert(
-                                "Failed to generate the PDF. Please try again."
-                            );
+                            Swal.fire({
+                                icon: "error",
+                                title: "PDF Generation Failed",
+                                text: "Failed to generate the PDF. Please try again.",
+                            });
+                            
                         });
                 })
                 .catch((error) => {
                     console.error("Error fetching employee data:", error);
-                    alert("Failed to fetch employee data. Please try again.");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Failed to Fetch Data",
+                        text: "Failed to fetch employee data. Please try again.",
+                    });
+                    
                 });
         }
     });

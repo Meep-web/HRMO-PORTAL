@@ -1106,3 +1106,23 @@ input.error {
     border-color: #004445; /* Highlight focused input */
     box-shadow: 0 0 5px rgba(0, 68, 69, 0.3); /* Add a subtle shadow */
 }
+
+/* Ensure SweetAlert2 appears above the modal */
+.swal2-container {
+    z-index: 99999 !important;
+}
+
+/* Highlight missing fields */
+.missing-field {
+    border: 2px solid red !important;
+    background-color: #ffe6e6;
+}
+
+/* Highlight entire row with missing data */
+.missing-row {
+    background-color: #fff3f3;
+}
+
+.hidden-column {
+    display: none;
+}

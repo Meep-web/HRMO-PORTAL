@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import Swal from "sweetalert2";
 
 document.addEventListener("DOMContentLoaded", function () {
     // Modal Handling Elements
@@ -15,12 +16,26 @@ document.addEventListener("DOMContentLoaded", function () {
     if (multiplePdsBtn) {
         multiplePdsBtn.addEventListener("click", function () {
             if (!excelUpload.files.length) {
-                alert("Please select a file first.");
+                Swal.fire({
+                    icon: "warning",
+                    title: "No File Selected",
+                    text: "Please select a file first.",
+                });
                 return;
             }
 
             const file = excelUpload.files[0];
             const reader = new FileReader();
+
+            // Show loading state while processing the file
+            Swal.fire({
+                title: "Processing File",
+                text: "Please wait while we process your file...",
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
 
             reader.onload = function (e) {
                 try {
@@ -38,10 +53,21 @@ document.addEventListener("DOMContentLoaded", function () {
                     const missingSheets = requiredSheets.filter(
                         (sheet) => !workbook.SheetNames.includes(sheet)
                     );
+
                     if (missingSheets.length > 0) {
-                        alert(
-                            `Please upload the proper format of data, to get the excel sheet with the proper format you can download it using the download button below`
-                        );
+                        Swal.fire({
+                            title: "Error",
+                            text: 'Please upload the proper format of data. To get the excel sheet with the proper format, you can download it using the download button that matches with the upload you are going to do.',
+                            icon: "error",
+                            confirmButtonText: "OK",
+                            customClass: {
+                                popup: "my-swal-popup",
+                            },
+                            didOpen: () => {
+                                const popup = Swal.getPopup();
+                                popup.style.zIndex = "5";
+                            },
+                        });
                         return;
                     }
 
@@ -67,6 +93,23 @@ document.addEventListener("DOMContentLoaded", function () {
                         3
                     );
 
+                    // Validate extracted data
+                    if (
+                        !personalData.length ||
+                        !familyData.length ||
+                        !educationData.length ||
+                        !workExperienceData.length ||
+                        !civilServiceData.length
+                    ) {
+                        Swal.fire({
+                            title: "Error",
+                            text: "The uploaded file contains empty or invalid data. Please check the file and try again.",
+                            icon: "error",
+                            confirmButtonText: "OK",
+                        });
+                        return;
+                    }
+
                     // Combine all data
                     const combinedData = personalData.map(
                         (personal, index) => ({
@@ -79,17 +122,34 @@ document.addEventListener("DOMContentLoaded", function () {
                         })
                     );
 
-                    console.log("Final Combined Data:", combinedData);
-
                     // Render data into the modal tables
                     renderAllTables(combinedData);
 
                     // Open the modal after rendering the data
                     multiplePdsModal.style.display = "block";
+
+                    // Close the loading state
+                    Swal.close();
                 } catch (error) {
                     console.error("Error processing file:", error);
-                    alert("An error occurred. Please check the file format.");
+                    Swal.fire({
+                        title: "Error",
+                        text: "An error occurred while processing the file. Please check the file format and try again.",
+                        icon: "error",
+                        confirmButtonText: "OK",
+                        confirmButtonColor: "#007bff",
+                    });
                 }
+            };
+
+            reader.onerror = function (error) {
+                console.error("Error reading file:", error);
+                Swal.fire({
+                    title: "Error",
+                    text: "An error occurred while reading the file. Please try again.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                });
             };
 
             reader.readAsArrayBuffer(file);
@@ -106,11 +166,128 @@ document.addEventListener("DOMContentLoaded", function () {
     if (multiplePdsCancel)
         multiplePdsCancel.addEventListener("click", closeMultiplePdsModal);
 
-    // Confirm button handler
+    const requiredFields = {
+        personalPreview: [
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 17, 18, 19, 20,
+            21, 22, 23, 24, 25, 26, 27, 27, 28, 30, 31,
+        ],
+        familyPreview: [0, 11, 12, 13, 15, 16, 17], // Columns 1, 2, 3 are required in the Family Background table
+        educationPreview: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], // Columns 1, 2 are required in the Education table
+        civilServicePreview:[0],
+        workExperiencePreview:[0],
+
+    };
+
     if (multiplePdsConfirm) {
         multiplePdsConfirm.addEventListener("click", function () {
-            // Handle confirmation logic
-            alert("Extraction confirmed!");
+            let hasMissingRequiredFields = false;
+            let firstMissingField = null;
+            const rowsWithMissingData = new Map(); // Key: fullName, Value: array of row numbers
+
+            // Iterate through each table
+            for (const [tableId, requiredColumns] of Object.entries(
+                requiredFields
+            )) {
+                const table = document.getElementById(tableId);
+                if (!table) continue;
+
+                const rows = table.querySelectorAll("tbody tr");
+
+                // Log the table ID (for debugging)
+                console.group(`Table: ${tableId}`);
+                console.log(`Columns: ${requiredColumns.join(", ")}`);
+
+                // Iterate through each row
+                rows.forEach((row, rowIndex) => {
+                    const inputs = row.querySelectorAll("input");
+                    const fullName = inputs[0]?.value.trim();
+                    const rowNumber = rowIndex + 1; // Convert to 1-based index
+
+                    // Log the row data
+                    console.groupCollapsed(
+                        `Row ${rowNumber}: ${fullName || "Unnamed"}`
+                    );
+                    const rowData = {};
+                    inputs.forEach((input, index) => {
+                        rowData[`Column ${index}`] = input.value.trim();
+                    });
+                    console.table(rowData); // Log the row data as a table
+                    console.groupEnd();
+
+                    // Check if any required field is missing
+                    const isRowMissingData = requiredColumns.some(
+                        (colIndex) => {
+                            const input = inputs[colIndex];
+                            return !input || !input.value.trim();
+                        }
+                    );
+
+                    if (isRowMissingData) {
+                        // Highlight missing fields and track first missing field
+                        requiredColumns.forEach((colIndex) => {
+                            const input = inputs[colIndex];
+                            if (!input || !input.value.trim()) {
+                                input.classList.add("missing-field");
+                                if (!firstMissingField)
+                                    firstMissingField = input;
+                            }
+                        });
+
+                        // Track the row for the error message
+                        if (fullName) {
+                            if (!rowsWithMissingData.has(fullName)) {
+                                rowsWithMissingData.set(fullName, []);
+                            }
+                            const currentRows =
+                                rowsWithMissingData.get(fullName);
+                            if (!currentRows.includes(rowNumber)) {
+                                currentRows.push(rowNumber);
+                            }
+                        }
+
+                        // Highlight the entire row
+                        row.classList.add("missing-row");
+                        hasMissingRequiredFields = true;
+                    } else {
+                        // Remove highlights if no missing data
+                        requiredColumns.forEach((colIndex) => {
+                            inputs[colIndex].classList.remove("missing-field");
+                        });
+                        row.classList.remove("missing-row");
+                    }
+                });
+
+                console.groupEnd(); // End the table group
+            }
+
+            // Show error message if missing fields exist
+            if (hasMissingRequiredFields) {
+                const errorList = Array.from(rowsWithMissingData.entries())
+                    .map(([name, rows]) => `${name}`)
+                    .join("<br>");
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Missing Required Fields",
+                    html: `Please fill in the required fields for:<br>${errorList}`,
+                }).then(() => {
+                    if (firstMissingField) {
+                        firstMissingField.focus();
+                        firstMissingField.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                        });
+                    }
+                });
+                return;
+            }
+
+            // Proceed if all fields are valid
+            Swal.fire({
+                icon: "success",
+                title: "Extraction Confirmed!",
+                text: "The extraction process has been successfully confirmed.",
+            });
             closeMultiplePdsModal();
         });
     }
@@ -154,12 +331,10 @@ function renderPersonalTable(data, targetId) {
         const personal = employee.personalInformation;
         const row = document.createElement("tr");
 
-        // Combine name components
-        const fullName = `${personal.firstName || ""} ${
-            personal.middleName || ""
-        } ${personal.surname || ""}`
-            .replace(/\s+/g, " ")
-            .trim();
+        const firstName = personal.firstName || "";
+        const middleName = personal.middleName || "";
+        const surname = personal.surname || "";
+        const fullName = `${firstName} ${middleName} ${surname}`.trim();
 
         row.innerHTML = `
             <td><input type="text" value="${fullName}" readonly></td>
@@ -226,6 +401,11 @@ function renderPersonalTable(data, targetId) {
             <td><input type="text" value="${personal.telephoneNo || ""}"></td>
             <td><input type="text" value="${personal.mobileNo || ""}"></td>
             <td><input type="text" value="${personal.emailAddress || ""}"></td>
+
+            <!-- Hidden Fields -->
+            <td class="hidden-column"><input type="hidden" value="${firstName}"></td>
+            <td class="hidden-column"><input type="hidden" value="${middleName}"></td>
+            <td class="hidden-column"><input type="hidden" value="${surname}"></td>
         `;
         tbody.appendChild(row);
     });
