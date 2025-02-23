@@ -909,6 +909,8 @@
                                     <th>Residential Barangay</th>
                                     <th>Residential City/Municipality</th>
                                     <th>Residential Province</th>
+                                    <th>Residential Zip Code</th> <!-- Added Zip Code Column -->
+
                                     <!-- Permanent Address Columns -->
                                     <th>Permanent House Block/Lot No.</th>
                                     <th>Permanent Street</th>
@@ -916,6 +918,8 @@
                                     <th>Permanent Barangay</th>
                                     <th>Permanent City/Municipality</th>
                                     <th>Permanent Province</th>
+                                    <th>Permanent Zip Code</th> <!-- Added Zip Code Column -->
+
                                     <th>Telephone No.</th>
                                     <th>Mobile No.</th>
                                     <th>Email Address</th>

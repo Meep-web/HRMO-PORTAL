@@ -97,9 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (
                         !personalData.length ||
                         !familyData.length ||
-                        !educationData.length ||
-                        !workExperienceData.length ||
-                        !civilServiceData.length
+                        !educationData.length
                     ) {
                         Swal.fire({
                             title: "Error",
@@ -179,118 +177,111 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     if (multiplePdsConfirm) {
-        multiplePdsConfirm.addEventListener("click", function () {
-            let hasMissingRequiredFields = false;
-            let firstMissingField = null;
-            const rowsWithMissingData = new Map(); // Key: fullName, Value: array of row numbers
+    multiplePdsConfirm.addEventListener("click", function () {
+        let hasMissingRequiredFields = false;
+        let firstMissingField = null;
+        const rowsWithMissingData = new Map(); // Track missing rows by row number
+        const allRowsData = {}; // Object to store rows grouped by index
+
+        // Get the maximum number of rows among all tables
+        let maxRows = 0;
+        for (const tableId of Object.keys(requiredFields)) {
+            const table = document.getElementById(tableId);
+            if (!table) continue;
+            const rows = table.querySelectorAll("tbody tr");
+            maxRows = Math.max(maxRows, rows.length);
+        }
+
+        // Iterate through row indices (assuming all tables align by row index)
+        for (let rowIndex = 0; rowIndex < maxRows; rowIndex++) {
+            allRowsData[rowIndex] = {}; // Create an object for this row
 
             // Iterate through each table
-            for (const [tableId, requiredColumns] of Object.entries(
-                requiredFields
-            )) {
+            for (const [tableId, requiredColumns] of Object.entries(requiredFields)) {
                 const table = document.getElementById(tableId);
                 if (!table) continue;
 
                 const rows = table.querySelectorAll("tbody tr");
+                const row = rows[rowIndex]; // Get the row at this index
 
-                // Log the table ID (for debugging)
-                console.group(`Table: ${tableId}`);
-                console.log(`Columns: ${requiredColumns.join(", ")}`);
+                if (!row) continue; // Skip if the row doesn't exist in this table
 
-                // Iterate through each row
-                rows.forEach((row, rowIndex) => {
-                    const inputs = row.querySelectorAll("input");
-                    const fullName = inputs[0]?.value.trim();
-                    const rowNumber = rowIndex + 1; // Convert to 1-based index
+                const inputs = row.querySelectorAll("input");
 
-                    // Log the row data
-                    console.groupCollapsed(
-                        `Row ${rowNumber}: ${fullName || "Unnamed"}`
-                    );
-                    const rowData = {};
-                    inputs.forEach((input, index) => {
-                        rowData[`Column ${index}`] = input.value.trim();
-                    });
-                    console.table(rowData); // Log the row data as a table
-                    console.groupEnd();
+                // Store table-specific data in the same row object
+                allRowsData[rowIndex][tableId] = {};
 
-                    // Check if any required field is missing
-                    const isRowMissingData = requiredColumns.some(
-                        (colIndex) => {
-                            const input = inputs[colIndex];
-                            return !input || !input.value.trim();
-                        }
-                    );
+                // Iterate over inputs
+                inputs.forEach((input, colIndex) => {
+                    const value = input.value.trim();
+                    allRowsData[rowIndex][tableId][`column_${colIndex}`] = value;
 
-                    if (isRowMissingData) {
-                        // Highlight missing fields and track first missing field
-                        requiredColumns.forEach((colIndex) => {
-                            const input = inputs[colIndex];
-                            if (!input || !input.value.trim()) {
-                                input.classList.add("missing-field");
-                                if (!firstMissingField)
-                                    firstMissingField = input;
-                            }
-                        });
-
-                        // Track the row for the error message
-                        if (fullName) {
-                            if (!rowsWithMissingData.has(fullName)) {
-                                rowsWithMissingData.set(fullName, []);
-                            }
-                            const currentRows =
-                                rowsWithMissingData.get(fullName);
-                            if (!currentRows.includes(rowNumber)) {
-                                currentRows.push(rowNumber);
-                            }
-                        }
-
-                        // Highlight the entire row
-                        row.classList.add("missing-row");
+                    // Check for missing required fields
+                    if (requiredColumns.includes(colIndex) && !value) {
+                        input.classList.add("missing-field");
+                        if (!firstMissingField) firstMissingField = input;
                         hasMissingRequiredFields = true;
-                    } else {
-                        // Remove highlights if no missing data
-                        requiredColumns.forEach((colIndex) => {
-                            inputs[colIndex].classList.remove("missing-field");
-                        });
-                        row.classList.remove("missing-row");
+
+                        // Track missing data by row
+                        if (!rowsWithMissingData.has(rowIndex)) {
+                            rowsWithMissingData.set(rowIndex, []);
+                        }
+                        rowsWithMissingData.get(rowIndex).push(`${tableId} (Column ${colIndex})`);
                     }
                 });
 
-                console.groupEnd(); // End the table group
-            }
-
-            // Show error message if missing fields exist
-            if (hasMissingRequiredFields) {
-                const errorList = Array.from(rowsWithMissingData.entries())
-                    .map(([name, rows]) => `${name}`)
-                    .join("<br>");
-
-                Swal.fire({
-                    icon: "error",
-                    title: "Missing Required Fields",
-                    html: `Please fill in the required fields for:<br>${errorList}`,
-                }).then(() => {
-                    if (firstMissingField) {
-                        firstMissingField.focus();
-                        firstMissingField.scrollIntoView({
-                            behavior: "smooth",
-                            block: "center",
-                        });
-                    }
+                // Highlight row if missing data
+                const isRowMissingData = requiredColumns.some((colIndex) => {
+                    const input = inputs[colIndex];
+                    return !input || !input.value.trim();
                 });
-                return;
-            }
 
-            // Proceed if all fields are valid
+                if (isRowMissingData) {
+                    row.classList.add("missing-row");
+                } else {
+                    row.classList.remove("missing-row");
+                }
+            }
+        }
+
+        // Show error message if missing fields exist
+        if (hasMissingRequiredFields) {
+            const errorList = Array.from(rowsWithMissingData.entries())
+                .map(([rowIndex, missing]) => `Row ${rowIndex + 1}: ${missing.join(", ")}`)
+                .join("<br>");
+
             Swal.fire({
-                icon: "success",
-                title: "Extraction Confirmed!",
-                text: "The extraction process has been successfully confirmed.",
+                icon: "error",
+                title: "Missing Required Fields",
+                html: `Please fill in the required fields for:<br>${errorList}`,
+            }).then(() => {
+                if (firstMissingField) {
+                    firstMissingField.focus();
+                    firstMissingField.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
             });
-            closeMultiplePdsModal();
+            return;
+        }
+
+        // Convert object to array
+        const resultArray = Object.entries(allRowsData).map(([rowIndex, data]) => ({
+            
+            ...data,
+        }));
+
+        console.log("Extracted Data:", resultArray); // Debugging - view extracted data
+
+        Swal.fire({
+            icon: "success",
+            title: "Extraction Confirmed!",
+            text: "The extraction process has been successfully confirmed.",
         });
-    }
+
+        closeMultiplePdsModal();
+    });
+}
+
+    
 
     // Tab switching functionality
     document.querySelectorAll(".tab-button").forEach((button) => {
@@ -313,7 +304,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // ==================== Helper Functions ====================
 
-// Render all tables with combined data
+
 function renderAllTables(combinedData) {
     renderPersonalTable(combinedData, "personalPreview");
     renderFamilyTable(combinedData, "familyPreview");
@@ -322,7 +313,7 @@ function renderAllTables(combinedData) {
     renderWorkExperienceTable(combinedData, "workExperiencePreview");
 }
 
-// Render Personal Information Table
+
 function renderPersonalTable(data, targetId) {
     const tbody = document.getElementById(targetId);
     tbody.innerHTML = ""; // Clear existing content
@@ -350,54 +341,29 @@ function renderPersonalTable(data, targetId) {
             <td><input type="text" value="${personal.philHealthNo || ""}"></td>
             <td><input type="text" value="${personal.sssNo || ""}"></td>
             <td><input type="text" value="${personal.tinNo || ""}"></td>
-            <td><input type="text" value="${
-                personal.agencyEmployeeNo || ""
-            }"></td>
+            <td><input type="text" value="${personal.agencyEmployeeNo || ""}"></td>
             <td><input type="text" value="${personal.filipino || ""}"></td>
-            <td><input type="text" value="${
-                personal.dualCitizenship || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.dualCitizenshipCountry || ""
-            }"></td>
+            <td><input type="text" value="${personal.dualCitizenship || ""}"></td>
+            <td><input type="text" value="${personal.dualCitizenshipCountry || ""}"></td>
+
             <!-- Residential Address -->
-            <td><input type="text" value="${
-                personal.residentialAddress?.houseBlockLotNo || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.residentialAddress?.street || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.residentialAddress?.subdivisionVillage || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.residentialAddress?.barangay || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.residentialAddress?.cityMunicipality || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.residentialAddress?.province || ""
-            }"></td>
+            <td><input type="text" value="${personal.residentialAddress?.houseBlockLotNo || ""}"></td>
+            <td><input type="text" value="${personal.residentialAddress?.street || ""}"></td>
+            <td><input type="text" value="${personal.residentialAddress?.subdivisionVillage || ""}"></td>
+            <td><input type="text" value="${personal.residentialAddress?.barangay || ""}"></td>
+            <td><input type="text" value="${personal.residentialAddress?.cityMunicipality || ""}"></td>
+            <td><input type="text" value="${personal.residentialAddress?.province || ""}"></td>
+            <td><input type="text" value="${personal.residentialAddress?.zipCode || ""}"></td> <!-- Added Zip Code -->
+
             <!-- Permanent Address -->
-            <td><input type="text" value="${
-                personal.permanentAddress?.houseBlockLotNo || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.permanentAddress?.street || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.permanentAddress?.subdivisionVillage || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.permanentAddress?.barangay || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.permanentAddress?.cityMunicipality || ""
-            }"></td>
-            <td><input type="text" value="${
-                personal.permanentAddress?.province || ""
-            }"></td>
+            <td><input type="text" value="${personal.permanentAddress?.houseBlockLotNo || ""}"></td>
+            <td><input type="text" value="${personal.permanentAddress?.street || ""}"></td>
+            <td><input type="text" value="${personal.permanentAddress?.subdivisionVillage || ""}"></td>
+            <td><input type="text" value="${personal.permanentAddress?.barangay || ""}"></td>
+            <td><input type="text" value="${personal.permanentAddress?.cityMunicipality || ""}"></td>
+            <td><input type="text" value="${personal.permanentAddress?.province || ""}"></td>
+            <td><input type="text" value="${personal.permanentAddress?.zipCode || ""}"></td> <!-- Added Zip Code -->
+
             <td><input type="text" value="${personal.telephoneNo || ""}"></td>
             <td><input type="text" value="${personal.mobileNo || ""}"></td>
             <td><input type="text" value="${personal.emailAddress || ""}"></td>
@@ -411,7 +377,8 @@ function renderPersonalTable(data, targetId) {
     });
 }
 
-// Render Family Background Table
+
+
 function renderFamilyTable(data, targetId) {
     const tbody = document.getElementById(targetId);
     tbody.innerHTML = "";
@@ -427,56 +394,28 @@ function renderFamilyTable(data, targetId) {
         row.innerHTML = `
             <td><input type="text" value="${fullName}" readonly></td>
             <td><input type="text" value="${family.spouse?.surname || ""}"></td>
-            <td><input type="text" value="${
-                family.spouse?.firstName || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.spouse?.middleName || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.spouse?.nameExtension || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.spouse?.occupation || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.spouse?.employer || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.spouse?.businessAddress || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.spouse?.telephoneNo || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.children?.map((c) => c.name).join(", ") || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.children?.map((c) => c.birthdate).join(", ") || ""
-            }"></td>
+            <td><input type="text" value="${family.spouse?.firstName || ""}"></td>
+            <td><input type="text" value="${family.spouse?.middleName || ""}"></td>
+            <td><input type="text" value="${family.spouse?.nameExtension || ""}"></td>
+            <td><input type="text" value="${family.spouse?.occupation || ""}"></td>
+            <td><input type="text" value="${family.spouse?.employer || ""}"></td>
+            <td><input type="text" value="${family.spouse?.businessAddress || ""}"></td>
+            <td><input type="text" value="${family.spouse?.telephoneNo || ""}"></td>
+            <td><input type="text" value="${family.children?.map((c) => c.name).join(", ") || ""}"></td>
+            <td><input type="text" value="${family.children?.map((c) => c.birthdate).join(", ") || ""}"></td>
             <td><input type="text" value="${family.father?.surname || ""}"></td>
-            <td><input type="text" value="${
-                family.father?.firstName || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.father?.middleName || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.father?.nameExtension || ""
-            }"></td>
+            <td><input type="text" value="${family.father?.firstName || ""}"></td>
+            <td><input type="text" value="${family.father?.middleName || ""}"></td>
+            <td><input type="text" value="${family.father?.nameExtension || ""}"></td>
             <td><input type="text" value="${family.mother?.surname || ""}"></td>
-            <td><input type="text" value="${
-                family.mother?.firstName || ""
-            }"></td>
-            <td><input type="text" value="${
-                family.mother?.middleName || ""
-            }"></td>
+            <td><input type="text" value="${family.mother?.firstName || ""}"></td>
+            <td><input type="text" value="${family.mother?.middleName || ""}"></td>
         `;
         tbody.appendChild(row);
     });
 }
 
-// Render Education Table (Single Row Per Person)
+
 function renderEducationTable(data, targetId) {
     const tbody = document.getElementById(targetId);
     tbody.innerHTML = "";
@@ -488,7 +427,7 @@ function renderEducationTable(data, targetId) {
             personal.middleName || ""
         } ${personal.surname || ""}`.trim();
 
-        // Create a single row for the employee
+        
         const row = document.createElement("tr");
         row.innerHTML = `
             <td><input type="text" value="${fullName}" readonly></td>
@@ -607,43 +546,37 @@ function renderEducationTable(data, targetId) {
     });
 }
 
-// Render Civil Service Table
 function renderCivilServiceTable(data, targetId) {
     const tbody = document.getElementById(targetId);
     tbody.innerHTML = "";
 
-    data.forEach((employee) => {
-        const civilService = employee.civilServiceEligibility;
+    data.forEach((employee, employeeIndex) => {
+        const civilService = Array.isArray(employee.civilServiceEligibility) ? employee.civilServiceEligibility : [];
         const personal = employee.personalInformation;
-        const fullName = `${personal.firstName || ""} ${
-            personal.middleName || ""
-        } ${personal.surname || ""}`.trim();
+        const fullName = `${personal.firstName || ""} ${personal.middleName || ""} ${personal.surname || ""}`.trim();
 
-        civilService.forEach((eligibility) => {
+        if (civilService.length === 0) {
+            civilService.push({});
+        }
+
+        civilService.forEach((eligibility, rowIndex) => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td><input type="text" value="${fullName}" readonly></td>
-                <td><input type="text" value="${eligibility.name || ""}"></td>
-                <td><input type="text" value="${eligibility.rating || ""}"></td>
-                <td><input type="text" value="${
-                    eligibility.dateOfExamination || ""
-                }"></td>
-                <td><input type="text" value="${
-                    eligibility.placeOfExamination || ""
-                }"></td>
-                <td><input type="text" value="${
-                    eligibility.licenseNumber || ""
-                }"></td>
-                <td><input type="text" value="${
-                    eligibility.dateOfValidity || ""
-                }"></td>
+                <td><input type="text" id="civilService_${employeeIndex}_${rowIndex}_fullName" value="${fullName}" readonly></td>
+                <td><input type="text" id="civilService_${employeeIndex}_${rowIndex}_name" value="${eligibility.name || ""}"></td>
+                <td><input type="text" id="civilService_${employeeIndex}_${rowIndex}_rating" value="${eligibility.rating || ""}"></td>
+                <td><input type="text" id="civilService_${employeeIndex}_${rowIndex}_dateOfExamination" value="${eligibility.dateOfExamination || ""}"></td>
+                <td><input type="text" id="civilService_${employeeIndex}_${rowIndex}_placeOfExamination" value="${eligibility.placeOfExamination || ""}"></td>
+                <td><input type="text" id="civilService_${employeeIndex}_${rowIndex}_licenseNumber" value="${eligibility.licenseNumber || ""}"></td>
+                <td><input type="text" id="civilService_${employeeIndex}_${rowIndex}_dateOfValidity" value="${eligibility.dateOfValidity || ""}"></td>
             `;
             tbody.appendChild(row);
         });
     });
 }
 
-// Render Work Experience Table
+
+
 function renderWorkExperienceTable(data, targetId) {
     const tbody = document.getElementById(targetId);
     tbody.innerHTML = ""; // Clear existing content
@@ -710,7 +643,6 @@ function extractDataFromSheet(sheet, startRow) {
     return extractedData;
 }
 
-// Extract Row Data for Personal Information
 function extractRowData(sheet, row) {
     return {
         surname: sheet[`B${row}`]?.v || "",
@@ -732,25 +664,30 @@ function extractRowData(sheet, row) {
         filipino: sheet[`R${row}`]?.v || "",
         dualCitizenship: sheet[`S${row}`]?.v || "",
         dualCitizenshipCountry: sheet[`T${row}`]?.v || "",
-        residentialAddress: {
+         // Residential Address (W - AC)
+         residentialAddress: {
             houseBlockLotNo: sheet[`W${row}`]?.v || "",
             street: sheet[`X${row}`]?.v || "",
             subdivisionVillage: sheet[`Y${row}`]?.v || "",
             barangay: sheet[`Z${row}`]?.v || "",
             cityMunicipality: sheet[`AA${row}`]?.v || "",
             province: sheet[`AB${row}`]?.v || "",
+            zipCode: sheet[`AC${row}`]?.v || "", // Added Zip Code
         },
+
+        // Permanent Address (AE - AK)
         permanentAddress: {
-            houseBlockLotNo: sheet[`AD${row}`]?.v || "",
-            street: sheet[`AE${row}`]?.v || "",
-            subdivisionVillage: sheet[`AF${row}`]?.v || "",
-            barangay: sheet[`AG${row}`]?.v || "",
-            cityMunicipality: sheet[`AH${row}`]?.v || "",
-            province: sheet[`AI${row}`]?.v || "",
+            houseBlockLotNo: sheet[`AE${row}`]?.v || "",
+            street: sheet[`AF${row}`]?.v || "",
+            subdivisionVillage: sheet[`AG${row}`]?.v || "",
+            barangay: sheet[`AH${row}`]?.v || "",
+            cityMunicipality: sheet[`AI${row}`]?.v || "",
+            province: sheet[`AJ${row}`]?.v || "",
+            zipCode: sheet[`AK${row}`]?.v || "", // Added Zip Code
         },
-        telephoneNo: sheet[`AJ${row}`]?.v || "",
-        mobileNo: sheet[`AK${row}`]?.v || "",
-        emailAddress: sheet[`AL${row}`]?.v || "",
+        telephoneNo: sheet[`AL${row}`]?.v || "",
+        mobileNo: sheet[`AM${row}`]?.v || "",
+        emailAddress: sheet[`AN${row}`]?.v || "",
     };
 }
 
@@ -931,3 +868,26 @@ function extractCivilServiceData(sheet, startRow) {
 
     return extractedData;
 }
+ function safeDateFormat(value) {
+                if (!value) return ""; // Return empty if no value
+
+                let dateObj;
+
+                if (typeof value === "number") {
+                    // Convert Excel serial date to JavaScript Date
+                    const excelStartDate = new Date(1899, 11, 30);
+                    dateObj = new Date(
+                        excelStartDate.getTime() + value * 86400000
+                    );
+                } else if (typeof value === "string") {
+                    // Parse string date
+                    dateObj = new Date(value);
+                }
+
+                if (dateObj && !isNaN(dateObj.getTime())) {
+                    // Format as YYYY-MM-DD for <input type="date">
+                    return dateObj.toISOString().split("T")[0];
+                }
+
+                return ""; // Return empty if invalid
+            }

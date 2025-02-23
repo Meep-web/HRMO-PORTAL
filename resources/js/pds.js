@@ -328,14 +328,6 @@ document.getElementById("savePDSButton").addEventListener("click", async () => {
     // Add currentEmployeeName to the formData object
     formData.currentEmployeeName = currentEmployeeName;
 
-    console.log("Form Data collected:", formData);
-    // Ensure isEditClicked flag is reset if needed
-    if (isEditClicked) {
-        console.log("Edit button was clicked, sending data to update.");
-    } else {
-        console.log("Edit button was not clicked, sending data to create new.");
-    }
-
     try {
         // First, call the validation endpoint
         const validationResponse = await fetch("/validate-form", {
