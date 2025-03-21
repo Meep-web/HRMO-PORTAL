@@ -71,14 +71,10 @@
 
                         <div class="button-container">
                             <button type="button" class="action-button" id="extractDataButton">Extract Data</button>
-                            <button type="button" class="action-button" id="extractMultipleDataButton">Extract Multiple
-                                Data</button>
                         </div>
 
                         <div class="button-container">
                             <button type="button" class="action-button" id="downloadButton">Download PDS Excel</button>
-                            <button type="button" class="action-button" id="downloadMultipleButton">Download Multiple Data
-                                Excel Format</button>
 
                         </div>
                     </div>

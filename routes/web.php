@@ -8,6 +8,7 @@ use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserAccountController;
 
 
 
@@ -58,6 +59,20 @@ Route::middleware('auth')->group(function () {
 Route::get('/data/zipcodes.json', function () {
     return response()->json(json_decode(File::get(public_path('data/zipcodes.json'))));
 });
+
+Route::get('/account-management', function () {return view('accountManagement');})->name('account.management');
+
+Route::get('/employment-status', function () {return view('employmentStatus');});
+
+Route::get('/edit-account', function () {return view('editAccount');})->name('editAccount');
+
+
+
+Route::get('/user-accounts', [UserAccountController::class, 'index'])->name('user.accounts');
+Route::post('/reset-password/{id}', [UserAccountController::class, 'resetPassword']);
+Route::get('/get-employee/{id}', [UserAccountController::class, 'getEmployee']);
+Route::post('/update-employee/{id}', [UserAccountController::class, 'updateEmployee']);
+
 
 
 

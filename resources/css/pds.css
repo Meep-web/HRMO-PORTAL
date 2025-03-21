@@ -133,7 +133,7 @@ body {
     transition: all 0.3s ease;
     background-color: #007bff;
     color: #fff;
-    width: 50%; /* Each button takes up half the modal width */
+    width: 100%; 
     text-align: center; /* Ensure text is centered */
 }
 
