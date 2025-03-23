@@ -7,10 +7,13 @@
     <div class="user-dropdown relative ml-auto">
         <!-- User Icon (this will act as a button for dropdown) -->
         <button class="user-dropdown-button flex items-center space-x-2" id="userDropdownButton" aria-haspopup="true"
-            aria-expanded="false">
-            <!-- Person Icon -->
-            <i class="fa-solid fa-user-circle text-xl text-gray-700"></i>
-        </button>
+    aria-expanded="false">
+    <img src="{{ session('employeeImage', asset('default-profile.png')) }}" 
+         alt="Profile Picture" 
+         class="profile-img">
+</button>
+
+
 
         <!-- Dropdown menu -->
         <div class="user-dropdown-menu absolute right-0 hidden mt-2 bg-white shadow-lg rounded-md w-48"
@@ -20,8 +23,8 @@
                 {{ session('employeeName', 'User Name') }} <!-- Display employeeName from session -->
             </div>
 
-            <!-- Profile Option (form without a route for now) -->
-            <form method="GET" action="#" id="profileForm" class="profile-form">
+            <!-- Profile Option -->
+            <form method="GET" action="{{ route('profile') }}" id="profileForm" class="profile-form">
                 <button type="submit" class="user-dropdown-item text-gray-700 px-4 py-2 hover:bg-gray-100">
                     <i class="fa-solid fa-user mr-2"></i> Profile
                 </button>

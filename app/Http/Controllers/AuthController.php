@@ -49,9 +49,13 @@ class AuthController extends Controller
             // Store user data in session
             session([
                 'employeeName' => $employee->employeeName,
-                'userId' => $employee->id, // Store user ID in session
-                'usertype' => $employee->role, // Store user type in session
+                'userId' => $employee->id,
+                'usertype' => $employee->role,
+                'employeeImage' => $employee->imagePath ? asset($employee->imagePath) : asset('default-profile.png'),
             ]);
+            
+            
+            
 
             // Redirect to the dashboard after successful login
             return redirect()->route('dashboard');

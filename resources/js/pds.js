@@ -160,9 +160,9 @@ document
     });
 
   
-    document.getElementById("downloadMultipleButton").addEventListener("click", function () {
-        window.location.href = "/docs/MultiplePersonalDataSheetFormat.xlsx";
-    });
+    // document.getElementById("downloadMultipleButton").addEventListener("click", function () {
+    //     window.location.href = "/docs/MultiplePersonalDataSheetFormat.xlsx";
+    // });
 
 
 

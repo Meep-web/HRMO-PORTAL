@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserAccountController;
+use App\Http\Controllers\ProfileController;
 
 
 
@@ -54,13 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/towns/{provinceCode}', [LocationController::class, 'getTowns']);
     Route::get('/barangays/{townCode}', [LocationController::class, 'getBarangays']);
     Route::get('/generate-report/{id}', [ReportController::class, 'generateReport']);
-});
 
-Route::get('/data/zipcodes.json', function () {
-    return response()->json(json_decode(File::get(public_path('data/zipcodes.json'))));
-});
-
-Route::get('/account-management', function () {return view('accountManagement');})->name('account.management');
+    Route::get('/account-management', function () {return view('accountManagement');})->name('account.management');
 
 Route::get('/employment-status', function () {return view('employmentStatus');});
 
@@ -75,5 +71,17 @@ Route::post('/update-employee/{id}', [UserAccountController::class, 'updateEmplo
 
 
 
+Route::get('/profile', [ProfileController::class, 'showProfile'])
+    ->middleware('auth')
+    ->name('profile');
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/update-password', [ProfileController::class, 'updatePassword'])->middleware('auth');
 
+
+
+});
+
+Route::get('/data/zipcodes.json', function () {
+    return response()->json(json_decode(File::get(public_path('data/zipcodes.json'))));
+});
 

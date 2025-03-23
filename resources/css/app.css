@@ -125,12 +125,12 @@ body, html {
 }
 
 .service-records-button img {
-    width: 100%; /* Adjust the size */
-    max-width: 130px; /* Maintain a consistent max size */
+    width: 100%; /* Adjust size */
+    max-width: 100px; /* Maintain a consistent max size */
+    scale: 1.5;
     height: auto; /* Keep aspect ratio */
     transition: transform 0.2s ease;
-    scale: 1.5;
-    margin-bottom: 10%;
+
 }
 
 .service-records-button:hover img {
@@ -148,10 +148,12 @@ body, html {
 }
 
 .leave-credits-button img {
-    width: 100%; /* Adjust size */
+    width: 100%; /* Adjust the size */
     max-width: 130px; /* Maintain a consistent max size */
     height: auto; /* Keep aspect ratio */
     transition: transform 0.2s ease;
+    scale: 1.5;
+    margin-bottom: 10%;
 }
 
 .leave-credits-button:hover img {
@@ -519,3 +521,12 @@ p {
     font-size: 18px;
     margin-right: 10px;
 }
+
+.profile-img {
+    width: 3.5rem !important; /* Adjust as needed (1.5rem = 24px) */
+    height: 3.5rem !important;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+}
+

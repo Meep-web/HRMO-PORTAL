@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     document.getElementById("modalUserName").textContent = data.data.name;
                     document.getElementById("modalUserRole").value = data.data.role;
-                    modalUserImage.src = data.data.image || "/default-avatar.png";
+                    modalUserImage.src = data.data.image || "employeeImage/default-user.png";
                     modal.setAttribute("data-user-id", userId);
 
                     modal.classList.remove("hidden");
