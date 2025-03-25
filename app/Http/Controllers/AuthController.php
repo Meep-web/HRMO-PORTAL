@@ -51,7 +51,7 @@ class AuthController extends Controller
                 'employeeName' => $employee->employeeName,
                 'userId' => $employee->id,
                 'usertype' => $employee->role,
-                'employeeImage' => $employee->imagePath ? asset($employee->imagePath) : asset('default-profile.png'),
+                'employeeImage' => $employee->imagePath ? asset($employee->imagePath) : asset('employeeImage/default-user.png'),
             ]);
             
             

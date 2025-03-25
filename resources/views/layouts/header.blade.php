@@ -8,7 +8,7 @@
         <!-- User Icon (this will act as a button for dropdown) -->
         <button class="user-dropdown-button flex items-center space-x-2" id="userDropdownButton" aria-haspopup="true"
     aria-expanded="false">
-    <img src="{{ session('employeeImage', asset('default-profile.png')) }}" 
+    <img src="{{ session('employeeImage' ?: 'employeeImage/default-user.png') }}" 
          alt="Profile Picture" 
          class="profile-img">
 </button>

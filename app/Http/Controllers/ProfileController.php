@@ -21,52 +21,53 @@ class ProfileController extends Controller
     }
 
     public function updateProfile(Request $request)
-    {
-        $request->validate([
-            'employeeName' => 'required|string|max:255',
-            'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif', // Image validation
-        ]);
-    
-        $user = Auth::user();
-        $employee = Employee::where('id', $user->id)->first();
-    
-        if (!$employee) {
-            return response()->json(['success' => false, 'message' => 'Employee not found.'], 404);
-        }
-    
-        // Update name
-        $employee->employeeName = $request->employeeName;
-    
-        // Handle Image Upload
-        if ($request->hasFile('profileImage')) {
-            // Delete old image if it exists
-            if ($employee->imagePath && file_exists(public_path($employee->imagePath))) {
-                unlink(public_path($employee->imagePath));
-            }
-    
-            // Save new image
-            $file = $request->file('profileImage');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('employeeImage'), $filename);
-    
-            // Update image path in database
-            $employee->imagePath = 'employeeImage/' . $filename;
-        }
-    
-        $employee->save();
-    
-        // Update session
-        session([
-            'employeeName' => $employee->employeeName,
-            'imagePath' => $employee->imagePath ?? session('imagePath'),
-        ]);
-    
-        return response()->json([
-            'success' => true,
-            'message' => 'Profile updated successfully.',
-            'newImage' => asset($employee->imagePath), // Return new image URL
-        ]);
+{
+    $request->validate([
+        'employeeName' => 'required|string|max:255',
+        'profileImage' => 'nullable|image|mimes:jpeg,png,jpg,gif', // Image validation
+    ]);
+
+    $user = Auth::user();
+    $employee = Employee::where('id', $user->id)->first();
+
+    if (!$employee) {
+        return response()->json(['success' => false, 'message' => 'Employee not found.'], 404);
     }
+
+    // Update name
+    $employee->employeeName = $request->employeeName;
+
+    // Handle Image Upload
+    if ($request->hasFile('profileImage')) {
+        // Delete old image if it exists
+        if ($employee->imagePath && file_exists(public_path($employee->imagePath))) {
+            unlink(public_path($employee->imagePath));
+        }
+
+        // Save new image
+        $file = $request->file('profileImage');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('employeeImage'), $filename);
+
+        // Update image path in database
+        $employee->imagePath = 'employeeImage/' . $filename;
+    }
+
+    $employee->save();
+
+    // Update session with new employee name and image path
+    session([
+        'employeeName' => $employee->employeeName,
+        'employeeImage' => $employee->imagePath ?: 'employeeImage/default-user.png',
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Profile updated successfully.',
+        'newImage' => asset($employee->imagePath), // Return new image URL
+    ]);
+}
+
     public function updatePassword(Request $request)
 {
     $request->validate([

@@ -26,7 +26,7 @@ class EmployeesTableSeeder extends Seeder
                 'employeeName' => 'John Doe',
                 'role' => 'Encoder',
                 'password' => Hash::make('password123'),
-                'imagePath' => 'employeeImage/JohnDoe.png', // ✅ Kept
+                'imagePath' => null, // ❌ Removed
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],

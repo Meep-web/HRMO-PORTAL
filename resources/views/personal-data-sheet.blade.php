@@ -42,9 +42,14 @@
                         <td>
                             <!-- Edit Button -->
                             <button class="btn btn-primary edit-btn" data-id="{{ $personalInfo->id }}">Edit</button>
+                            
                             <!-- Print Button (No functionality yet) -->
                             <button class="btn btn-secondary print-btn" data-id="{{ $personalInfo->id }}">Print</button>
+                            
+                            <!-- View Files Button -->
+                            <button class="btn btn-info view-files-btn" data-id="{{ $personalInfo->id }}">View Files</button>
                         </td>
+                        
                         <td>{{ $personalInfo->updated_by }}</td> <!-- Now fetching from pdsupdates -->
                     </tr>
                 @endforeach
@@ -1077,6 +1082,42 @@
             </div>
         </div>
     </div>
+
+    <div id="viewFilesModal" class="view-files-container" style="display: none;">
+        <div class="view-files-content">
+            <span class="close-view-files">&times;</span>   
+            <h2>View Files</h2>
+            
+            <!-- Employee Details -->
+            <div id="employeeDetails">
+                <p><strong>Name:</strong> <span id="employeeName">Loading...</span></p>
+                <p><strong>Department:</strong> <span id="employeeDepartment">Loading...</span></p>
+            </div>
+    
+            <!-- File List -->
+            <div id="fileList">
+                <div class="file-card">
+                    <div class="file-title">Notice Of Salary Adjustment</div>
+                    <p>File 1 Content</p>
+                </div>
+                <div class="file-card">
+                    <div class="file-title">Service Record</div>
+                    <p>File 2 Content</p>
+                </div>
+                <div class="file-card">
+                    <div class="file-title">Personal Data Sheet</div>
+                    <p>File 3 Content</p>
+                </div>
+                <div class="file-card">
+                    <div class="file-title">Leave Credits</div>
+                    <p>File 4 Content</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+
 
 
 @endsection
