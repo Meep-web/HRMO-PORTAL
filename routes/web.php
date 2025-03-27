@@ -8,6 +8,11 @@ use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\File;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserAccountController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EmploymentController;
+
+
 
 
 
@@ -40,6 +45,9 @@ Route::middleware('auth')->group(function () {
     // Personal Data Sheet route
     Route::get('/personal-data-sheet', [PersonalDataSheetController::class, 'index'])->name('personalDataSheet');
     Route::get('/personal-data-sheet/{id}', [PersonalDataSheetController::class, 'show'])->name('personal-data-sheet.show');
+    Route::get('/get-employee-details/{id}', [PersonalDataSheetController::class, 'getEmployeeDetails']);
+    
+
 
     Route::post('/submit-form', [FileController::class, 'store']);
     Route::post('/validate-form', [FileController::class, 'validateForm']);
@@ -54,12 +62,39 @@ Route::middleware('auth')->group(function () {
     Route::get('/towns/{provinceCode}', [LocationController::class, 'getTowns']);
     Route::get('/barangays/{townCode}', [LocationController::class, 'getBarangays']);
     Route::get('/generate-report/{id}', [ReportController::class, 'generateReport']);
+
+    Route::get('/account-management', function () {
+        return view('accountManagement'); })->name('account.management');
+
+    Route::get('/employment-status', [EmploymentController::class, 'index']);
+
+    Route::post('/assign-employment', [EmploymentController::class, 'store'])->name('employment.store');
+
+
+
+    Route::get('/edit-account', function () {
+        return view('editAccount'); })->name('editAccount');
+
+
+
+    Route::get('/user-accounts', [UserAccountController::class, 'index'])->name('user.accounts');
+    Route::post('/reset-password/{id}', [UserAccountController::class, 'resetPassword']);
+    Route::get('/get-employee/{id}', [UserAccountController::class, 'getEmployee']);
+    Route::post('/update-employee/{id}', [UserAccountController::class, 'updateEmployee']);
+
+
+
+    Route::get('/profile', [ProfileController::class, 'showProfile'])
+        ->middleware('auth')
+        ->name('profile');
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/update-password', [ProfileController::class, 'updatePassword'])->middleware('auth');
+
+
+
 });
 
 Route::get('/data/zipcodes.json', function () {
     return response()->json(json_decode(File::get(public_path('data/zipcodes.json'))));
 });
-
-
-
 

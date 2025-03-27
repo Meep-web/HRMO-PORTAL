@@ -1,0 +1,144 @@
+
+    .custom-modal {
+display: none;
+position: fixed;
+z-index: 1000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5);
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.custom-modal-content {
+background: white;
+padding: 25px;
+border-radius: 12px;
+width: 50%;
+max-width: 600px;
+display: flex;
+flex-direction: column;
+position: relative;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hidden {
+display: none;
+}
+
+.close-modal {
+position: absolute;
+right: 15px;
+top: 10px;
+font-size: 20px;
+cursor: pointer;
+}
+
+.modal-title {
+text-align: center;
+font-size: 22px;
+font-weight: bold;
+margin-bottom: 15px;
+}
+
+.modal-body {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 15px;
+}
+
+/* Image Upload Section */
+.image-upload-container {
+display: flex;
+align-items: center;
+gap: 20px;
+width: 100%;
+justify-content: center;
+}
+
+.user-modal-img {
+width: 120px;
+height: 120px;
+border-radius: 50%;
+object-fit: cover;
+border: 2px solid #ddd;
+}
+
+.upload-section {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 5px;
+}
+
+.change-image-text {
+font-size: 14px;
+font-weight: bold;
+color: #444;
+}
+
+#imageUpload {
+border: 1px solid #ccc;
+padding: 5px;
+border-radius: 5px;
+}
+
+/* User Info */
+.user-name-text {
+font-size: 18px;
+font-weight: bold;
+margin-top: 10px;
+text-align: center;
+}
+
+/* Role Dropdown */
+.modal-input-group {
+display: flex;
+flex-direction: column;
+width: 80%;
+margin-top: 10px;
+}
+
+.modal-input-group label {
+font-weight: bold;
+margin-bottom: 5px;
+}
+
+.modal-dropdown {
+padding: 8px;
+border-radius: 5px;
+border: 1px solid #ccc;
+font-size: 16px;
+}
+
+.modal-buttons {
+display: flex;
+justify-content: space-between;
+width: 80%;
+margin-top: 15px;
+}
+
+.modal-btn {
+padding: 8px 15px;
+font-size: 16px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+width: 48%; /* Ensures both buttons fit nicely side by side */
+}
+
+/* Reset Password Button (Gray) */
+.reset-btn {
+background-color: #ccc;
+color: #333;
+}
+
+/* Save Button (Blue) */
+.save-btn {
+background-color: #007bff;
+color: white;
+}

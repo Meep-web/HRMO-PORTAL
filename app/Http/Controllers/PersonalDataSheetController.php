@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PdsUpdate;
 use App\Models\PersonalInfo;
+use App\Models\Employment;
+use App\Models\Department;
 
 class PersonalDataSheetController extends Controller
 {
@@ -31,10 +33,31 @@ class PersonalDataSheetController extends Controller
         'order' => $order,
     ]);
 }
+public function getEmployeeDetails($id)
+{
+    // Find the personal info
+    $employee = PersonalInfo::find($id);
 
+    if (!$employee) {
+        return response()->json(['error' => 'Employee not found'], 404);
+    }
 
+    // Find the employment details (if available)
+    $employment = Employment::where('personalID', $id)->first();
 
-    
+    // Get department name if employment data exists
+    $departmentName = null;
+    if ($employment && $employment->department_id) {
+        $department = Department::find($employment->department_id);
+        $departmentName = $department ? $department->department_name : null;
+    }
 
-    
+    return response()->json([
+        'first_name' => $employee->first_name,
+        'middle_name' => $employee->middle_name,
+        'last_name' => $employee->last_name,
+        'department' => $departmentName
+    ]);
+}
+
 }

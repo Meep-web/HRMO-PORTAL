@@ -160,9 +160,9 @@ document
     });
 
   
-    document.getElementById("downloadMultipleButton").addEventListener("click", function () {
-        window.location.href = "/docs/MultiplePersonalDataSheetFormat.xlsx";
-    });
+    // document.getElementById("downloadMultipleButton").addEventListener("click", function () {
+    //     window.location.href = "/docs/MultiplePersonalDataSheetFormat.xlsx";
+    // });
 
 
 
@@ -2839,4 +2839,52 @@ document.querySelectorAll(".print-btn").forEach((button) => {
                 console.error("Error fetching report data:", error);
             });
     });
+
+    
 });
+document.addEventListener("DOMContentLoaded", function () {
+    const viewFilesButtons = document.querySelectorAll(".view-files-btn");
+    const modal = document.querySelector(".view-files-container");
+    const closeModal = document.querySelector(".close-view-files");
+
+    viewFilesButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const employeeId = this.getAttribute("data-id");
+
+            fetch(`/get-employee-details/${employeeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Error:", data.error);
+                        return;
+                    }
+
+                    // Set Name
+                    document.getElementById("employeeName").textContent =
+                        `${data.first_name} ${data.middle_name || ""} ${data.last_name}`;
+
+                    // Set Department (or show 'Not Assigned' if null)
+                    document.getElementById("employeeDepartment").textContent =
+                        data.department ? data.department : "Not Assigned";
+
+                    // Ensure the modal uses flex display for proper centering
+                    modal.style.display = "flex";
+                })
+                .catch(error => console.error("Error:", error));
+        });
+    });
+
+    // Close modal when clicking the close button
+closeModal.addEventListener("click", function () {
+    modal.style.display = "none";
+});
+
+// Close modal when clicking outside of it
+window.addEventListener("click", function (event) {
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
+
+});
+

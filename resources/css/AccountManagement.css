@@ -1,0 +1,54 @@
+.user-accounts-container {
+    padding: 20px;
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+.card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.user-card {
+    width: 220px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 15px;
+}
+
+.user-icon img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.user-type {
+    font-size: 14px;
+    color: gray;
+    margin-bottom: 10px;
+}
+
+.manage-button {
+    padding: 8px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.manage-button:hover {
+    background: #0056b3;
+}

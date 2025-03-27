@@ -46,8 +46,16 @@ class AuthController extends Controller
             // Authenticate the user - Using Auth to log in the employee
             Auth::loginUsingId($employee->id);
 
-            // Store the employeeName in the session or a way to access it in the dropdown
-            session(['employeeName' => $employee->employeeName]);
+            // Store user data in session
+            session([
+                'employeeName' => $employee->employeeName,
+                'userId' => $employee->id,
+                'usertype' => $employee->role,
+                'employeeImage' => $employee->imagePath ? asset($employee->imagePath) : asset('employeeImage/default-user.png'),
+            ]);
+            
+            
+            
 
             // Redirect to the dashboard after successful login
             return redirect()->route('dashboard');

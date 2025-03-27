@@ -23,3 +23,4 @@ yarn-error.log
 .env
 run_silent.vbs
 start_hrmoportal.bat
+public/employeeImage

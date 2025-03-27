@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
             ProvinceSeeder::class,
             TownSeeder::class,
             BarangaySeeder::class,
+            SalaryGradeSeeder::class,
+            DepartmentSeeder::class,
     ]);
         
     }

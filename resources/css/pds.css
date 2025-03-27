@@ -133,7 +133,7 @@ body {
     transition: all 0.3s ease;
     background-color: #007bff;
     color: #fff;
-    width: 50%; /* Each button takes up half the modal width */
+    width: 100%; 
     text-align: center; /* Ensure text is centered */
 }
 
@@ -1126,3 +1126,99 @@ input.error {
 .hidden-column {
     display: none;
 }
+
+.view-files-btn {
+    background-color: green;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.view-files-btn:hover {
+    background-color: darkgreen;
+}
+
+/* Modal Container */
+.view-files-container {
+    display: none; /* Ensures modal is hidden initially */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal Content */
+.view-files-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%; /* Takes up almost the full screen */
+    max-width: 1200px; /* Prevents it from getting too wide */
+    height: 90vh; /* Almost full screen height */
+    text-align: left;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow-y: auto; /* Adds scroll if content overflows */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Close Button */
+.close-view-files {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+}
+
+.close-view-files:hover {
+    color: red;
+}
+
+#fileList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    gap: 15px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.file-card {
+    position: relative;
+    background: #f0f0f0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 150px; /* Adjust as needed */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Title inside the border */
+.file-title {
+    position: absolute;
+    top: 0;
+    left: 10px; /* Aligns text to the left */
+    transform: translateY(-50%); /* Keeps it positioned on the border */
+    background: white;
+    padding: 0 10px;
+    font-size: 23px;
+    font-weight: bold;
+}
+

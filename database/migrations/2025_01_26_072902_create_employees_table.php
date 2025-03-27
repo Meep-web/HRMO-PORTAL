@@ -19,8 +19,10 @@ class CreateEmployeesTable extends Migration
             $table->string('employeeName');
             $table->string('role');
             $table->string('password');
+            $table->string('imagePath')->nullable(); // Added column for storing image path
             $table->timestamps(); // created_at and updated_at
         });
+        
     }
 
     /**
