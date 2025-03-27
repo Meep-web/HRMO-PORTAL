@@ -503,6 +503,42 @@ class FileController extends Controller
         }
     }
     
+public function storePersonalInfo(Request $request)
+{
+    try {
+        $data = $request->input('personalPreview');
+
+        // Mapping column names to database fields
+        $personalInfo = new PersonalInfo();
+        $personalInfo->first_name = $data['column_34']; // "Christopher John"
+        $personalInfo->middle_name = $data['column_35']; // "Venusa"
+        $personalInfo->last_name = $data['column_36']; // "Pasahol"
+        $personalInfo->date_of_birth = $data['column_1']; // "11/29/2000"
+        $personalInfo->place_of_birth = $data['column_2']; // "Santa Cruz"
+        $personalInfo->sex = $data['column_3']; // "Male"
+        $personalInfo->civil_status = $data['column_4']; // "Single"
+        $personalInfo->height = $data['column_5']; // "182.88"
+        $personalInfo->weight = $data['column_6']; // "60"
+        $personalInfo->blood_type = $data['column_7']; // "A"
+        $personalInfo->gsis_id = $data['column_8']; // "123"
+        $personalInfo->pagibig_id = $data['column_9']; // "123"
+        $personalInfo->philhealth_id = $data['column_10']; // "123"
+        $personalInfo->sss_no = $data['column_11']; // "123"
+        $personalInfo->tin_no = $data['column_12']; // "123"
+        $personalInfo->agency_employee_no = $data['column_13']; // "123"
+        $personalInfo->telephone_no = $data['column_31']; // "9464812629"
+        $personalInfo->mobile_no = $data['column_32']; // "9464812629"
+        $personalInfo->email = $data['column_33']; // "pasahol.chris9816@gmail.com"
+        
+        $personalInfo->save();
+
+        return response()->json(['message' => 'Personal Information stored successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
+    
 }
 
 

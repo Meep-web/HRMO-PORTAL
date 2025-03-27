@@ -159,10 +159,9 @@ document.addEventListener("DOMContentLoaded", function () {
         multiplePdsModal.style.display = "none";
     }
 
-    if (multiplePdsClose)
-        multiplePdsClose.addEventListener("click", closeMultiplePdsModal);
-    if (multiplePdsCancel)
-        multiplePdsCancel.addEventListener("click", closeMultiplePdsModal);
+        if (multiplePdsClose)
+            multiplePdsClose.addEventListener("click", closeMultiplePdsModal);
+        
 
     const requiredFields = {
         personalPreview: [
@@ -177,111 +176,222 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     if (multiplePdsConfirm) {
-    multiplePdsConfirm.addEventListener("click", function () {
-        let hasMissingRequiredFields = false;
-        let firstMissingField = null;
-        const rowsWithMissingData = new Map(); // Track missing rows by row number
-        const allRowsData = {}; // Object to store rows grouped by index
-
-        // Get the maximum number of rows among all tables
-        let maxRows = 0;
-        for (const tableId of Object.keys(requiredFields)) {
-            const table = document.getElementById(tableId);
-            if (!table) continue;
-            const rows = table.querySelectorAll("tbody tr");
-            maxRows = Math.max(maxRows, rows.length);
-        }
-
-        // Iterate through row indices (assuming all tables align by row index)
-        for (let rowIndex = 0; rowIndex < maxRows; rowIndex++) {
-            allRowsData[rowIndex] = {}; // Create an object for this row
-
-            // Iterate through each table
-            for (const [tableId, requiredColumns] of Object.entries(requiredFields)) {
+        multiplePdsConfirm.addEventListener("click", function () {
+            let hasMissingRequiredFields = false;
+            let firstMissingField = null;
+            const rowsWithMissingData = new Map(); // Track missing rows by row number
+            const allRowsData = {}; // Object to store rows grouped by index
+    
+            // Get the maximum number of rows among all tables
+            let maxRows = 0;
+            for (const tableId of Object.keys(requiredFields)) {
                 const table = document.getElementById(tableId);
                 if (!table) continue;
-
                 const rows = table.querySelectorAll("tbody tr");
-                const row = rows[rowIndex]; // Get the row at this index
-
-                if (!row) continue; // Skip if the row doesn't exist in this table
-
-                const inputs = row.querySelectorAll("input");
-
-                // Store table-specific data in the same row object
-                allRowsData[rowIndex][tableId] = {};
-
-                // Iterate over inputs
-                inputs.forEach((input, colIndex) => {
-                    const value = input.value.trim();
-                    allRowsData[rowIndex][tableId][`column_${colIndex}`] = value;
-
-                    // Check for missing required fields
-                    if (requiredColumns.includes(colIndex) && !value) {
-                        input.classList.add("missing-field");
-                        if (!firstMissingField) firstMissingField = input;
-                        hasMissingRequiredFields = true;
-
-                        // Track missing data by row
-                        if (!rowsWithMissingData.has(rowIndex)) {
-                            rowsWithMissingData.set(rowIndex, []);
+                maxRows = Math.max(maxRows, rows.length);
+            }
+    
+            // Iterate through row indices (assuming all tables align by row index)
+            for (let rowIndex = 0; rowIndex < maxRows; rowIndex++) {
+                allRowsData[rowIndex] = {}; // Create an object for this row
+    
+                // Iterate through each table
+                for (const [tableId, requiredColumns] of Object.entries(requiredFields)) {
+                    const table = document.getElementById(tableId);
+                    if (!table) continue;
+    
+                    const rows = table.querySelectorAll("tbody tr");
+                    const row = rows[rowIndex]; // Get the row at this index
+    
+                    if (!row) continue; // Skip if the row doesn't exist in this table
+    
+                    const inputs = row.querySelectorAll("input");
+    
+                    // Store table-specific data in the same row object
+                    allRowsData[rowIndex][tableId] = {};
+    
+                    // Iterate over inputs (including hidden fields)
+                    inputs.forEach((input, colIndex) => {
+                        const value = input.value.trim();
+    
+                        // Include both visible and hidden inputs
+                        if (input.type === "text" || input.type === "hidden") {
+                            allRowsData[rowIndex][tableId][`column_${colIndex}`] = value;
+    
+                            // Check for missing required fields
+                            if (requiredColumns.includes(colIndex) && !value) {
+                                input.classList.add("missing-field");
+                                if (!firstMissingField) firstMissingField = input;
+                                hasMissingRequiredFields = true;
+    
+                                // Track missing data by row
+                                if (!rowsWithMissingData.has(rowIndex)) {
+                                    rowsWithMissingData.set(rowIndex, []);
+                                }
+                                rowsWithMissingData.get(rowIndex).push(`${tableId} (Column ${colIndex})`);
+                            }
                         }
-                        rowsWithMissingData.get(rowIndex).push(`${tableId} (Column ${colIndex})`);
+                    });
+    
+                    // Highlight row if missing data
+                    const isRowMissingData = requiredColumns.some((colIndex) => {
+                        const input = inputs[colIndex];
+                        return !input || !input.value.trim();
+                    });
+    
+                    if (isRowMissingData) {
+                        row.classList.add("missing-row");
+                    } else {
+                        row.classList.remove("missing-row");
                     }
-                });
-
-                // Highlight row if missing data
-                const isRowMissingData = requiredColumns.some((colIndex) => {
-                    const input = inputs[colIndex];
-                    return !input || !input.value.trim();
-                });
-
-                if (isRowMissingData) {
-                    row.classList.add("missing-row");
-                } else {
-                    row.classList.remove("missing-row");
                 }
             }
-        }
-
-        // Show error message if missing fields exist
-        if (hasMissingRequiredFields) {
-            const errorList = Array.from(rowsWithMissingData.entries())
-                .map(([rowIndex, missing]) => `Row ${rowIndex + 1}: ${missing.join(", ")}`)
-                .join("<br>");
-
-            Swal.fire({
-                icon: "error",
-                title: "Missing Required Fields",
-                html: `Please fill in the required fields for:<br>${errorList}`,
-            }).then(() => {
-                if (firstMissingField) {
-                    firstMissingField.focus();
-                    firstMissingField.scrollIntoView({ behavior: "smooth", block: "center" });
-                }
-            });
-            return;
-        }
-
-        // Convert object to array
-        const resultArray = Object.entries(allRowsData).map(([rowIndex, data]) => ({
-            
-            ...data,
-        }));
-
-        console.log("Extracted Data:", resultArray); // Debugging - view extracted data
-
-        Swal.fire({
-            icon: "success",
-            title: "Extraction Confirmed!",
-            text: "The extraction process has been successfully confirmed.",
-        });
-
-        closeMultiplePdsModal();
-    });
-}
-
     
+            // Show error message if missing fields exist
+            if (hasMissingRequiredFields) {
+                const errorList = Array.from(rowsWithMissingData.entries())
+                    .map(([rowIndex, missing]) => `Row ${rowIndex + 1}: ${missing.join(", ")}`)
+                    .join("<br>");
+    
+                Swal.fire({
+                    icon: "error",
+                    title: "Missing Required Fields",
+                    html: `Please fill in the required fields for:<br>${errorList}`,
+                }).then(() => {
+                    if (firstMissingField) {
+                        firstMissingField.focus();
+                        firstMissingField.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }
+                });
+                return;
+            }
+    
+            // Convert object to array and flatten the structure
+            const resultArray = Object.entries(allRowsData).map(([rowIndex, rowData]) => {
+                const flatRow = {};
+                for (const [tableId, tableData] of Object.entries(rowData)) {
+                    for (const [column, value] of Object.entries(tableData)) {
+                        flatRow[column] = value; // Flatten the data into a single row
+                    }
+                }
+                return flatRow;
+            });
+    
+            console.log("Extracted Data:", resultArray); // Debugging - view extracted data
+    
+            Swal.fire({
+                icon: "success",
+                title: "Extraction Confirmed!",
+                text: "The extraction process has been successfully confirmed.",
+            });
+    
+            // Format dates using safeDateFormat before sending to the server
+            const extractedData = resultArray.map(row => {
+                const formattedRow = { ...row };
+                if (formattedRow.date_of_birth) {
+                    formattedRow.date_of_birth = safeDateFormat(formattedRow.date_of_birth);
+                }
+                return formattedRow;
+            });
+    
+            // Ensure all columns (including hidden fields) are included
+            const completeData = extractedData.map(row => {
+                const defaultRow = {};
+                for (let i = 0; i <= 36; i++) {
+                    defaultRow[`column_${i}`] = row[`column_${i}`] || ""; // Fill missing columns with empty strings
+                }
+                return defaultRow;
+            });
+    
+            console.log("Complete Data:", completeData); // Debugging - view complete data
+    
+            // Send extracted data to the server
+            const personalPreview = completeData[0]; // Taking first record for now
+    
+            fetch('/store-personal-info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ personalPreview })
+            })
+            .then(response => response.json())
+            .then(data => console.log('Success:', data))
+            .catch(error => console.error('Error:', error));
+    
+            closeMultiplePdsModal();
+        });
+    }
+    
+    // Helper function to format dates
+    function safeDateFormat(value) {
+        if (!value) return ""; // Return empty if no value
+    
+        let dateObj;
+    
+        if (typeof value === "number") {
+            // Convert Excel serial date to JavaScript Date
+            const excelStartDate = new Date(1899, 11, 30);
+            dateObj = new Date(excelStartDate.getTime() + value * 86400000);
+        } else if (typeof value === "string") {
+            // Parse string date
+            dateObj = new Date(value);
+        }
+    
+        if (dateObj && !isNaN(dateObj.getTime())) {
+            // Format as YYYY-MM-DD for <input type="date">
+            return dateObj.toISOString().split("T")[0];
+        }
+    
+        return ""; // Return empty if invalid
+    }
+    
+    // Helper function to format dates
+    function safeDateFormat(value) {
+        if (!value) return ""; // Return empty if no value
+    
+        let dateObj;
+    
+        if (typeof value === "number") {
+            // Convert Excel serial date to JavaScript Date
+            const excelStartDate = new Date(1899, 11, 30);
+            dateObj = new Date(excelStartDate.getTime() + value * 86400000);
+        } else if (typeof value === "string") {
+            // Parse string date
+            dateObj = new Date(value);
+        }
+    
+        if (dateObj && !isNaN(dateObj.getTime())) {
+            // Format as YYYY-MM-DD for <input type="date">
+            return dateObj.toISOString().split("T")[0];
+        }
+    
+        return ""; // Return empty if invalid
+    }
+    
+    // Helper function to format dates
+    function safeDateFormat(value) {
+        if (!value) return ""; // Return empty if no value
+    
+        let dateObj;
+    
+        if (typeof value === "number") {
+            // Convert Excel serial date to JavaScript Date
+            const excelStartDate = new Date(1899, 11, 30);
+            dateObj = new Date(excelStartDate.getTime() + value * 86400000);
+        } else if (typeof value === "string") {
+            // Parse string date
+            dateObj = new Date(value);
+        }
+    
+        if (dateObj && !isNaN(dateObj.getTime())) {
+            // Format as YYYY-MM-DD for <input type="date">
+            return dateObj.toISOString().split("T")[0];
+        }
+    
+        return ""; // Return empty if invalid
+    }
 
     // Tab switching functionality
     document.querySelectorAll(".tab-button").forEach((button) => {

@@ -45,7 +45,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/validate-form', [FileController::class, 'validateForm']);
     Route::get('/get-update-data/{id}', [FileController::class, 'getUpdateData']);
     Route::put('/update-personal-info', [FileController::class, 'updatePersonalInfo'])->name('update-personal-info');
-    Route::post('/save-multiple-data', [FileController::class, 'saveMultipleData']);
+    Route::post('/store-personal-info', [FileController::class, 'storePersonalInfo']);
+
 
 
     // Location routes
