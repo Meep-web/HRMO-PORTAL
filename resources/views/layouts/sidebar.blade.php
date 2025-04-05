@@ -6,12 +6,10 @@
         <img src="{{ asset('logo.png') }}" alt="Logo" class="sidebar-logo" id="logo-clickable">
     </a>
 
-
     <!-- Nosa Button -->
     <a href="{{ route('noticeOfSalaryAdjustment') }}" class="nosa-button" data-title="Notice of Salary Adjustment">
         <img src="{{ asset('nosa.png') }}" alt="Nosa" class="sidebar-nosa">
     </a>
-
 
     <a href="#" class="service-records-button" data-title="Service Records">
         <img src="{{ asset('leaveCredits.png') }}" alt="Service Records" class="sidebar-service-records">

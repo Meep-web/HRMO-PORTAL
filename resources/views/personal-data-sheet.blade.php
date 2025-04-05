@@ -44,7 +44,7 @@
                             <button class="btn btn-primary edit-btn" data-id="{{ $personalInfo->id }}">Edit</button>
                             
                             <!-- Print Button (No functionality yet) -->
-                            <button class="btn btn-secondary print-btn" data-id="{{ $personalInfo->id }}">Print</button>
+                            <button class="btn btn-secondary print-btn" id="printButton" data-id="{{ $personalInfo->id }}">Print</button>
                             
                             <!-- View Files Button -->
                             <button class="btn btn-info view-files-btn" data-id="{{ $personalInfo->id }}">View Files</button>
