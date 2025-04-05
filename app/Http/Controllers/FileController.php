@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use Illuminate\Support\Facades\Response;
 
 
 
@@ -506,51 +502,43 @@ class FileController extends Controller
             return response()->json(['error' => 'An error occurred while updating data.'], 500);
         }
     }
-
-    public function fillExcel()
-{
-    $filePath = public_path('docs/ClearPDS.xlsx');
-
-    if (!file_exists($filePath)) {
-        return response()->json(['error' => 'File not found'], 404);
-    }
-
-    // Load the spreadsheet
-    $spreadsheet = IOFactory::load($filePath);
-    $sheet = $spreadsheet->getActiveSheet();
-
-    // Fetch data from the database (Adjust the query as needed)
-    $personalInfo = PersonalInfo::first(); // Adjust this to get the correct record
-
-    if (!$personalInfo) {
-        return response()->json(['error' => 'No personal data found'], 404);
-    }
-
-    // Fill specific cells with actual data
-    $sheet->setCellValueExplicit('D10', $personalInfo->last_name, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-    $sheet->setCellValueExplicit('D11', $personalInfo->first_name, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-    $sheet->setCellValueExplicit('D12', $personalInfo->middle_name, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
     
-    $sheet->setCellValueExplicit('D13', $personalInfo->date_of_birth, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-    $sheet->setCellValueExplicit('D15', $personalInfo->place_of_birth, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+public function storePersonalInfo(Request $request)
+{
+    try {
+        $data = $request->input('personalPreview');
 
-    $sheet->setCellValueExplicit('D22', $personalInfo->height, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-    $sheet->setCellValueExplicit('D24', $personalInfo->weight, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-    $sheet->setCellValueExplicit('D25', $personalInfo->blood_type, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+        // Mapping column names to database fields
+        $personalInfo = new PersonalInfo();
+        $personalInfo->first_name = $data['column_34']; // "Christopher John"
+        $personalInfo->middle_name = $data['column_35']; // "Venusa"
+        $personalInfo->last_name = $data['column_36']; // "Pasahol"
+        $personalInfo->date_of_birth = $data['column_1']; // "11/29/2000"
+        $personalInfo->place_of_birth = $data['column_2']; // "Santa Cruz"
+        $personalInfo->sex = $data['column_3']; // "Male"
+        $personalInfo->civil_status = $data['column_4']; // "Single"
+        $personalInfo->height = $data['column_5']; // "182.88"
+        $personalInfo->weight = $data['column_6']; // "60"
+        $personalInfo->blood_type = $data['column_7']; // "A"
+        $personalInfo->gsis_id = $data['column_8']; // "123"
+        $personalInfo->pagibig_id = $data['column_9']; // "123"
+        $personalInfo->philhealth_id = $data['column_10']; // "123"
+        $personalInfo->sss_no = $data['column_11']; // "123"
+        $personalInfo->tin_no = $data['column_12']; // "123"
+        $personalInfo->agency_employee_no = $data['column_13']; // "123"
+        $personalInfo->telephone_no = $data['column_31']; // "9464812629"
+        $personalInfo->mobile_no = $data['column_32']; // "9464812629"
+        $personalInfo->email = $data['column_33']; // "pasahol.chris9816@gmail.com"
+        
+        $personalInfo->save();
 
-    $sheet->setCellValueExplicit('I32', $personalInfo->telephone_no, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-    $sheet->setCellValueExplicit('I34', $personalInfo->email, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-
-    // Save to a temporary file
-    $tempFile = tempnam(sys_get_temp_dir(), 'PDS') . '.xlsx';
-    $writer = new Xlsx($spreadsheet);
-
-    // Ensure proper file handling
-    $writer->save($tempFile);
-
-    return response()->download($tempFile, 'Filled_PDS.xlsx')->deleteFileAfterSend(true);
+        return response()->json(['message' => 'Personal Information stored successfully']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
 }
 
+    
 }
 
 
