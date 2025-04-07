@@ -12,7 +12,7 @@
             <div class="search-bar-container">
                 <input type="text" class="search-bar" placeholder="🔍 Search..." />
             </div>
-            <button class="upload-button" id="uploadButton">Upload</button>
+
         </div>
 
         <!-- Table Content -->
@@ -45,7 +45,11 @@
                                     data-name="{{ $employment->first_name }} {{ $employment->last_name }}"
                                     data-department="{{ $employment->department_id ?? '' }}"
                                     data-salary-grade="{{ $employment->salaryGrade ?? '' }}"
-                                    data-step-increment="{{ $employment->stepIncrement ?? '' }}">
+                                    data-step-increment="{{ $employment->stepIncrement ?? '' }}"
+                                    data-position="{{ $employment->designation_id ?? '' }}"
+                                    data-date-hired="{{ $employment->date_hired ?? '' }}"
+                                    data-date-effectivity="{{ $employment->dateOfEffectivity ?? '' }}"
+                                    data-date-released="{{ $employment->dateReleased ?? '' }}">
                                     Assign
                                 </button>
 
@@ -58,7 +62,7 @@
     </div>
 
     <!-- Assign Employment Modal -->
-    <div id="assignEmploymentModal" class="modal">
+    <div id="assignEmploymentModal" class="modal assign-employment-modal">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2>Assign Employment</h2>
@@ -74,6 +78,13 @@
                     @foreach ($departments as $department)
                         <option value="{{ $department->id }}">{{ $department->department_name }}</option>
                     @endforeach
+                </select>
+
+                <!-- Position Dropdown -->
+                <label for="position">Position:</label>
+                <select id="position" name="position">
+                    <option value="" disabled selected>Select a position</option>
+                    <!-- Dynamic positions will be loaded here -->
                 </select>
 
                 <!-- Salary Grade & Step Increment Row -->
@@ -99,10 +110,34 @@
                     </div>
                 </div>
 
+                <!-- Date Effectivity & Date Released Row -->
+                <div class="date-container">
+                    <div class="date-group">
+                        <label for="dateOfEffectivity">Date of Effectivity:</label>
+                        <input type="date" id="dateOfEffectivity" name="dateOfEffectivity" required>
+                    </div>
+
+                    <div class="date-group">
+                        <label for="dateReleased">Date Released:</label>
+                        <input type="date" id="dateReleased" name="dateReleased" required>
+                    </div>
+                </div>
+
+                <!-- Date Hired Picker -->
+                <label for="dateHired">Date Hired:</label>
+                <input type="date" id="dateHired" name="dateHired" required>
+
+                <!-- Hidden fields for old data -->
+                <input type="hidden" id="oldDepartment" value="{{ $employment->department_id ?? '' }}">
+                <input type="hidden" id="oldSalaryGrade" value="{{ $employment->salaryGrade ?? '' }}">
+                <input type="hidden" id="oldStepIncrement" value="{{ $employment->stepIncrement ?? '' }}">
+                <input type="hidden" id="oldPosition" value="{{ $employment->designation_id ?? '' }}">
+
                 <button type="submit" class="save-assign-btn">Save</button>
             </form>
         </div>
     </div>
+
 
 
     <style>
@@ -197,8 +232,8 @@
             background: #218838;
         }
 
-        /* Modal */
-        .modal {
+        /* Assign Employment Modal */
+        .assign-employment-modal {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -207,58 +242,145 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            /* Adds blur effect to the background */
         }
 
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 10px;
-            width: 40%;
-            text-align: center;
+        .assign-employment-modal .modal-content {
+            background-color: #ffffff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 50%;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            /* Ensures the modal doesn't overflow on smaller screens */
+            box-sizing: border-box;
+            height: 90vh;
+            /* Limit the modal height to 90% of the viewport height */
+            overflow-y: auto;
+            /* Adds scrolling if content exceeds the height */
         }
 
-        .close-modal {
+        /* Modal Close Button */
+        .assign-employment-modal .close-modal {
             float: right;
             font-size: 28px;
+            color: #333;
             cursor: pointer;
         }
 
-        label {
+        .assign-employment-modal .close-modal:hover {
+            color: #f44336;
+        }
+
+        /* Form Elements */
+        .assign-employment-modal label {
             display: block;
             margin: 10px 0 5px;
+            font-weight: 600;
+            color: #333;
         }
 
-        select,
-        input {
+        .assign-employment-modal select,
+        .assign-employment-modal input {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
         }
 
-        .save-assign-btn {
+        .assign-employment-modal select:focus,
+        .assign-employment-modal input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .assign-employment-modal .save-assign-btn {
             background-color: #28a745;
             color: white;
             border: none;
-            padding: 10px;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 6px;
             cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
         }
 
-        .save-assign-btn:hover {
+        .assign-employment-modal .save-assign-btn:hover {
             background-color: #218838;
         }
 
-        .salary-step-container {
+        /* Salary Grade & Step Increment Layout */
+        .assign-employment-modal .salary-step-container {
             display: flex;
             gap: 20px;
-            /* Adjust spacing between Salary Grade and Step Increment */
+            margin-bottom: 20px;
         }
 
-        .salary-step-group {
+        /* Salary Grade and Step Increment Group */
+        .assign-employment-modal .salary-step-group {
             flex: 1;
-            /* Makes both fields equal in width */
+        }
+
+        /* Date Pickers Layout */
+        .assign-employment-modal .date-container {
             display: flex;
-            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .assign-employment-modal .date-group {
+            flex: 1;
+        }
+
+        .assign-employment-modal .date-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .assign-employment-modal .date-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        /* Hover Effects for Date Pickers */
+        .assign-employment-modal .date-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* Responsiveness for smaller screens */
+        @media (max-width: 768px) {
+            .assign-employment-modal .modal-content {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .assign-employment-modal .salary-step-container,
+            .assign-employment-modal .date-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .assign-employment-modal .salary-step-group,
+            .assign-employment-modal .date-group {
+                flex: 1;
+            }
+
+            .assign-employment-modal .save-assign-btn {
+                padding: 10px 15px;
+            }
         }
     </style>
+
 @endsection

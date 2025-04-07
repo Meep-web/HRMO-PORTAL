@@ -11,6 +11,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserAccountController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmploymentController;
+use App\Models\Designation;
+use App\Models\Department;
 
 
 
@@ -38,10 +40,8 @@ Route::middleware('auth')->group(function () {
 
     // Notice of Salary Adjustment routes
     Route::get('/notice-of-salary-adjustment', [NoticeOfSalaryAdjustmentController::class, 'show'])->name('noticeOfSalaryAdjustment');
-    Route::post('/save-nosa', [NoticeOfSalaryAdjustmentController::class, 'save'])->name('save.nosa');
-    Route::get('/get-nosa-data', [NoticeOfSalaryAdjustmentController::class, 'getNosaData']);
-    Route::get('/get-employee-data/{employeeId}', [NoticeOfSalaryAdjustmentController::class, 'getEmployeeData']);
-
+    Route::post('/show-salary-changes', [NoticeOfSalaryAdjustmentController::class, 'showSalaryChanges']);
+    Route::post('/refactor_data', [NoticeOfSalaryAdjustmentController::class, 'refactorData']);
     // Personal Data Sheet route
     Route::get('/personal-data-sheet', [PersonalDataSheetController::class, 'index'])->name('personalDataSheet');
     Route::get('/personal-data-sheet/{id}', [PersonalDataSheetController::class, 'show'])->name('personal-data-sheet.show');
@@ -98,3 +98,15 @@ Route::get('/data/zipcodes.json', function () {
     return response()->json(json_decode(File::get(public_path('data/zipcodes.json'))));
 });
 
+Route::get('/get-designations/{departmentId}', function ($departmentId) {
+    $designations = Designation::where('department_id', $departmentId)->get();
+    return response()->json($designations);
+});
+
+Route::get('/get-department-name/{departmentId}', function ($departmentId) {
+    $department = Department::find($departmentId); // Find the department by its ID
+    if ($department) {
+        return response()->json(['name' => $department->department_name]); // Return the department name
+    }
+    return response()->json(['name' => 'Unknown Department']); // Return a default value if not found
+});

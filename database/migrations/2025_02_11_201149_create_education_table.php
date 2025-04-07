@@ -9,8 +9,8 @@ return new class extends Migration {
         Schema::create('education', function (Blueprint $table) {
             $table->id();
             $table->foreignId('personal_info_id')->constrained('personal_info')->onDelete('cascade');
-            $table->string('level');
-            $table->string('school');
+            $table->string('level')->nullable();
+            $table->string('school')->nullable();
             $table->string('degree')->nullable();
             $table->date('from')->nullable();
             $table->date('to')->nullable();

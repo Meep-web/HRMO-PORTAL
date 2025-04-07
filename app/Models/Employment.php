@@ -17,7 +17,14 @@ class Employment extends Model
         'stepIncrement',
         'salaryGrade',
         'updatedBy',
+        'designation_id',  // Add designation_id here
+        'date_hired',      // Add date_hired here
+        'dateOfEffectivity',  // Add date_of_effectivity here
+        'dateReleased',       // Add date_released here
     ];
+    
+    
+    
 
     // Relationship with PersonalInfo
     public function personalInfo()

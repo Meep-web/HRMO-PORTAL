@@ -1,0 +1,75 @@
+.update-history-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Table Styling */
+#updateHistoryData table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    border: 1px solid #ddd;
+}
+
+#updateHistoryData th, #updateHistoryData td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#updateHistoryData th {
+    background-color: #f2f2f2;
+    color: #333;
+}
+
+/* Action Button Styling */
+.action-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color: #45a049; /* Darker green when hovered */
+}
+
+/* Table Row Hover Effect */
+#updateHistoryData tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* For better visibility of modal content */
+#updateHistoryModal {
+    padding: 20px;
+    overflow-x: auto;
+}

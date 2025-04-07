@@ -3,8 +3,8 @@
 @section('title', 'Notice of Salary Adjustment')
 
 @section('content')
-    @vite(['resources/css/nosa.css', 'resources/js/app.js']) <!-- Include your CSS and JS -->
-    <input type="hidden" id="saveNosaRoute" value="{{ route('save.nosa') }}" />
+    @vite(['resources/css/nosa.css','resources/css/nosaModal.css', 'resources/js/app.js', 'resources/js/nosa.js']) <!-- Include your CSS and JS -->
+   
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <div class="main-content">
@@ -16,8 +16,7 @@
                 <input type="text" class="search-bar" placeholder="🔍 Search..." />
             </div>
 
-            <!-- Upload Button -->
-            <button class="upload-button" id="uploadButton">Upload</button>
+           
         </div>
 
         <!-- Table Content -->
@@ -25,26 +24,38 @@
             <table class="salary-adjustment-table">
                 <thead>
                     <tr>
+                        <th>Name</th>
                         <th>Department</th>
                         <th>Last Updated</th>
-                        <th>Action</th>
                         <th>Updated By</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($nosaRecords as $record)
+                    @forelse ($employees as $employee)
                         <tr>
-                            <td>{{ $record->department }}</td>
-                            <td>{{ $record->updated_at->format('Y-m-d h:i A') }}</td>
-                            <td>
-                                <button class="view-button" data-department="{{ $record->department }}">View</button>
-                            </td>
-                            <td>{{ $record->userName }}</td>
+                            <td>{{ $employee['name'] }}</td>
+                            <td>{{ $employee['department'] }}</td>
+                            <td>{{ \Carbon\Carbon::parse($employee['updated_at'])->format('F d, Y h:i A') }}</td>
+                            <td>{{ $employee['updatedBy'] }}</td>
+                            
+                                <td>
+                                    <button class="show-salary-changes-button" data-id="{{ $employee['id'] }}">
+                                        Show Salary Changes
+                                    </button>
+                                </td>
+                                
+                            
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center;">No employee data available.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
+
     </div>
 
     <!-- Modal -->
@@ -92,35 +103,44 @@
         </div>
     </div>
 
-    <!-- Department Specific Modal -->
-<div id="DepartmentSpecificModal" class="department-specific-modal">
-    <div class="department-specific-modal-content">
-        <span class="close-department-specific-modal">&times;</span>
-        <h2>Employee Salary Adjustment Details</h2>
-        <table id="employeeDataTable">
+   <!-- Modal to show salary changes -->
+<div id="updateHistoryModal" class="modal">
+    <div class="modal-content">
+        <span id="closeUpdateHistory" class="close">&times;</span>
+        <h2>Salary Change History</h2>
+
+        <!-- Table for displaying salary changes -->
+        <table id="salaryChangesTable" style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr>
-                    <th>Employee</th>
-                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Date of Effectivity</th>
                     <th>Date Released</th>
-                    <th>Updated By</th>
-                    <th>Action</th> <!-- New Action Column -->
+                    <th>Action</th> <!-- Action column for the button -->
                 </tr>
             </thead>
-            <tbody>
-                <!-- Data will be dynamically inserted here -->
+            <tbody id="updateHistoryData">
+                <!-- Data will be injected here -->
             </tbody>
         </table>
+
+        <!-- Button to generate PDF (for later) -->
+        <!-- Will be added later -->
     </div>
 </div>
 
-<!-- PDF Display Modal -->
-<div id="pdfModal" class="modal">
-    <div class="modal-content">
-        <span class="close-pdf-modal">&times;</span>
-        <h2>NOSA Document</h2>
-        <iframe id="pdfIframe" src="" width="100%" height="500px"></iframe>
+
+    <!-- PDF Display Modal -->
+    <div id="pdfModal" class="modal">
+        <div class="modal-content">
+            <span class="close-pdf-modal">&times;</span>
+            <h2>NOSA Document</h2>
+            <iframe id="pdfIframe" src="" width="100%" height="500px"></iframe>
+        </div>
     </div>
-</div>
+
+
+
+
 
 @endsection

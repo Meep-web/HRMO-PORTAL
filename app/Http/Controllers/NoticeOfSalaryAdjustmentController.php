@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\NOSA;
-use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\Employment;
+use App\Models\PersonalInfo;
+use App\Models\Department;
+use Illuminate\Support\Facades\File;
+use App\Models\Designation;
+use App\Models\SalaryGrade;
+
 
 
 class NoticeOfSalaryAdjustmentController extends Controller
@@ -13,119 +19,119 @@ class NoticeOfSalaryAdjustmentController extends Controller
     // Show the form
     public function show()
     {
-        // Fetch the latest record for each unique department
-        $nosaRecords = NOSA::select('department', 'updated_at', 'userName')
-            ->whereIn('id', function ($query) {
-                $query->selectRaw('MAX(id)') // Get the latest record ID for each department
-                    ->from('NOSA')
-                    ->groupBy('department');
-            })
-            ->orderBy('department', 'asc')
-            ->get();
+        $employees = PersonalInfo::select('id', 'first_name', 'middle_name', 'last_name')
+            ->get()
+            ->map(function ($employee) {
+                $employment = Employment::where('personalID', $employee->id)->first();
 
-        // Pass the data to the view
-        return view('noticeOfSalaryAdjustment', compact('nosaRecords'));
-    }
-    // Save the data
-    public function save(Request $request)
-{
-    Log::info('Received data:', $request->all());
+                return [
+                    'id' => $employee->id,
+                    'name' => trim("{$employee->first_name} {$employee->middle_name} {$employee->last_name}"),
+                    'department' => $employment?->department_id
+                        ? Department::find($employment->department_id)?->department_name ?? 'N/A'
+                        : 'N/A',
+                    'updatedBy' => $employment?->updatedBy ?? 'N/A',
+                    'updated_at' => $employment?->updated_at ?? 'N/A',
+                ];
+            });
 
-    $validator = Validator::make($request->all(), [
-        'currentEmployeeName' => 'required|string',
-        'salaryAdjustments' => 'required|array',
-        'salaryAdjustments.*.employeeName' => 'required|string',
-        'salaryAdjustments.*.position' => 'required|string',
-        'salaryAdjustments.*.department' => 'required|string',
-        'salaryAdjustments.*.previousSalary' => 'required|numeric',
-        'salaryAdjustments.*.newSalary' => 'required|numeric',
-        'salaryAdjustments.*.dateOfEffectivity' => 'required|date',
-        'salaryAdjustments.*.dateReleased' => 'required|date',
-        'salaryAdjustments.*.salaryGrade' => 'required|integer',
-        'salaryAdjustments.*.stepIncrement' => 'required|integer',
-    ]);
+        // Log or pass to view
+        logger($employees);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Validation failed.',
-            'errors' => $validator->errors(),
-        ], 422);
+        return view('noticeOfSalaryAdjustment', ['employees' => $employees]);
     }
 
-    $data = $validator->validated();
-
-    try {
-        foreach ($data['salaryAdjustments'] as $adjustment) {
-            $existingRecord = NOSA::where('employeeName', $adjustment['employeeName'])
-                ->where('department', $adjustment['department'])
-                ->first();
-
-            if ($existingRecord) {
-                // If a record exists, return it for confirmation
-                return response()->json([
-                    'success' => false,
-                    'duplicate' => true,
-                    'message' => "A record for {$adjustment['employeeName']} at {$adjustment['department']} already exists.",
-                    'existingData' => $existingRecord,
-                    'newData' => $adjustment,
-                ]);
+    public function showSalaryChanges(Request $request)
+    {
+        // Get employee ID from request
+        $employeeId = $request->input('employeeId');
+    
+        // Path to the JSON file
+        $jsonFilePath = storage_path('app/employment_changes.json');
+    
+        // Check if the file exists
+        if (!File::exists($jsonFilePath)) {
+            return response()->json(['error' => 'JSON file not found.'], 404);
+        }
+    
+        // Get the content of the JSON file
+        $jsonContent = File::get($jsonFilePath);
+    
+        // Decode the JSON content into an array
+        $changes = json_decode($jsonContent, true);
+    
+        // Filter the data based on employeeId
+        $employeeChanges = [];
+        foreach ($changes as $change) {
+            if ($change['employee_id'] == $employeeId) {
+                $employeeChanges[] = $change;
             }
         }
-
-        // If no duplicate, proceed with saving
-        foreach ($data['salaryAdjustments'] as $adjustment) {
-            NOSA::create([
-                'employeeName' => $adjustment['employeeName'],
-                'position' => $adjustment['position'],
-                'department' => $adjustment['department'],
-                'previousSalary' => $adjustment['previousSalary'],
-                'newSalary' => $adjustment['newSalary'],
-                'dateOfEffectivity' => $adjustment['dateOfEffectivity'],
-                'dateReleased' => $adjustment['dateReleased'],
-                'salaryGrade' => $adjustment['salaryGrade'],
-                'stepIncrement' => $adjustment['stepIncrement'],
-                'userName' => $data['currentEmployeeName'],
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data saved successfully!',
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Database error: ' . $e->getMessage());
-        return response()->json([
-            'success' => false,
-            'message' => 'Database error: ' . $e->getMessage(),
-        ], 500);
-    }
-}
-
-    //Show the Data Per Department
-    public function getNosaData(Request $request)
-    {
-        $department = $request->query('department');
-
-        // Fetch data from the database
-        $data = NOSA::where('department', $department)
-            ->select('id','employeeName', 'position', 'dateReleased', 'userName')
-            ->get();
-
-        return response()->json($data);
-    }
-    public function getEmployeeData($employeeId)
-    {
-        // Fetch the employee data from the NOSA table
-        $employeeData = NOSA::find($employeeId);
-
-        if (!$employeeData) {
-            return response()->json(['error' => 'Employee not found'], 404);
-        }
-
-        // Return the employee data as JSON
-        return response()->json($employeeData);
-    }
-
     
+        // Get all departments
+        $departments = Department::all();
+    
+        // Return both employee changes and departments as JSON
+        return response()->json([
+            'employeeChanges' => $employeeChanges,
+            'departments' => $departments
+        ]);
+    }
+
+    public function refactorData(Request $request)
+    {
+        // Get the employee changes data from the request
+        $employeeChanges = $request->all();
+
+        // Get the department name based on the department_id
+        $department = Department::find($employeeChanges['department_id']);
+        $departmentName = $department ? $department->department_name : 'N/A';
+
+        // Get the designation based on the department_id
+        $designation = Designation::where('department_id', $employeeChanges['department_id'])->first();
+        $designationName = $designation ? $designation->designation : 'N/A';
+
+        // Get the employee name using the employee_id
+        $employeeInfo = PersonalInfo::find($employeeChanges['employee_id']);
+        $employeeName = $employeeInfo ? $employeeInfo->first_name . ' ' . $employeeInfo->last_name : 'N/A';
+
+        // Format the date of effectivity and date released
+        $dateOfEffectivity = Carbon::parse($employeeChanges['dateOfEffectivity']['new'])->format('F d, Y');
+        $dateReleased = Carbon::parse($employeeChanges['dateReleased']['new'])->format('F d, Y');
+
+        // Get salary grade and step increment for both new and old
+        $salaryGradeNew = $employeeChanges['salaryGrade']['new'];
+        $stepIncrementNew = $employeeChanges['stepIncrement']['new'];
+        $salaryGradeOld = $employeeChanges['salaryGrade']['old'];
+        $stepIncrementOld = $employeeChanges['stepIncrement']['old'];
+
+        // Get the corresponding salary values for new salary grade and step increment
+        $salaryRowNew = SalaryGrade::find($salaryGradeNew);
+        $salaryNew = null;
+        if ($salaryRowNew) {
+            $stepColumnNew = "step" . $stepIncrementNew;  // e.g., 'step1', 'step2', etc.
+            $salaryNew = $salaryRowNew->$stepColumnNew;  // Dynamically access the step column
+        }
+
+        // Get the corresponding salary values for old salary grade and step increment
+        $salaryRowOld = SalaryGrade::find($salaryGradeOld);
+        $salaryOld = null;
+        if ($salaryRowOld) {
+            $stepColumnOld = "step" . $stepIncrementOld;  // e.g., 'step1', 'step2', etc.
+            $salaryOld = $salaryRowOld->$stepColumnOld;  // Dynamically access the step column
+        }
+
+       
+
+        // Return the necessary data for the response
+        return response()->json([
+            'department' => $departmentName,
+            'designation' => $designationName,
+            'employeeName' => $employeeName,
+            'dateOfEffectivity' => $dateOfEffectivity,
+            'dateReleased' => $dateReleased,
+            'newSalary' => $salaryNew,  // Return the new salary
+            'oldSalary' => $salaryOld   // Return the old salary
+        ]);
+    }
 }

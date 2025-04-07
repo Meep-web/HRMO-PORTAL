@@ -2,7 +2,7 @@
 
 @section('title', 'Personal Data Sheet')
 @vite(['resources/css/pds.css', 'resources/js/pds.js', 'resources/js/multiplePDShandling.js']) <!-- Include CSS & JS -->
-<input type="hidden" id="saveNosaRoute" value="{{ route('save.nosa') }}" />
+
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 
