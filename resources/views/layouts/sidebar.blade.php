@@ -22,9 +22,10 @@
     </a>
 
     <!-- Leave Credits Button -->
-    <button class="leave-credits-button" data-title="Leave Credits">
+    <a href="/leave-credits" class="leave-credits-button" data-title="Leave Credits">
         <img src="{{ asset('Service_Records.png') }}" alt="Leave Credits" class="sidebar-leave-credits">
-    </button>
+    </a>
+    
 
     <!-- Account Management Button -->
     <a href="{{ session('usertype') === 'Admin' ? route('account.management') : url('/employment-status') }}"

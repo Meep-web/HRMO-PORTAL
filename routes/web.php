@@ -110,3 +110,6 @@ Route::get('/get-department-name/{departmentId}', function ($departmentId) {
     }
     return response()->json(['name' => 'Unknown Department']); // Return a default value if not found
 });
+
+Route::get('/leave-credits', [App\Http\Controllers\LeaveCreditsController::class, 'index']);
+

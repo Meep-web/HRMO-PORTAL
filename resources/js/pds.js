@@ -1,5 +1,6 @@
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
+import ExcelJS from 'exceljs';
 
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector(".search-bar");
@@ -2660,222 +2661,43 @@ row.innerHTML = `
     });
 });
 
-// document.querySelectorAll(".print-btn").forEach((button) => {
-//     button.addEventListener("click", function () {
-//         const personalInfoId = button.getAttribute("data-id"); // Get the ID of the clicked row
 
-//         // Fetch report data from the server
-//         fetch(`/generate-report/${personalInfoId}`)
-//             .then((response) => response.json())
-//             .then((data) => {
-//                 if (data.success) {
-//                     const reportData = data.reportData;
-//                     console.log(reportData);
-
-//                     // Generate the HTML for the report (you can modify this to fit your design)
-//                     const reportHTML = `
-//                         <html>
-//                             <head>
-//                                 <title>Personal Information Report</title>
-//                                 <style>
-//                                     @media print {
-//                                         body { font-family: Arial, sans-serif; }
-//                                         .report-container { padding: 20px; }
-//                                         h2, h3 { margin-bottom: 10px; }
-//                                         p { margin: 5px 0; }
-//                                         .no-print { display: none; }
-//                                     }
-//                                 </style>
-//                             </head>
-//                             <body>
-//                                 <div class="report-container">
-//                                     <h2>Personal Information Report</h2>
-//                                     <p><strong>Name:</strong> ${
-//                                         reportData.personalInfo.first_name
-//                                     } ${reportData.personalInfo.middle_name} ${
-//                         reportData.personalInfo.last_name
-//                     }</p>
-//                                     <p><strong>Birth Date:</strong> ${
-//                                         reportData.personalInfo.date_of_birth
-//                                     }</p>
-//                                     <p><strong>Place of Birth:</strong> ${
-//                                         reportData.personalInfo.place_of_birth
-//                                     }</p>
-//                                     <p><strong>Gender:</strong> ${
-//                                         reportData.personalInfo.sex
-//                                     }</p>
-//                                     <p><strong>Civil Status:</strong> ${
-//                                         reportData.personalInfo.civil_status
-//                                     }</p>
-//                                     <p><strong>Height:</strong> ${
-//                                         reportData.personalInfo.height
-//                                     } m</p>
-//                                     <p><strong>Weight:</strong> ${
-//                                         reportData.personalInfo.weight
-//                                     } kg</p>
-//                                     <p><strong>Blood Type:</strong> ${
-//                                         reportData.personalInfo.blood_type
-//                                     }</p>
-//                                     <p><strong>Telephone No:</strong> ${
-//                                         reportData.personalInfo.telephone_no
-//                                     }</p>
-//                                     <p><strong>Email:</strong> ${
-//                                         reportData.personalInfo.email
-//                                     }</p>
-//                                     <p><strong>Citizenship:</strong> ${
-//                                         reportData.personalInfo.is_filipino
-//                                             ? "Filipino"
-//                                             : "Non-Filipino"
-//                                     }</p>
-//                                     <p><strong>Dual Citizenship:</strong> ${
-//                                         reportData.personalInfo.is_dual_citizen
-//                                             ? "Yes"
-//                                             : "No"
-//                                     }</p>
-//                                     ${
-//                                         reportData.personalInfo.is_dual_citizen
-//                                             ? `
-//                                         <p><strong>Dual Citizenship Type:</strong> ${reportData.personalInfo.dual_citizen_type}</p>
-//                                         <p><strong>Dual Citizenship Country:</strong> ${reportData.personalInfo.dual_citizen_country}</p>
-//                                     `
-//                                             : ""
-//                                     }
-
-//                                     <h3>Addresses</h3>
-//                                         ${reportData.addresses
-//                                             .map(
-//                                                 (address) => `
-//                                             <p><strong>Type:</strong> ${
-//                                                 address.type === "residential"
-//                                                     ? "Residential Address"
-//                                                     : "Permanent Address"
-//                                             }</p>
-//                                             <p><strong>House No:</strong> ${
-//                                                 address.house_no
-//                                             }</p>
-//                                             <p><strong>Street:</strong> ${
-//                                                 address.street
-//                                             }</p>
-//                                             <p><strong>Subdivision:</strong> ${
-//                                                 address.subdivision
-//                                             }</p>
-//                                             <p><strong>Barangay:</strong> ${
-//                                                 address.barangay
-//                                             }</p>
-//                                             <p><strong>City:</strong> ${
-//                                                 address.city
-//                                             }</p>
-//                                             <p><strong>Province:</strong> ${
-//                                                 address.province
-//                                             }</p>
-//                                             <p><strong>Zip Code:</strong> ${
-//                                                 address.zip_code
-//                                             }</p>
-//                                             <hr>
-//                                         `
-//                                             )
-//                                             .join("")}
-//                                     <h3>Family Background</h3>
-//                                     ${reportData.familyBackgrounds
-//                                         .map(
-//                                             (family) => `
-//                                         <p><strong>Spouse:</strong> ${family.spouse_surname} ${family.spouse_first_name} ${family.spouse_middle_name}</p>
-//                                         <p><strong>Spouse Occupation:</strong> ${family.spouse_occupation}</p>
-//                                         <p><strong>Spouse Employer:</strong> ${family.spouse_employer}</p>
-//                                         <p><strong>Spouse Telephone:</strong> ${family.spouse_telephone}</p>
-//                                         <p><strong>Father:</strong> ${family.father_surname} ${family.father_first_name} ${family.father_middle_name}</p>
-//                                         <p><strong>Mother:</strong> ${family.mother_surname} ${family.mother_first_name} ${family.mother_middle_name}</p>
-//                                     `
-//                                         )
-//                                         .join("")}
-
-//                                     <h3>Educational Background</h3>
-//                                         ${reportData.education
-//                                             .map(
-//                                                 (edu) => `
-//                                             <p><strong>Level:</strong> ${edu.level}</p>
-//                                             <p><strong>School:</strong> ${edu.school}</p>
-//                                             <p><strong>Degree:</strong> ${edu.degree}</p>
-//                                             <p><strong>Period:</strong> ${edu.from} to ${edu.to}</p>
-//                                             <p><strong>Highest Level:</strong> ${edu.highest_level}</p>
-//                                             <p><strong>Year Graduated:</strong> ${edu.year_graduated}</p>
-//                                             <p><strong>Honors:</strong> ${edu.honors}</p>
-//                                             <hr>
-//                                         `
-//                                             )
-//                                             .join("")}
-
-//                                     <h3>Work Experience</h3>
-//                                     ${reportData.workExperiences
-//                                         .map(
-//                                             (work) => `
-//                                         <p><strong>Position Title:</strong> ${work.positionTitle}</p>
-//                                     `
-//                                         )
-//                                         .join("")}
-//                                 </div>
-//                             </body>
-//                         </html>`;
-
-//                     // Open a new window and print the report
-//                     const printWindow = window.open(
-//                         "",
-//                         "",
-//                         "width=800,height=600"
-//                     );
-//                     printWindow.document.write(reportHTML);
-//                     printWindow.document.close();
-//                     printWindow.print();
-//                 } else {
-//                     Swal.fire({
-//                         icon: "error",
-//                         title: "Error",
-//                         text: data.message,
-//                     });
-                    
-//                 }
-//             })
-//             .catch((error) => {
-//                 console.error("Error fetching report data:", error);
-//             });
-//     });
-
-    
-// });
-
-async function modifyPDS() {
+async function modifyPDS(data) {
     const filePath = "/docs/ClearPDS.xlsx";
 
     try {
         const response = await fetch(filePath);
         const arrayBuffer = await response.arrayBuffer();
 
-        // Read the Excel file without modifying structure
-        const workbook = XLSX.read(arrayBuffer, { type: "array", cellStyles: true });
+        // Initialize workbook with ExcelJS
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(arrayBuffer);
 
-        // Get the first sheet
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
+        // Use the correct sheet name
+        const worksheet = workbook.getWorksheet("C1");
 
-        // Modify only the specific cells (without touching anything else)
-        worksheet["D10"].v = "LastName";  // Direct modification
-        worksheet["D11"].v = "FirstName";
-        worksheet["D12"].v = "MiddleName";
+        if (!worksheet) {
+            console.error("Sheet 'C1' not found in the Excel file.");
+            return;
+        }
 
-        // Instead of rewriting everything, try using a more raw method
-        const updatedArrayBuffer = XLSX.write(workbook, {
-            bookType: "xlsx",
-            type: "array",
-            cellStyles: true, // Keep cell styles intact
-            compression: true, // Reduce unnecessary changes
-        });
+        // Fill in the employee data (without changing layout or formatting)
+        worksheet.getCell('D10').value = data.last_name || "";
+        worksheet.getCell('D11').value = data.first_name || "";
+        worksheet.getCell('D12').value = data.middle_name || "";
+
+        // Write the file back with ExcelJS
+        const updatedArrayBuffer = await workbook.xlsx.writeBuffer();
+
+        const employeeName = `${data.first_name} ${data.last_name}`;
+        const fileName = `${employeeName.replace(/\s+/g, '_')}'s_Personal_Datasheet.xlsx`;
 
         // Create a Blob and trigger download
         const blob = new Blob([updatedArrayBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "ModifiedPDS.xlsx";
+        a.download = fileName;  // Set the new file name
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -2884,12 +2706,18 @@ async function modifyPDS() {
         console.error("Error modifying the Excel file:", error);
     }
 }
+document.getElementById("printButton").addEventListener("click", async function () {
+    const employeeId = this.getAttribute("data-id");
+    const response = await fetch(`/get-employee-details/${employeeId}`);
+    const data = await response.json();
 
-// Attach function to print button
-document.getElementById("printButton").addEventListener("click", function () {
-    window.location.href = "/download-filled-excel";
+    if (response.ok) {
+        // Pass the data to modifyPDS
+        modifyPDS(data);
+    } else {
+        console.error("Error fetching employee data:", data.error);
+    }
 });
-
 
 
 document.addEventListener("DOMContentLoaded", function () {
