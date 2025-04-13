@@ -1,0 +1,119 @@
+/* Upper Section Styles (Search Bar and Upload Button) */
+.search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%; /* Ensure it takes up full width */
+}
+
+/* Styling for the Upload Button */
+.upload-button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.upload-button:hover {
+    background-color: #0056b3;
+}
+
+/* Search Bar Styles */
+.search-bar-container {
+    display: flex;
+    align-items: center;
+    flex-grow: 0; /* Prevent it from growing to fill all space */
+    width: 250px; /* Set the width to be shorter */
+    margin-right: 10px; /* Add space between the search bar and the upload button */
+}
+
+.search-bar {
+    padding: 8px;
+    font-size: 14px;
+    width: 100%; /* Take up full width of the container */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-button {
+    position: absolute; /* Position the button inside the container */
+    right: 0; /* Align the button to the right */
+    top: 0;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #0056b3;
+}
+
+
+/* Wrapper for the table */
+.table-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+/* Salary Adjustment Table */
+.salary-adjustment-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    overflow-x: auto;
+}
+
+/* Ensures text is left-aligned in both header and data */
+.salary-adjustment-table th, .salary-adjustment-table td {
+    padding: 12px;
+    text-align: left; /* Align text to the left */
+    border-bottom: 1px solid #ddd;
+}
+
+/* Ensure that the header row sticks to the top */
+.salary-adjustment-table th {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+}
+
+/* Ensure that table data cells have the same background and color */
+.salary-adjustment-table td {
+    background-color: white;
+    color: black;
+}
+
+/* Fixed height for rows to always show 9 rows */
+.salary-adjustment-table tr {
+    height: 50px; /* Adjust height to your preference */
+}
+
+.show-service-record-button {
+    background-color: #4a90e2; /* Blue background */
+    color: white;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.show-service-record-button:hover {
+    background-color: #357ABD; /* Darker blue on hover */
+    transform: scale(1.03);
+}
+
+.show-service-record-button:active {
+    background-color: #2c5f99;
+    transform: scale(0.98);
+}

@@ -116,4 +116,5 @@ Route::get('/get-employee-data/{id}', [LeaveCreditsController::class, 'getEmploy
 Route::post('/save-leave-usage', [LeaveCreditsController::class, 'saveLeaveUsage']);
 
 
+Route::get('/generate-service-record/{id}', [ServiceRecordsController::class, 'generateWordDoc'])->name('generate.service.record');
 Route::get('/service-records', [ServiceRecordsController::class, 'index'])->name('service.records');

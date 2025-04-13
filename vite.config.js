@@ -9,6 +9,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/leaveCredits.css',
                 'resources/js/leaveCredits.js',
+                'resources/css/serviceRecords.css',
+                'resources/js/serviceRecords.js',
             ],
             refresh: true,
         }),
