@@ -42,7 +42,7 @@ assignButtons.forEach(button => {
             document.getElementById("dateReleased").value = dateReleased;
 
             modal.style.display = "block";
-        }, 500); // 2 seconds delay (2000 milliseconds)
+        }, 1000); // 2 seconds delay (2000 milliseconds)
     });
 });
 
@@ -109,6 +109,11 @@ assignButtons.forEach(button => {
         const dateOfEffectivity = document.getElementById("dateOfEffectivity").value;
         const dateReleased = document.getElementById("dateReleased").value;
     
+        // Log date values before appending
+        console.log("Date Hired: ", dateHired);
+        console.log("Date of Effectivity: ", dateOfEffectivity);
+        console.log("Date Released: ", dateReleased);
+    
         // Append date fields (nullable)
         formData.append("dateHired", dateHired || null);
         formData.append("dateOfEffectivity", dateOfEffectivity || null);
@@ -139,6 +144,7 @@ assignButtons.forEach(button => {
         })
         .catch((error) => console.error("Error:", error));
     });
+    
     
 });
 

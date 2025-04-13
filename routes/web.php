@@ -11,13 +11,9 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserAccountController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EmploymentController;
+use App\Http\Controllers\LeaveCreditsController;
 use App\Models\Designation;
 use App\Models\Department;
-
-
-
-
-
 
 // Redirect root to login page
 Route::get('/', function () {
@@ -111,5 +107,7 @@ Route::get('/get-department-name/{departmentId}', function ($departmentId) {
     return response()->json(['name' => 'Unknown Department']); // Return a default value if not found
 });
 
-Route::get('/leave-credits', [App\Http\Controllers\LeaveCreditsController::class, 'index']);
+Route::get('/leave-credits', [LeaveCreditsController::class, 'index']);
 
+Route::get('/get-employee-data/{id}', [LeaveCreditsController::class, 'getEmployeeData'])->name('getEmployeeData');
+Route::post('/save-leave-usage', [LeaveCreditsController::class, 'saveLeaveUsage']);

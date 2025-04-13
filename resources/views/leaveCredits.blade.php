@@ -1,56 +1,130 @@
 @extends('layouts.master')
 
 @section('title', 'Leave Credits')
-@vite('resources/css/leaveCredits.css')
+@vite(['resources/css/leaveCredits.css', 'resources/js/leaveCredits.js'])
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('content')
-<div class="main-content">
-    <!-- Hidden input to store the current employeeName -->
-    <input type="hidden" id="currentEmployeeName" value="{{ session('employeeName') }}" />
-    
-    <div class="search-container">
-        <!-- Search Bar -->
-        <div class="search-bar-container">
-            <input type="text" class="search-bar" placeholder="🔍 Search..." />
+    <div class="main-content">
+        <!-- Hidden input to store the current employeeName -->
+        <input type="hidden" id="currentEmployeeName" value="{{ session('employeeName') }}" />
+
+        <div class="search-container">
+            <!-- Search Bar -->
+            <div class="search-bar-container">
+                <input type="text" class="search-bar" placeholder="🔍 Search..." />
+            </div>
+        </div>
+
+        <!-- Table Content -->
+        <div class="table-container">
+            <table class="salary-adjustment-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Date Hired</th>
+                        <th>Leave Balance</th>
+                        <th>Sick Leave</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    @forelse ($employees as $employee)
+                        <tr>
+                            <td>{{ $employee->personalInfo->first_name }} {{ $employee->personalInfo->middle_name }}
+                                {{ $employee->personalInfo->last_name }}</td> <!-- Employee full name -->
+                            <td>{{ $employee->department->department_name }}</td> <!-- Department name -->
+                            <td>{{ $employee->date_hired_formatted ?? 'N/A' }}</td> <!-- Formatted Date Hired -->
+                            <td>{{ $employee->leave_balance !== null ? floor($employee->leave_balance) : 'N/A' }}</td>
+                            <!-- Leave balance (calculated) -->
+                            <td>{{ $employee->sick_leave !== null ? floor($employee->sick_leave) : 'N/A' }}</td>
+                            <!-- Sick leave (calculated) -->
+                            <td>
+                                <button class="view-details-button"
+                                    onclick="openUseBalanceModal({{ $employee->id }}, {{ $employee->leave_balance ?? 0 }}, {{ $employee->sick_leave ?? 0 }}, '{{ $employee->full_name }}', '{{ $employee->date_hired }}')">
+                                    Use Leave Credits
+                                </button>
+                                <a href="{{ route('getEmployeeData', ['id' => $employee->id]) }}" target="_blank">
+                                    <button class="view-details-button">
+                                        Leave Credit File
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" style="text-align: center;">No employee data available.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
+@endsection
 
-    <!-- Table Content -->
-    <div class="table-container">
-        <table class="salary-adjustment-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Department</th>
-                    <th>Date Hired</th>
-                    <th>Leave Balance</th>
-                    <th>Sick Leave</th>
-                    <th>Action</th>
-                </tr>
-                
-            </thead>
-            <tbody>
-                @forelse ($employees as $employee)
-                    <tr>
-                        <td>{{ $employee->personalInfo->first_name }} {{ $employee->personalInfo->middle_name }} {{ $employee->personalInfo->last_name }}</td> <!-- Employee full name -->
-                        <td>{{ $employee->department->department_name }}</td> <!-- Department name -->
-                        <td>{{ $employee->date_hired_formatted ?? 'N/A' }}</td> <!-- Formatted Date Hired -->
-                        <td>{{ $employee->leave_balance !== null ? floor($employee->leave_balance) : 'N/A' }}</td> <!-- Leave balance (calculated) -->
-                        <td>{{ $employee->sick_leave !== null ? floor($employee->sick_leave) : 'N/A' }}</td> <!-- Sick leave (calculated) -->
-                        <td>
-                            <button class="view-details-button" data-id="{{ $employee->id }}">
-                                View Details
-                            </button>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" style="text-align: center;">No employee data available.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+<div id="useBalanceModal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeUseBalanceModal()" class="close">&times;</span>
+
+        <p id="employeeIdText" style="display: none;"></p>
+        <p><strong>Employee Name:</strong> <span id="employeeNameText"></span></p>
+        <p><strong>Date Hired:</strong> <span id="dateHiredText"></span></p>
+
+
+        <p>
+            <strong>Vacation Leave:</strong> <span id="vacationLeaveText"></span> &nbsp;&nbsp;
+            <strong>Sick Leave:</strong> <span id="sickLeaveText"></span>
+        </p>
+
+        <div class="inline-form">
+            <label for="leaveMonth">Month:</label>
+            <select id="leaveMonth">
+                <option value="">-- Select Month --</option>
+                <option value="January">January</option>
+                <option value="February">February</option>
+                <option value="March">March</option>
+                <option value="April">April</option>
+                <option value="May">May</option>
+                <option value="June">June</option>
+                <option value="July">July</option>
+                <option value="August">August</option>
+                <option value="September">September</option>
+                <option value="October">October</option>
+                <option value="November">November</option>
+                <option value="December">December</option>
+            </select>
+
+            <label for="leaveYear">Year:</label>
+            <select id="leaveYear">
+                <option value="">-- Select Year --</option>
+                <script>
+                    const yearSelect = document.getElementById('leaveYear');
+                    const currentYear = new Date().getFullYear();
+                    for (let y = currentYear; y >= currentYear - 10; y--) {
+                        const option = document.createElement('option');
+                        option.value = y;
+                        option.textContent = y;
+                        yearSelect.appendChild(option);
+                    }
+                </script>
+            </select>
+
+            <label for="leaveType">Type:</label>
+            <select id="leaveType">
+                <option value="">-- Select Type --</option>
+                <option value="VL">Vacation Leave</option>
+                <option value="SL">Sick Leave</option>
+            </select>
+
+            <label for="creditsUsed">Credits Used:</label>
+            <input type="number" id="creditsUsed" placeholder="0.0" min="0" step="0.5">
+        </div>
+
+        <div class="modal-footer">
+            <button onclick="submitLeaveUsage()">Submit</button>
+        </div>
     </div>
 </div>
-@endsection
+

@@ -161,12 +161,18 @@ class EmploymentController extends Controller
             ]);
     
         } catch (\Exception $e) {
+            // Log the full error with context
+            Log::error('Failed to assign employment.', [
+                'error_message' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString()
+            ]);
+        
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to assign employment.',
-                'error' => $e->getMessage()
+                'error' => 'An unexpected error occurred. Please check the logs.'
             ]);
-        }
+        }        
     }
     
 }
