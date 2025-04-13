@@ -147,3 +147,33 @@
     background-color: #218838;
 }
 
+.btn-nice {
+    background-color: #2563eb;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    margin-bottom: 5px;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-nice:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-green {
+    background-color: #16a34a;
+}
+
+.btn-green:hover {
+    background-color: #15803d;
+}
+
+.btn-group {
+    display: flex;
+    gap: 0.5rem;
+}
+

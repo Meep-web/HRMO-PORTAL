@@ -14,6 +14,10 @@ use App\Http\Controllers\EmploymentController;
 use App\Http\Controllers\LeaveCreditsController;
 use App\Models\Designation;
 use App\Models\Department;
+use App\Http\Controllers\ServiceRecordsController;
+
+
+
 
 // Redirect root to login page
 Route::get('/', function () {
@@ -110,3 +114,6 @@ Route::get('/get-department-name/{departmentId}', function ($departmentId) {
 Route::get('/leave-credits', [LeaveCreditsController::class, 'index']);
 Route::get('/get-employee-data/{id}', [LeaveCreditsController::class, 'getEmployeeData'])->name('getEmployeeData');
 Route::post('/save-leave-usage', [LeaveCreditsController::class, 'saveLeaveUsage']);
+
+
+Route::get('/service-records', [ServiceRecordsController::class, 'index'])->name('service.records');

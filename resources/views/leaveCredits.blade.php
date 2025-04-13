@@ -42,15 +42,16 @@
                             <td>{{ $employee->sick_leave !== null ? floor($employee->sick_leave) : 'N/A' }}</td>
                             <!-- Sick leave (calculated) -->
                             <td>
-                                <button class="view-details-button"
-                                    onclick="openUseBalanceModal({{ $employee->id }}, {{ $employee->leave_balance ?? 0 }}, {{ $employee->sick_leave ?? 0 }}, '{{ $employee->full_name }}', '{{ $employee->date_hired }}')">
-                                    Use Leave Credits
+                                <button class="btn-nice"
+                                onclick="openUseBalanceModal({{ $employee->id }}, {{ $employee->leave_balance ?? 0 }}, {{ $employee->sick_leave ?? 0 }}, '{{ $employee->full_name }}', '{{ $employee->date_hired }}')">
+                                Use Leave Credits
+                            </button>
+                        
+                            <a href="{{ route('getEmployeeData', ['id' => $employee->id]) }}" target="_blank">
+                                <button class="btn-nice btn-green">
+                                    Leave Credit File
                                 </button>
-                                <a href="{{ route('getEmployeeData', ['id' => $employee->id]) }}" target="_blank">
-                                    <button class="view-details-button">
-                                        Leave Credit File
-                                    </button>
-                                </a>
+                            </a>
                             </td>
                         </tr>
                     @empty

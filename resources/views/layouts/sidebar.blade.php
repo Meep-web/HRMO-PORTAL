@@ -11,9 +11,10 @@
         <img src="{{ asset('nosa.png') }}" alt="Nosa" class="sidebar-nosa">
     </a>
 
-    <a href="#" class="service-records-button" data-title="Service Records">
-        <img src="{{ asset('leaveCredits.png') }}" alt="Service Records" class="sidebar-service-records">
+    <a href="{{ route('service.records') }}" class="service-records-button" data-title="Service Records">
+        <img src="{{ asset('Service_Records.png') }}" alt="Service Records" class="sidebar-service-records">
     </a>
+    
 
 
     <!-- Personal Data Sheet Button -->
@@ -23,7 +24,7 @@
 
     <!-- Leave Credits Button -->
     <a href="/leave-credits" class="leave-credits-button" data-title="Leave Credits">
-        <img src="{{ asset('Service_Records.png') }}" alt="Leave Credits" class="sidebar-leave-credits">
+        <img src="{{ asset('leaveCredits.png') }}" alt="Leave Credits" class="sidebar-leave-credits">
     </a>
     
 
