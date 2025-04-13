@@ -26,29 +26,29 @@ class LeaveCreditsController extends Controller
     {
         // Fetch employees with necessary data (Personal Info and Employment)
         $employees = Employment::with(['personalInfo', 'department'])->get();
-    
-        // Load leave usage data from JSON file
+
+        // Load consolidated leave usage data
         $leaveUsageData = [];
-        $jsonPath = storage_path('app/leave-credits/leave_usage_1.json');
-    
+        $jsonPath = storage_path('app/leave-credits/leave_usage_all.json'); // ✅ consolidated file
+
         if (File::exists($jsonPath)) {
             $leaveUsageData = json_decode(File::get($jsonPath), true);
         }
-    
+
         foreach ($employees as $employee) {
             $dateHired = Carbon::parse($employee->date_hired);
             $monthsWorked = $dateHired->diffInMonths(Carbon::now());
-    
+
             // Base leave balance calculation
             $leaveBalance = 15 + (1.5 * $monthsWorked);
             $sickLeave = 15 + (1.5 * $monthsWorked);
-    
-            // Sum used leave based on employeeId and leaveType
+
+            // Sum used leave with pay
             $usedVL = 0;
             $usedSL = 0;
-    
+
             foreach ($leaveUsageData as $entry) {
-                if ($entry['employeeId'] == $employee->id) {
+                if ($entry['employeeId'] == $employee->id && $entry['payType'] === 'With Pay') {
                     if ($entry['leaveType'] === 'VL') {
                         $usedVL += $entry['creditsUsed'];
                     } elseif ($entry['leaveType'] === 'SL') {
@@ -56,144 +56,23 @@ class LeaveCreditsController extends Controller
                     }
                 }
             }
-    
-            // Subtract used credits from balances
+
+            // Apply leave balances
             $employee->leave_balance = max(0, $leaveBalance - $usedVL);
             $employee->sick_leave = max(0, $sickLeave - $usedSL);
-    
+
             $employee->date_hired_formatted = $dateHired->format('F d, Y');
-    
-            // Combine full name from personalInfo
+
+            // Build full name
             $employee->full_name = $employee->personalInfo->first_name . ' ' .
-                                   $employee->personalInfo->middle_name . ' ' .
-                                   $employee->personalInfo->last_name;
+                $employee->personalInfo->middle_name . ' ' .
+                $employee->personalInfo->last_name;
         }
-    
+
         return view('leaveCredits', compact('employees'));
     }
-    
 
 
-    public function generateWordDoc()
-    {
-        $phpWord = new PhpWord();
-        $section = $phpWord->addSection();
-
-        // Centered Title
-        $section->addText("EMPLOYEE'S LEAVE CARD", [
-            'bold' => true,
-            'size' => 14,
-            'name' => 'Times New Roman'
-        ], ['alignment' => Jc::CENTER]);
-
-        // Add space
-        $section->addTextBreak(2);
-
-        $paragraphStyle = ['tabs' => [2500, 3100]];
-        $font = ['name' => 'Times New Roman', 'size' => 10];
-
-        // Info Lines
-        $section->addText(
-            "Name: _____________\tCivil Status: ______________\tGSIS Policy Number: ____________________",
-            $font,
-            $paragraphStyle
-        );
-        $section->addText(
-            "Position: ___________\tEntrance of Duty: __________\tTIN No.: _____________________________",
-            $font,
-            $paragraphStyle
-        );
-        $section->addText(
-            "Status: _____________\tUnit: ___________________\tNational Reference Card No.: ______________",
-            $font,
-            $paragraphStyle
-        );
-
-        $section->addTextBreak(2);
-
-        // Create table with full width
-        $table = $section->addTable([
-            'borderSize' => 6,
-            'borderColor' => '000000',
-            'cellMargin' => 80,
-            'width' => 100 * 50, // 100% width in twips
-            'unit' => TblWidth::PERCENT
-        ]);
-
-        // Header row 1
-        $table->addRow();
-        $table->addCell(null, ['vMerge' => 'restart', 'valign' => 'center'])->addText('Period');
-        $table->addCell(null, ['vMerge' => 'restart', 'valign' => 'center'])->addText('Particulars');
-        $table->addCell(null, ['gridSpan' => 4, 'valign' => 'center'])->addText('Vacation Leave', ['bold' => true], ['alignment' => Jc::CENTER]);
-        $table->addCell(null, ['gridSpan' => 4, 'valign' => 'center'])->addText('Sick Leave', ['bold' => true], ['alignment' => Jc::CENTER]);
-        $table->addCell(null, ['vMerge' => 'restart', 'valign' => 'center'])->addText('Remarks');
-
-        // Header row 2
-        $table->addRow();
-        $table->addCell(null, ['vMerge' => 'continue']);
-        $table->addCell(null, ['vMerge' => 'continue']);
-        $subHeaders = ['Earned', 'W/ Pay', 'Balance', 'W/O Pay'];
-        foreach (range(1, 2) as $i) {
-            foreach ($subHeaders as $sub) {
-                $table->addCell()->addText($sub, ['bold' => true], ['alignment' => Jc::CENTER]);
-            }
-        }
-        $table->addCell(null, ['vMerge' => 'continue']);
-
-        // Example data rows
-        $dataRows = [
-            ['Jan-Mar', 'Sample Data', ['12', '0', '12', '0'], ['15', '1', '14', '0'], 'Notes'],
-            ['Apr-Jun', 'Sample Data', ['10', '2', '8', '1'], ['20', '0', '20', '0'], 'Notes']
-        ];
-
-        foreach ($dataRows as $row) {
-            $table->addRow();
-            $table->addCell()->addText($row[0]);
-            $table->addCell()->addText($row[1]);
-            foreach ($row[2] as $val) {
-                $table->addCell()->addText($val);
-            }
-            foreach ($row[3] as $val) {
-                $table->addCell()->addText($val);
-            }
-            $table->addCell()->addText($row[4]);
-        }
-
-        // Add a footer row (bottom of the table)
-        $table->addRow();
-
-        // Empty cell for "Period"
-        $table->addCell()->addText('');
-
-        // Insert "BAL. BROUGHT FORWARD" in the "Particulars" column with line breaks
-        $particularsCell = $table->addCell();
-        $textRun = $particularsCell->addTextRun();
-        $textRun->addText('BAL.', ['bold' => true]);
-        $textRun->addTextBreak(1); // Line break
-        $textRun->addText('BROUGHT', ['bold' => true]);
-        $textRun->addTextBreak(1); // Line break
-        $textRun->addText('FORWARD', ['bold' => true]);
-
-        // Empty cells for "Vacation Leave" columns
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-
-        // Empty cell for "Remarks" column
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-
-        // Save and download
-        $fileName = 'Employee_Leave_Card.docx';
-        $filePath = storage_path("app/public/{$fileName}");
-        $phpWord->save($filePath, 'Word2007');
-
-        return response()->download($filePath)->deleteFileAfterSend(true);
-    }
 
     public function getEmployeeData($id)
     {
@@ -241,12 +120,12 @@ class LeaveCreditsController extends Controller
 
         // Info Lines - using actual employee data
         $section->addText(
-            "Name: {$employeeData->full_name}\tCivil Status: {$employeeData->civil_status}\t\tGSIS Policy Number: {$employeeData->gsis_id}",
+            "Name: {$employeeData->full_name}\t\tCivil Status: {$employeeData->civil_status}\t\tGSIS Policy Number: {$employeeData->gsis_id}",
             $font,
             $paragraphStyle
         );
         $section->addText(
-            "Position:{$employeeData->designation} \t\tEntrance of Duty: __________\tTIN No.: {$employeeData->tin_no}",
+            "Position:{$employeeData->designation} \tEntrance of Duty: __________\tTIN No.: {$employeeData->tin_no}",
             $font,
             $paragraphStyle
         );
@@ -295,7 +174,14 @@ class LeaveCreditsController extends Controller
         foreach ($dataRows as $row) {
             $table->addRow();
             $table->addCell()->addText($row[0]);  // Period (e.g., "Feb-2025 - Mar-2025")
-            $table->addCell()->addText($row[1]);  // Sample Data (you can replace this with relevant data)
+            $cell = $table->addCell();
+            $textRun = $cell->addTextRun();
+            foreach (explode("\n", $row[1]) as $i => $line) {
+                $textRun->addText($line, ['bold' => true]);
+                if ($i < 2)
+                    $textRun->addTextBreak(); // add line break between lines but not after the last one
+            }
+            // Sample Data (you can replace this with relevant data)
 
             // Add the vacation leave and sick leave data for the first part (vacation)
             foreach ($row[2] as $val) {
@@ -312,34 +198,16 @@ class LeaveCreditsController extends Controller
         }
 
 
+        for ($i = count($dataRows) - 1; $i >= 0; $i--) {
+            $row = $dataRows[$i];
 
-        // Add a footer row (bottom of the table)
-        $table->addRow();
+            if (isset($row[2][2]) && isset($row[3][2])) {
+                $lastVLBalance = $row[2][2];
+                $lastSLBalance = $row[3][2];
+                break;
+            }
+        }
 
-        // Empty cell for "Period"
-        $table->addCell()->addText('');
-
-        // Insert "BAL. BROUGHT FORWARD" in the "Particulars" column with line breaks
-        $particularsCell = $table->addCell();
-        $textRun = $particularsCell->addTextRun();
-        $textRun->addText('BAL.', ['bold' => true]);
-        $textRun->addTextBreak(1); // Line break
-        $textRun->addText('BROUGHT', ['bold' => true]);
-        $textRun->addTextBreak(1); // Line break
-        $textRun->addText('FORWARD', ['bold' => true]);
-
-        // Empty cells for "Vacation Leave" columns
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-
-        // Empty cell for "Remarks" column
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
-        $table->addCell()->addText('');
 
 
 
@@ -359,61 +227,127 @@ class LeaveCreditsController extends Controller
         return response()->download($filePath)->deleteFileAfterSend(true);
 
     }
-
     public function generateLeaveData($employmentData)
     {
-        // Get the employee's hire date
         $dateHired = Carbon::parse($employmentData->date_hired);
+        $employeeId = $employmentData->id;
 
-        // Calculate the number of months since the employee was hired
+        $jsonPath = storage_path('app/leave-credits/leave_usage_all.json');
+        $leaveUsage = [];
+        if (file_exists($jsonPath)) {
+            $leaveUsage = json_decode(file_get_contents($jsonPath), true);
+        }
+
         $monthsWorked = $dateHired->diffInMonths(Carbon::now());
 
-        // Employee leave calculation
-        $vacationLeave = 15;  // Initial vacation leave
-        $sickLeave = 15;  // Initial sick leave
+        $vacationLeave = 15;
+        $sickLeave = 15;
 
-        // Array to store the leave data for each period
+        $totalVlWithPayUsed = 0;
+        $totalSlWithPayUsed = 0;
+
         $leaveData = [];
+        $periodStart = $dateHired->copy();
 
-        // Calculate the periods (e.g., Feb-Mar, Mar-Apr, etc.)
-        $periodStart = $dateHired->copy();  // Start from the hire date
-
-        // Define how many months you want to calculate for (e.g., 12 months)
-        $periods = $monthsWorked;  // Calculate based on months worked since the hire date
-        for ($i = 0; $i < $periods; $i++) {
-            // Calculate the end of the month period (e.g., Feb-Mar)
-            $periodEnd = $periodStart->copy()->addMonth(); // The end of the current month
-
-            // Format the period as 'Month Year' (e.g., 'Feb-Mar 2025')
+        // Add earned leave rows first
+        for ($i = 0; $i < $monthsWorked; $i++) {
+            $periodEnd = $periodStart->copy()->addMonth();
             $periodLabel = $periodStart->format('M-Y') . ' - ' . $periodEnd->format('M-Y');
 
-            // Increment the vacation and sick leave for the current month
-            $vacationLeave += 1.5;  // Add 1.5 days for each month
-            $sickLeave += 1.5;  // Add 1.5 days for each month
+            // Add 1.5 credits per month for both Vacation and Sick Leave
+            $vacationLeave += 1.5;
+            $sickLeave += 1.5;
 
-            // Add the calculated leave data for the period
+            // Insert the earned leave row
             $leaveData[] = [
-                $periodLabel,  // Period (e.g., 'Feb-Mar 2025')
-                'Earned',  // Placeholder for additional data
-                [round($vacationLeave, 2), 0, round($vacationLeave, 2), 0],  // Vacation Leave data
-                [round($sickLeave, 2), 0, round($sickLeave, 2), 0],  // Sick Leave data
-                ''  // Placeholder for any additional notes
+                $periodLabel,
+                'Earned',
+                [1.5, 0, round($vacationLeave, 2), 0], // Earned Vacation Leave
+                [1.5, 0, round($sickLeave, 2), 0], // Earned Sick Leave
+                ''
             ];
 
-            // Increment the period start by 1 month for the next period
             $periodStart->addMonth();
         }
 
-        // Ensure the data is sorted in ascending order based on the periods (if necessary)
+        // Add usage rows (and match them to the appropriate earned row)
+        foreach ($leaveUsage as $usage) {
+            if ($usage['employeeId'] != $employeeId)
+                continue;
+
+            $leaveMonthYear = $usage['leaveMonth'] . ' ' . $usage['leaveYear']; // Month-Year from JSON
+            $payTypeNote = $usage['payType'] === 'With Pay' ? 'Paid' : 'Unpaid';
+            $creditsUsed = -abs($usage['creditsUsed']); // Ensure the value is negative for usage
+
+            // Default structure for the row
+            $leaveRow = [
+                $leaveMonthYear,
+                'Used',
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                "{$payTypeNote}"
+            ];
+
+            if ($usage['payType'] === 'With Pay') {
+                if ($usage['leaveType'] === 'VL') {
+                    $leaveRow[2][1] = $creditsUsed;
+                    $totalVlWithPayUsed += abs($creditsUsed);
+                } elseif ($usage['leaveType'] === 'SL') {
+                    $leaveRow[3][1] = $creditsUsed;
+                    $totalSlWithPayUsed += abs($creditsUsed);
+                }
+            } else {
+                if ($usage['leaveType'] === 'VL') {
+                    $leaveRow[2][3] = $creditsUsed;
+                } elseif ($usage['leaveType'] === 'SL') {
+                    $leaveRow[3][3] = $creditsUsed;
+                }
+            }
+
+            $inserted = false;
+            foreach ($leaveData as $index => $row) {
+                try {
+                    $earnedPeriodEnd = Carbon::createFromFormat('M-Y', explode(' - ', $row[0])[1]);
+                    $usageDate = Carbon::parse($usage['leaveMonth'] . ' ' . $usage['leaveYear']);
+                    if ($earnedPeriodEnd->isSameMonth($usageDate) || $earnedPeriodEnd->greaterThanOrEqualTo($usageDate)) {
+                        array_splice($leaveData, $index + 1, 0, [$leaveRow]);
+                        $inserted = true;
+                        break;
+                    }
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+
+            if (!$inserted) {
+                $leaveData[] = $leaveRow;
+            }
+        }
+
+        // Sort rows by date
         usort($leaveData, function ($a, $b) {
-            $dateA = Carbon::createFromFormat('M-Y', explode(' - ', $a[0])[1]);
-            $dateB = Carbon::createFromFormat('M-Y', explode(' - ', $b[0])[1]);
-            return $dateA->lt($dateB) ? -1 : 1;
+            try {
+                $getDate = function ($label) {
+                    return Carbon::createFromFormat('M-Y', explode(' - ', $label)[1]);
+                };
+                return $getDate($a[0])->lt($getDate($b[0])) ? -1 : 1;
+            } catch (\Exception $e) {
+                return 0;
+            }
         });
 
-        // Return the leave data
+        // Final summary row: Diminish with-pay usage from earned
+        $leaveData[] = [
+            '',
+            "BAL.\nBROUGHT\nFORWARD",
+            [0, -$totalVlWithPayUsed, round($vacationLeave - $totalVlWithPayUsed, 2), 0],
+            [0, -$totalSlWithPayUsed, round($sickLeave - $totalSlWithPayUsed, 2), 0],
+            ''
+        ];
+
         return $leaveData;
     }
+
 
     public function saveLeaveUsage(Request $request)
     {
@@ -424,45 +358,40 @@ class LeaveCreditsController extends Controller
             'leaveYear' => 'required|integer',
             'leaveType' => 'required|string',
             'creditsUsed' => 'required|numeric',
+            'payType' => 'required|string',
         ]);
 
-        // Prepare the data to be saved in the JSON file
+        // Prepare the data to be saved
         $data = [
             'employeeId' => $validated['employeeId'],
             'leaveMonth' => $validated['leaveMonth'],
             'leaveYear' => $validated['leaveYear'],
             'leaveType' => $validated['leaveType'],
             'creditsUsed' => $validated['creditsUsed'],
+            'payType' => $validated['payType'],
         ];
 
-        // Define the custom file path
+        // Single consolidated file path
         $filePath = 'C:/Users/Chris/Desktop/HRMO-PORTAL/storage/app/leave-credits/';
-        $filename = 'leave_usage_' . $validated['employeeId'] . '.json'; // Using employee ID for the filename
+        $filename = 'leave_usage_all.json'; // 👈 One consolidated file
 
         // Ensure the directory exists
         if (!File::exists($filePath)) {
             File::makeDirectory($filePath, 0775, true);
         }
 
-        // Check if the file already exists
-        if (File::exists($filePath . $filename)) {
-            // If the file exists, read its contents and append the new data
-            $existingData = json_decode(File::get($filePath . $filename), true);
+        // Load existing data if the file exists
+        $existingData = File::exists($filePath . $filename)
+            ? json_decode(File::get($filePath . $filename), true)
+            : [];
 
-            // Append the new data
-            $existingData[] = $data;
+        // Append the new entry
+        $existingData[] = $data;
 
-            // Write the updated data back to the file
-            File::put($filePath . $filename, json_encode($existingData, JSON_PRETTY_PRINT));
-        } else {
-            // If the file does not exist, create a new file and store the data
-            $jsonData = json_encode([$data], JSON_PRETTY_PRINT);
-            File::put($filePath . $filename, $jsonData);
-        }
+        // Save everything back to the file
+        File::put($filePath . $filename, json_encode($existingData, JSON_PRETTY_PRINT));
 
-        // Return a success response
         return response()->json(['message' => 'Data has been saved successfully!']);
     }
+
 }
-
-

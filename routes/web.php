@@ -108,6 +108,5 @@ Route::get('/get-department-name/{departmentId}', function ($departmentId) {
 });
 
 Route::get('/leave-credits', [LeaveCreditsController::class, 'index']);
-
 Route::get('/get-employee-data/{id}', [LeaveCreditsController::class, 'getEmployeeData'])->name('getEmployeeData');
 Route::post('/save-leave-usage', [LeaveCreditsController::class, 'saveLeaveUsage']);

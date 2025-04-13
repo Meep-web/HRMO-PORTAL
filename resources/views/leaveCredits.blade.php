@@ -72,7 +72,6 @@
         <p><strong>Employee Name:</strong> <span id="employeeNameText"></span></p>
         <p><strong>Date Hired:</strong> <span id="dateHiredText"></span></p>
 
-
         <p>
             <strong>Vacation Leave:</strong> <span id="vacationLeaveText"></span> &nbsp;&nbsp;
             <strong>Sick Leave:</strong> <span id="sickLeaveText"></span>
@@ -99,16 +98,7 @@
             <label for="leaveYear">Year:</label>
             <select id="leaveYear">
                 <option value="">-- Select Year --</option>
-                <script>
-                    const yearSelect = document.getElementById('leaveYear');
-                    const currentYear = new Date().getFullYear();
-                    for (let y = currentYear; y >= currentYear - 10; y--) {
-                        const option = document.createElement('option');
-                        option.value = y;
-                        option.textContent = y;
-                        yearSelect.appendChild(option);
-                    }
-                </script>
+                <!-- Remove inline <script>, year options will be handled via JS -->
             </select>
 
             <label for="leaveType">Type:</label>
@@ -120,6 +110,14 @@
 
             <label for="creditsUsed">Credits Used:</label>
             <input type="number" id="creditsUsed" placeholder="0.0" min="0" step="0.5">
+
+            <!-- 👇 New Dropdown for With Pay / Without Pay -->
+            <label for="payType">Pay Type:</label>
+            <select id="payType">
+                <option value="">-- Select Pay Type --</option>
+                <option value="With Pay">With Pay</option>
+                <option value="Without Pay">Without Pay</option>
+            </select>
         </div>
 
         <div class="modal-footer">
@@ -127,4 +125,5 @@
         </div>
     </div>
 </div>
+
 
