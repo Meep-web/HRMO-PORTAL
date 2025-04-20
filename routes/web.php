@@ -15,10 +15,13 @@ use App\Http\Controllers\LeaveCreditsController;
 use App\Models\Designation;
 use App\Models\Department;
 use App\Http\Controllers\ServiceRecordsController;
+use App\Http\Controllers\DatabaseBackupController;
 
-use App\Http\Controllers\BackupController;
+Route::get('/backup-database', [DatabaseBackupController::class, 'backup'])->name('backup.database');
 
-Route::get('/backup', [BackupController::class, 'createBackup'])->name('backup.create');
+
+Route::post('/upload-backup', [DatabaseBackupController::class, 'uploadBackup'])->name('backup.upload');
+
 
 // Redirect root to login page
 Route::get('/', function () {
