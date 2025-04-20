@@ -19,8 +19,9 @@ function openUseBalanceModal(
     document.getElementById("employeeIdText").innerText = employeeId;
     document.getElementById("employeeNameText").innerText = fullName;
     document.getElementById("vacationLeaveText").innerText =
-        vacationLeave.toFixed(2);
-    document.getElementById("sickLeaveText").innerText = sickLeave.toFixed(2);
+        Math.trunc(vacationLeave);
+    document.getElementById("sickLeaveText").innerText =
+        Math.trunc(sickLeave);
 
     const formattedDate = formatDate(dateHired);
     document.getElementById("dateHiredText").innerText = formattedDate;
@@ -37,9 +38,13 @@ function openUseBalanceModal(
         yearSelect.appendChild(option);
     }
 
+    // Set current year as default selected
+    yearSelect.value = currentYear;
+
     modal.style.display = "flex";
     window.addEventListener("click", outsideClickHandler);
 }
+
 
 function closeUseBalanceModal() {
     const modal = document.getElementById("useBalanceModal");

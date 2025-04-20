@@ -16,8 +16,9 @@ use App\Models\Designation;
 use App\Models\Department;
 use App\Http\Controllers\ServiceRecordsController;
 
+use App\Http\Controllers\BackupController;
 
-
+Route::get('/backup', [BackupController::class, 'createBackup'])->name('backup.create');
 
 // Redirect root to login page
 Route::get('/', function () {

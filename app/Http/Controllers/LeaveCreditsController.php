@@ -40,8 +40,8 @@ class LeaveCreditsController extends Controller
             $monthsWorked = $dateHired->diffInMonths(Carbon::now());
 
             // Base leave balance calculation
-            $leaveBalance = 15 + (1.5 * $monthsWorked);
-            $sickLeave = 15 + (1.5 * $monthsWorked);
+            $leaveBalance = (1.5 * $monthsWorked);
+            $sickLeave = (1.5 * $monthsWorked);
 
             // Sum used leave with pay
             $usedVL = 0;
@@ -238,10 +238,14 @@ class LeaveCreditsController extends Controller
             $leaveUsage = json_decode(file_get_contents($jsonPath), true);
         }
 
-        $monthsWorked = $dateHired->diffInMonths(Carbon::now());
+        $today = Carbon::today();
+        $startOfCurrentMonth = Carbon::now()->startOfMonth();
 
-        $vacationLeave = 15;
-        $sickLeave = 15;
+        // Count only fully completed months
+        $monthsWorked = $dateHired->diffInMonths($startOfCurrentMonth);
+
+        $vacationLeave = 0;
+        $sickLeave = 0;
 
         $totalVlWithPayUsed = 0;
         $totalSlWithPayUsed = 0;

@@ -1,40 +1,51 @@
 @extends('layouts.master')
 
-@section('title', 'Account Management')
+@section('title', 'Management')
 
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 @section('content')
-    <div class="account-management-container">
-        <div class="card-grid">
-          
-            <!-- User Accounts Card -->
-            <div class="card">
-                <div class="card-icon">
-                    <img src="{{ asset('encoding.png') }}" alt="User Accounts">
-                </div>
-                <div class="card-content">
-                    <div class="card-title">User Accounts</div>
-                    <a href="{{ route('user.accounts') }}">
-                        <button class="card-button">Manage</button>
-                    </a>
-                </div>
+<div class="account-management-container">
+    <div class="card-grid">
+      
+        <!-- User Accounts Card -->
+        <div class="card">
+            <div class="card-icon">
+                <img src="{{ asset('encoding.png') }}" alt="User Accounts">
             </div>
-
-
-            <!-- Employment Status Card -->
-            <div class="card">
-                <div class="card-icon">
-                    <img src="{{ asset('recruitment.png') }}" alt="Employment Status">
-                </div>
-                <div class="card-content">
-                    <div class="card-title">Employment Status</div>
-                    <a href="/employment-status" class="card-button">Manage</a>
-                </div>
+            <div class="card-content">
+                <div class="card-title">User Accounts</div>
+                <a href="{{ route('user.accounts') }}">
+                    <button class="card-button">Manage</button>
+                </a>
             </div>
-
         </div>
+
+        <!-- Employment Status Card -->
+        <div class="card">
+            <div class="card-icon">
+                <img src="{{ asset('recruitment.png') }}" alt="Employment Status">
+            </div>
+            <div class="card-content">
+                <div class="card-title">Employment Status</div>
+                <a href="/employment-status" class="card-button">Manage</a>
+            </div>
+        </div>
+
+        <!-- Backup Data Card -->
+        <div class="card">
+            <div class="card-icon">
+                <img src="{{ asset('Backup.png') }}" alt="Backup Data">
+            </div>
+            <div class="card-content">
+                <div class="card-title">Backup Data</div>
+                <a href="#" class="card-button">Manage</a>
+            </div>
+        </div>
+
     </div>
+</div>
+
 
     <style>
         .account-management-container {

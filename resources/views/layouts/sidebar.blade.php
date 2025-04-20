@@ -30,8 +30,8 @@
 
     <!-- Account Management Button -->
     <a href="{{ session('usertype') === 'Admin' ? route('account.management') : url('/employment-status') }}"
-        class="account-management-button" data-title="Account Management">
-        <img src="{{ asset('Account_Management.png') }}" alt="Account Management" class="sidebar-account-management">
+        class="account-management-button" data-title="Management">
+        <img src="{{ asset('Account_Management.png') }}" alt="Management" class="sidebar-account-management">
     </a>
 
 
