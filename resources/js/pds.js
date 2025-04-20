@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
-import ExcelJS from 'exceljs';
+import ExcelJS from "exceljs";
 
 document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.querySelector(".search-bar");
@@ -160,12 +160,9 @@ document
         link.click(); // Programmatically click the link to start the download
     });
 
-  
-    // document.getElementById("downloadMultipleButton").addEventListener("click", function () {
-    //     window.location.href = "/docs/MultiplePersonalDataSheetFormat.xlsx";
-    // });
-
-
+// document.getElementById("downloadMultipleButton").addEventListener("click", function () {
+//     window.location.href = "/docs/MultiplePersonalDataSheetFormat.xlsx";
+// });
 
 // Next button functionality with check
 document.getElementById("nextButton1").addEventListener("click", () => {
@@ -289,7 +286,6 @@ document.getElementById("submitButton").addEventListener("click", async () => {
                     window.location.href = "/personal-data-sheet";
                 });
             } else {
-                
                 Swal.fire({
                     icon: "error",
                     title: "Submission Failed",
@@ -297,7 +293,6 @@ document.getElementById("submitButton").addEventListener("click", async () => {
                 });
             }
         } else {
-            
             console.error("Validation Error:", validationData.errors);
             const errorMessage = formatValidationErrors(validationData.errors);
             Swal.fire({
@@ -305,7 +300,6 @@ document.getElementById("submitButton").addEventListener("click", async () => {
                 title: "Validation Error",
                 text: errorMessage,
             });
-            
         }
     } catch (error) {
         console.error("Error:", error);
@@ -314,7 +308,6 @@ document.getElementById("submitButton").addEventListener("click", async () => {
             title: "Submission Error",
             text: "An error occurred while submitting the form.",
         });
-        
     }
 });
 
@@ -364,7 +357,7 @@ document.getElementById("savePDSButton").addEventListener("click", async () => {
                     icon: "success",
                     title: "Success",
                     text: "Data updated successfully!",
-                });                
+                });
 
                 // Optionally, close the modal here
                 const modal = document.getElementById("uploadModal");
@@ -383,10 +376,8 @@ document.getElementById("savePDSButton").addEventListener("click", async () => {
                     title: "Error",
                     text: "Failed to update data.",
                 });
-                
             }
         } else {
-            
             console.error("Validation Error:", validationData.errors);
             const errorMessage = formatValidationErrors(validationData.errors);
             Swal.fire({
@@ -394,7 +385,6 @@ document.getElementById("savePDSButton").addEventListener("click", async () => {
                 title: "Validation Error",
                 text: errorMessage,
             });
-            
         }
     } catch (error) {
         console.error("Error:", error);
@@ -403,7 +393,6 @@ document.getElementById("savePDSButton").addEventListener("click", async () => {
             title: "Submission Error",
             text: "An error occurred while submitting the form.",
         });
-        
     }
 });
 
@@ -425,7 +414,6 @@ function formatValidationErrors(errors) {
             .replace(/\./g, " ") // Replace dots with spaces
             .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize each word
 
-        
         errorMessage += `\n- ${readableField}`;
     }
 
@@ -748,7 +736,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     icon: "warning",
                     title: "No File Selected",
                     text: "Please select a file first.",
-                });                
+                });
                 return;
             }
 
@@ -799,7 +787,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                     return; // Stop execution if the sheet name is incorrect
                 }
-    
+
                 // Access the first sheet (existing logic)
                 const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
@@ -2595,19 +2583,39 @@ document.addEventListener("DOMContentLoaded", function () {
                 const entryNumber = index + 1;
 
                 const row = document.createElement("tr");
-row.innerHTML = `
-    <td><input type="date" id="inclusiveDatesFrom${entryNumber}" name="work_experience[${index}][from]" value="${experience.from || ""}"></td>
-    <td><input type="date" id="inclusiveDatesTo${entryNumber}" name="work_experience[${index}][to]" value="${experience.to || ""}"></td>
-    <td><input type="text" id="positionTitle${entryNumber}" name="work_experience[${index}][position_title]" value="${experience.position_title || ""}"></td>
-    <td><input type="text" id="department${entryNumber}" name="work_experience[${index}][department]" value="${experience.department || ""}"></td>
-    <td><input type="text" id="monthlySalary${entryNumber}" name="work_experience[${index}][monthly_salary]" value="${experience.monthly_salary || ""}"></td>
-    <td><input type="text" id="salaryGrade${entryNumber}" name="work_experience[${index}][salary_grade]" value="${experience.salary_grade || ""}"></td>
-    <td><input type="text" id="stepIncrement${entryNumber}" name="work_experience[${index}][step_increment]" value="${experience.step_increment || ""}"></td>
-    <td><input type="text" id="appointmentStatus${entryNumber}" name="work_experience[${index}][appointment_status]" value="${experience.appointment_status || ""}"></td>
+                row.innerHTML = `
+    <td><input type="date" id="inclusiveDatesFrom${entryNumber}" name="work_experience[${index}][from]" value="${
+                    experience.from || ""
+                }"></td>
+    <td><input type="date" id="inclusiveDatesTo${entryNumber}" name="work_experience[${index}][to]" value="${
+                    experience.to || ""
+                }"></td>
+    <td><input type="text" id="positionTitle${entryNumber}" name="work_experience[${index}][position_title]" value="${
+                    experience.position_title || ""
+                }"></td>
+    <td><input type="text" id="department${entryNumber}" name="work_experience[${index}][department]" value="${
+                    experience.department || ""
+                }"></td>
+    <td><input type="text" id="monthlySalary${entryNumber}" name="work_experience[${index}][monthly_salary]" value="${
+                    experience.monthly_salary || ""
+                }"></td>
+    <td><input type="text" id="salaryGrade${entryNumber}" name="work_experience[${index}][salary_grade]" value="${
+                    experience.salary_grade || ""
+                }"></td>
+    <td><input type="text" id="stepIncrement${entryNumber}" name="work_experience[${index}][step_increment]" value="${
+                    experience.step_increment || ""
+                }"></td>
+    <td><input type="text" id="appointmentStatus${entryNumber}" name="work_experience[${index}][appointment_status]" value="${
+                    experience.appointment_status || ""
+                }"></td>
     <td>
-        <input type="radio" id="govtServiceYes${entryNumber}" name="govtService${entryNumber}" value="Yes" ${experience.govt_service === "Yes" ? "checked" : ""}>
+        <input type="radio" id="govtServiceYes${entryNumber}" name="govtService${entryNumber}" value="Yes" ${
+                    experience.govt_service === "Yes" ? "checked" : ""
+                }>
         <label for="govtServiceYes${entryNumber}">Yes</label>
-        <input type="radio" id="govtServiceNo${entryNumber}" name="govtService${entryNumber}" value="No" ${experience.govt_service === "No" ? "checked" : ""}>
+        <input type="radio" id="govtServiceNo${entryNumber}" name="govtService${entryNumber}" value="No" ${
+                    experience.govt_service === "No" ? "checked" : ""
+                }>
         <label for="govtServiceNo${entryNumber}">No</label>
     </td>
     <td><button type="button" class="remove-btn">Remove</button></td>
@@ -2661,7 +2669,6 @@ row.innerHTML = `
     });
 });
 
-
 async function modifyPDS(data) {
     const filePath = "/docs/ClearPDS.xlsx";
 
@@ -2682,64 +2689,83 @@ async function modifyPDS(data) {
         }
 
         // Fill in the employee data (without changing layout or formatting)
-        worksheet.getCell('D10').value = data.last_name || "";
-        worksheet.getCell('D11').value = data.first_name || "";
-        worksheet.getCell('D12').value = data.middle_name || "";
+        worksheet.getCell("D10").value = data.last_name || "";
+        worksheet.getCell("D11").value = data.first_name || "";
+        worksheet.getCell("D12").value = data.middle_name || "";
+        worksheet.getCell("D13").value = data.date_of_birth || "";
+        worksheet.getCell("D15").value = data.place_of_birth || "";
+        worksheet.getCell("D22").value = data.height || "";
+        worksheet.getCell("D24").value = data.weight || "";
+        worksheet.getCell("D25").value = data.blood_type || "";
+        worksheet.getCell("D27").value = data.gsis_id || "";
+        worksheet.getCell("D29").value = data.pagibig_id || "";
+        worksheet.getCell("D31").value = data.philhealth_id || "";
+        worksheet.getCell("D32").value = data.sss_no || "";
+        worksheet.getCell("D33").value = data.tin_no || "";
 
         // Write the file back with ExcelJS
         const updatedArrayBuffer = await workbook.xlsx.writeBuffer();
 
         const employeeName = `${data.first_name} ${data.last_name}`;
-        const fileName = `${employeeName.replace(/\s+/g, '_')}'s_Personal_Datasheet.xlsx`;
+        const fileName = `${employeeName.replace(
+            /\s+/g,
+            "_"
+        )}'s_Personal_Datasheet.xlsx`;
 
         // Create a Blob and trigger download
-        const blob = new Blob([updatedArrayBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        const blob = new Blob([updatedArrayBuffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = fileName;  // Set the new file name
+        a.download = fileName; // Set the new file name
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-
     } catch (error) {
         console.error("Error modifying the Excel file:", error);
     }
 }
-document.getElementById("printButton").addEventListener("click", async function () {
-    const employeeId = this.getAttribute("data-id");
-    const response = await fetch(`/get-employee-details/${employeeId}`);
-    const data = await response.json();
+document
+    .getElementById("printButton")
+    .addEventListener("click", async function () {
+        const employeeId = this.getAttribute("data-id");
+        const response = await fetch(`/get-employee-details/${employeeId}`);
+        const data = await response.json();
 
-    if (response.ok) {
-        // Pass the data to modifyPDS
-        modifyPDS(data);
-    } else {
-        console.error("Error fetching employee data:", data.error);
-    }
-});
+        // Log the data fetched
+        console.log("Employee Data:", data);
 
+        if (response.ok) {
+            // Pass the data to modifyPDS
+            modifyPDS(data);
+        } else {
+            console.error("Error fetching employee data:", data.error);
+        }
+    });
 
 document.addEventListener("DOMContentLoaded", function () {
     const viewFilesButtons = document.querySelectorAll(".view-files-btn");
     const modal = document.querySelector(".view-files-container");
     const closeModal = document.querySelector(".close-view-files");
 
-    viewFilesButtons.forEach(button => {
+    viewFilesButtons.forEach((button) => {
         button.addEventListener("click", function () {
             const employeeId = this.getAttribute("data-id");
 
             fetch(`/get-employee-details/${employeeId}`)
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     if (data.error) {
                         console.error("Error:", data.error);
                         return;
                     }
 
                     // Set Name
-                    document.getElementById("employeeName").textContent =
-                        `${data.first_name} ${data.middle_name || ""} ${data.last_name}`;
+                    document.getElementById("employeeName").textContent = `${
+                        data.first_name
+                    } ${data.middle_name || ""} ${data.last_name}`;
 
                     // Set Department (or show 'Not Assigned' if null)
                     document.getElementById("employeeDepartment").textContent =
@@ -2748,21 +2774,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Ensure the modal uses flex display for proper centering
                     modal.style.display = "flex";
                 })
-                .catch(error => console.error("Error:", error));
+                .catch((error) => console.error("Error:", error));
         });
     });
 
     // Close modal when clicking the close button
-closeModal.addEventListener("click", function () {
-    modal.style.display = "none";
-});
-
-// Close modal when clicking outside of it
-window.addEventListener("click", function (event) {
-    if (event.target === modal) {
+    closeModal.addEventListener("click", function () {
         modal.style.display = "none";
-    }
-});
+    });
 
+    // Close modal when clicking outside of it
+    window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
 });
-

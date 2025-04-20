@@ -53,11 +53,34 @@ public function getEmployeeDetails($id)
     }
 
     return response()->json([
+        'id' => $employee->id,
         'first_name' => $employee->first_name,
-        'middle_name' => $employee->middle_name,
         'last_name' => $employee->last_name,
+        'middle_name' => $employee->middle_name,
+        'name_extension' => $employee->name_extension,
+        'date_of_birth' => $employee->date_of_birth,
+        'place_of_birth' => $employee->place_of_birth,
+        'sex' => $employee->sex,
+        'civil_status' => $employee->civil_status,
+        'height' => $employee->height,
+        'weight' => $employee->weight,
+        'blood_type' => $employee->blood_type,
+        'gsis_id' => $employee->gsis_id,
+        'pagibig_id' => $employee->pagibig_id,
+        'philhealth_id' => $employee->philhealth_id,
+        'sss_no' => $employee->sss_no,
+        'tin_no' => $employee->tin_no,
+        'agency_employee_no' => $employee->agency_employee_no,
+        'telephone_no' => $employee->telephone_no,
+        'mobile_no' => $employee->mobile_no,
+        'email' => $employee->email,
+        'is_filipino' => $employee->is_filipino,
+        'is_dual_citizen' => $employee->is_dual_citizen,
+        'dual_citizen_type' => $employee->dual_citizen_type,
+        'dual_citizen_country' => $employee->dual_citizen_country,
         'department' => $departmentName
     ]);
 }
+
 
 }

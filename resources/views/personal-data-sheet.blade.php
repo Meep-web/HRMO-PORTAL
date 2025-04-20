@@ -47,7 +47,7 @@
                             <button class="btn btn-secondary print-btn" id="printButton" data-id="{{ $personalInfo->id }}">Print</button>
                             
                             <!-- View Files Button -->
-                            <button class="btn btn-info view-files-btn" data-id="{{ $personalInfo->id }}">View Files</button>
+                            <button class="btn btn-info view-files-btn" data-id="{{ $personalInfo->id }}" style="display: none;">View Files</button>
                         </td>
                         
                         <td>{{ $personalInfo->updated_by }}</td> <!-- Now fetching from pdsupdates -->
@@ -56,7 +56,6 @@
             </tbody>
         </table>
     </div>
-
 
     <!-- Modal -->
     <div id="uploadModal" class="modal">
@@ -1115,9 +1114,5 @@
             </div>
         </div>
     </div>
-    
-    
-
-
 
 @endsection

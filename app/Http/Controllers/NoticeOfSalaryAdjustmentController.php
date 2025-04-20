@@ -18,65 +18,94 @@ class NoticeOfSalaryAdjustmentController extends Controller
 {
     // Show the form
     public function show()
-    {
-        $employees = PersonalInfo::select('id', 'first_name', 'middle_name', 'last_name')
-            ->get()
-            ->map(function ($employee) {
-                $employment = Employment::where('personalID', $employee->id)->first();
+{
+    $employees = PersonalInfo::select('id', 'first_name', 'middle_name', 'last_name')
+        ->get()
+        ->map(function ($employee) {
+            // Check if employment data exists for the employee
+            $employment = Employment::where('personalID', $employee->id)->first();
 
-                return [
-                    'id' => $employee->id,
-                    'name' => trim("{$employee->first_name} {$employee->middle_name} {$employee->last_name}"),
-                    'department' => $employment?->department_id
-                        ? Department::find($employment->department_id)?->department_name ?? 'N/A'
-                        : 'N/A',
-                    'updatedBy' => $employment?->updatedBy ?? 'N/A',
-                    'updated_at' => $employment?->updated_at ?? 'N/A',
-                ];
-            });
+            if (!$employment) {
+                return null; // Skip this employee if no employment data found
+            }
 
-        // Log or pass to view
-        logger($employees);
+            // Return employee data if employment exists
+            return [
+                'id' => $employee->id,
+                'name' => trim("{$employee->first_name} {$employee->middle_name} {$employee->last_name}"),
+                'department' => $employment->department_id
+                    ? Department::find($employment->department_id)?->department_name ?? 'N/A'
+                    : 'N/A',
+                'updatedBy' => $employment->updatedBy ?? 'N/A',
+                'updated_at' => $employment->updated_at ?? 'N/A',
+            ];
+        })
+        ->filter(); // Removes null values from the collection
 
+    // If there is no employee data (after filtering), return just the view
+    if ($employees->isEmpty()) {
         return view('noticeOfSalaryAdjustment', ['employees' => $employees]);
     }
+
+    // Log or pass to view
+    logger($employees);
+
+    return view('noticeOfSalaryAdjustment', ['employees' => $employees]);
+}
 
     public function showSalaryChanges(Request $request)
     {
         // Get employee ID from request
         $employeeId = $request->input('employeeId');
-    
+        
         // Path to the JSON file
         $jsonFilePath = storage_path('app/employment_changes.json');
-    
+        
         // Check if the file exists
         if (!File::exists($jsonFilePath)) {
             return response()->json(['error' => 'JSON file not found.'], 404);
         }
-    
+        
         // Get the content of the JSON file
         $jsonContent = File::get($jsonFilePath);
-    
+        
         // Decode the JSON content into an array
         $changes = json_decode($jsonContent, true);
-    
-        // Filter the data based on employeeId
+        
+        // Filter the data based on employeeId and non-null 'old' values
         $employeeChanges = [];
         foreach ($changes as $change) {
             if ($change['employee_id'] == $employeeId) {
-                $employeeChanges[] = $change;
+                // Filter out changes with null or missing 'old' values
+                $filteredChanges = [];
+                foreach ($change['changes'] as $key => $value) {
+                    // Only include changes where 'old' is not null
+                    if (isset($value['old']) && $value['old'] !== null) {
+                        $filteredChanges[$key] = $value;
+                    }
+                }
+                
+                // Add the change to the result only if it has valid 'old' values
+                if (!empty($filteredChanges)) {
+                    $employeeChanges[] = [
+                        'employee_id' => $change['employee_id'],
+                        'changes' => $filteredChanges,
+                        'timestamp' => $change['timestamp']
+                    ];
+                }
             }
         }
-    
+        
         // Get all departments
         $departments = Department::all();
-    
+        
         // Return both employee changes and departments as JSON
         return response()->json([
             'employeeChanges' => $employeeChanges,
             'departments' => $departments
         ]);
     }
+    
 
     public function refactorData(Request $request)
     {
