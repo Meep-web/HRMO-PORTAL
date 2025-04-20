@@ -200,7 +200,7 @@ private function handleJSONFiles($employmentChangesFile, $leaveCreditsFile)
 
         Log::info('JSON files handled successfully.');
 
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         Log::error('Error handling JSON files: ' . $e->getMessage());
         throw $e;
     }
