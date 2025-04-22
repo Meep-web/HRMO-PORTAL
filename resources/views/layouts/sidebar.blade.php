@@ -14,7 +14,7 @@
     <a href="{{ route('service.records') }}" class="service-records-button" data-title="Service Records">
         <img src="{{ asset('Service_Records.png') }}" alt="Service Records" class="sidebar-service-records">
     </a>
-    
+
 
 
     <!-- Personal Data Sheet Button -->
@@ -26,13 +26,14 @@
     <a href="/leave-credits" class="leave-credits-button" data-title="Leave Credits">
         <img src="{{ asset('leaveCredits.png') }}" alt="Leave Credits" class="sidebar-leave-credits">
     </a>
-    
+
 
     <!-- Account Management Button -->
     <a href="{{ session('usertype') === 'Admin' ? route('account.management') : url('/employment-status') }}"
-        class="account-management-button" data-title="Management">
+        class="account-management-button tooltip-top" data-title="Management">
         <img src="{{ asset('Account_Management.png') }}" alt="Management" class="sidebar-account-management">
     </a>
+
 
 
 </aside>

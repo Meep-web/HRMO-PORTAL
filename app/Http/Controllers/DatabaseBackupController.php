@@ -34,14 +34,16 @@ class DatabaseBackupController extends Controller
         $passwordPart = $password ? "-p{$password}" : "";
 
         $command = "{$mysqldump} -u {$user} {$passwordPart} {$dbName} > \"{$sqlFile}\"";
-        exec($command, $output, $result);
+        exec($command . ' 2>&1', $output, $result);
 
         if ($result !== 0) {
             return response()->json([
                 'message' => 'Database backup failed.',
-                'error' => $output
+                'command' => $command, // optional: so you can see the full command used
+                'error' => $output,
             ], 500);
         }
+        
 
         $zip = new \ZipArchive();
         if ($zip->open($zipFile, \ZipArchive::CREATE) === TRUE) {
