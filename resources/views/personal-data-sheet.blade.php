@@ -40,16 +40,21 @@
                         <td>{{ $personalInfo->first_name }} {{ $personalInfo->last_name }}</td>
                         <td>{{ $personalInfo->updated_at ? $personalInfo->updated_at->format('F j, Y h:i A') : 'N/A' }}</td>
                         <td>
-                            <!-- Edit Button -->
-                            <button class="btn btn-primary edit-btn" data-id="{{ $personalInfo->id }}">Edit</button>
-                            
+                            @if (session('usertype') !== 'Employee')
+                                <!-- Edit Button -->
+                                <button class="btn btn-primary edit-btn" data-id="{{ $personalInfo->id }}">Edit</button>
+                            @endif
+
+
                             <!-- Print Button (No functionality yet) -->
-                            <button class="btn btn-secondary print-btn" id="printButton" data-id="{{ $personalInfo->id }}">Print</button>
-                            
+                            <button class="btn btn-secondary print-btn" id="printButton"
+                                data-id="{{ $personalInfo->id }}">Print</button>
+
                             <!-- View Files Button -->
-                            <button class="btn btn-info view-files-btn" data-id="{{ $personalInfo->id }}" style="display: none;">View Files</button>
+                            <button class="btn btn-info view-files-btn" data-id="{{ $personalInfo->id }}"
+                                style="display: none;">View Files</button>
                         </td>
-                        
+
                         <td>{{ $personalInfo->updated_by }}</td> <!-- Now fetching from pdsupdates -->
                     </tr>
                 @endforeach
@@ -1084,15 +1089,15 @@
 
     <div id="viewFilesModal" class="view-files-container" style="display: none;">
         <div class="view-files-content">
-            <span class="close-view-files">&times;</span>   
+            <span class="close-view-files">&times;</span>
             <h2>View Files</h2>
-            
+
             <!-- Employee Details -->
             <div id="employeeDetails">
                 <p><strong>Name:</strong> <span id="employeeName">Loading...</span></p>
                 <p><strong>Department:</strong> <span id="employeeDepartment">Loading...</span></p>
             </div>
-    
+
             <!-- File List -->
             <div id="fileList">
                 <div class="file-card">

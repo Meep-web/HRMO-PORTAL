@@ -29,10 +29,13 @@
 
 
     <!-- Account Management Button -->
-    <a href="{{ session('usertype') === 'Admin' ? route('account.management') : url('/employment-status') }}"
-        class="account-management-button tooltip-top" data-title="Management">
-        <img src="{{ asset('Account_Management.png') }}" alt="Management" class="sidebar-account-management">
-    </a>
+    @if (session('usertype') !== 'Employee')
+        <a href="{{ session('usertype') === 'Admin' ? route('account.management') : url('/employment-status') }}"
+            class="account-management-button tooltip-top" data-title="Management">
+            <img src="{{ asset('Account_Management.png') }}" alt="Management" class="sidebar-account-management">
+        </a>
+    @endif
+
 
 
 
