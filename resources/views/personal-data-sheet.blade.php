@@ -11,7 +11,10 @@
         <div class="search-bar-container">
             <input type="text" class="search-bar" placeholder="🔍 Search..." />
         </div>
-        <button class="upload-button" id="uploadButton">Upload</button>
+        @if (session('usertype') !== 'Employee')
+            <button class="upload-button" id="uploadButton">Upload</button>
+        @endif
+
     </div>
 
     <div class="table-container">

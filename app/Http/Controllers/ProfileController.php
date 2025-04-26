@@ -6,19 +6,27 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Log; // Make sure this is at the top of your file
+use Illuminate\Support\Facades\Session;
+
 
 class ProfileController extends Controller
 {
+
     public function showProfile()
     {
-        // Get logged-in user's ID
-        $userId = Auth::id();
-
+        // Get logged-in user's ID from session
+        $userId = session('userId'); // or Session::get('userId')
+    
+        // Log the user ID
+        Log::info('Session userId: ' . $userId);
+    
         // Fetch employee details based on user ID
         $employee = Employee::where('id', $userId)->first();
-
+    
         return view('profile', compact('employee'));
     }
+
 
     public function updateProfile(Request $request)
 {
