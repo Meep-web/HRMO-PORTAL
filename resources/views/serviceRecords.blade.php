@@ -1,13 +1,31 @@
 @extends('layouts.master')
 
 @section('title', 'Service Records')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('.search-bar');
+        const tableRows = document.querySelectorAll('.salary-adjustment-table tbody tr');
 
+        searchInput.addEventListener('input', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            tableRows.forEach(function(row) {
+                const rowText = row.textContent.toLowerCase();
+                if (rowText.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
 @section('content')
     @vite(['resources/css/serviceRecords.css', 'resources/js/serviceRecords.js'])
 
     <div class="main-content">
         <input type="hidden" id="currentEmployeeName" value="{{ session('employeeName') }}" />
-        
+
         <!-- Search Bar -->
         <div class="search-container">
             <div class="search-bar-container">
@@ -33,12 +51,13 @@
                             <td>{{ $personalInfo->department_name }}</td>
                             <td>{{ $personalInfo->designation_name }}</td>
                             <td>
-                                <form action="{{ route('generate.service.record', ['id' => $personalInfo->id]) }}" method="GET" target="_blank">
+                                <form action="{{ route('generate.service.record', ['id' => $personalInfo->id]) }}"
+                                    method="GET" target="_blank">
                                     <button type="submit" class="show-service-record-button">
                                         Show Service Record
                                     </button>
                                 </form>
-                                
+
                             </td>
                         </tr>
                     @endforeach

@@ -50,8 +50,9 @@ function renderSalaryHistory(data) {
             historyContent += `
                 <tr>
                     <td>${departmentName}</td>
-                    <td>${dateOfEffectivity && dateOfEffectivity.new ? dateOfEffectivity.new : 'N/A'}</td>
-                    <td>${dateReleased && dateReleased.new ? dateReleased.new : 'N/A'}</td>
+                    <td>${dateOfEffectivity && dateOfEffectivity.new ? new Date(dateOfEffectivity.new).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</td>
+                    <td>${dateReleased && dateReleased.new ? new Date(dateReleased.new).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</td>
+
                     <td>
                         <button class="action-btn"
                             data-department-new="${changeRecord.changes.department_id.new}"

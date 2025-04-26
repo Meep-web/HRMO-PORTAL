@@ -7,6 +7,27 @@
    
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-bar');
+            const tableRows = document.querySelectorAll('.salary-adjustment-table tbody tr');
+    
+            searchInput.addEventListener('input', function() {
+                const searchTerm = searchInput.value.toLowerCase();
+    
+                tableRows.forEach(function(row) {
+                    const rowText = row.textContent.toLowerCase();
+                    if (rowText.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+
+
     <div class="main-content">
         <!-- Hidden input to store the current employeeName -->
         <input type="hidden" id="currentEmployeeName" value="{{ session('employeeName') }}" />
