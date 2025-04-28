@@ -29,14 +29,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function saveProfile() {
         const employeeName = document.getElementById("employeeName").value;
+        const employeeId = document.getElementById("employeeId").value; // <-- Get employeeId
         const fileInput = document.getElementById("profileImageInput");
-
+    
         let formData = new FormData();
         formData.append("employeeName", employeeName);
+        formData.append("employeeId", employeeId); // <-- Include employeeId
         if (fileInput.files.length > 0) {
-            formData.append("profileImage", fileInput.files[0]); // Append image file
+            formData.append("profileImage", fileInput.files[0]);
         }
-
+    
         fetch("/profile/update", {
             method: "POST",
             headers: {
@@ -44,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     .querySelector('meta[name="csrf-token"]')
                     .getAttribute("content"),
             },
-            body: formData, // Send as FormData (not JSON)
+            body: formData,
         })
             .then((response) => response.json())
             .then((data) => {
@@ -54,11 +56,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         title: "Profile Updated!",
                         text: "Your profile has been updated successfully.",
                     }).then(() => {
-                        window.location.href = "/profile"; // Redirect to profile
+                        window.location.href = "/profile";
                     });
-
+    
                     if (data.newImage) {
-                        profileImage.src = data.newImage; // Update profile image immediately
+                        profileImage.src = data.newImage;
                     }
                 } else {
                     Swal.fire({
@@ -77,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
     }
+    
 
     if (openModalBtn && modal) {
         openModalBtn.addEventListener("click", function () {
@@ -137,18 +140,18 @@ document.addEventListener("DOMContentLoaded", function () {
             errors.push("Password must contain at least one lowercase letter.");
         }
 
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            errors.push("Passwords do not match!");
+        }
+
         // Display errors if any
         if (errors.length > 0) {
             Swal.fire("Error", errors.join("<br>"), "error");
             return;
         }
 
-        // Check if passwords match
-        if (password !== confirmPassword) {
-            Swal.fire("Error", "Passwords do not match!", "error");
-            return;
-        }
-
+        // Send the updated password via fetch
         fetch("/update-password", {
             method: "POST",
             headers: {
@@ -176,5 +179,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 Swal.fire("Error", "Something went wrong!", "error");
             });
     });
+
 
 });

@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalUserImage = document.getElementById("modalUserImage");
     const resetPasswordBtn = document.getElementById("resetPasswordBtn");
     const saveChangesBtn = document.getElementById("saveChangesBtn");
+    const modalUserIdInput = document.getElementById("modalUserId"); // <-- new
 
     // Open modal & fetch employee data
     document.querySelectorAll(".manage-button").forEach((button) => {
@@ -23,7 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("modalUserName").textContent = data.data.name;
                     document.getElementById("modalUserRole").value = data.data.role;
                     modalUserImage.src = data.data.image || "employeeImage/default-user.png";
-                    modal.setAttribute("data-user-id", userId);
+                    
+                    modalUserIdInput.value = userId; // <-- set hidden field
 
                     modal.classList.remove("hidden");
                 })
@@ -32,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     Swal.fire("Error!", "Failed to fetch employee data.", "error");
                 });
         });
-    });
+
 
     // Handle image upload preview
     imageUpload.addEventListener("change", function (event) {
@@ -53,49 +55,50 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target === modal) closeModalHandler();
     });
 
-    // Reset Password
-    resetPasswordBtn.addEventListener("click", function () {
-        const id = modal.getAttribute("data-user-id");
+// Reset Password
+resetPasswordBtn.addEventListener("click", function () {
+    const id = modalUserIdInput.value; // <-- get from hidden input
 
-        if (!id) {
-            Swal.fire("Error!", "User ID is missing. Please select a user.", "error");
-            return;
-        }
+    if (!id) {
+        Swal.fire("Error!", "User ID is missing. Please select a user.", "error");
+        return;
+    }
 
-        Swal.fire({
-            title: "Reset Password?",
-            text: "Are you sure you want to reset this user's password?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, reset it!",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`/reset-password/${id}`, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
-                        "Content-Type": "application/json",
-                    },
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        if (!data.success) throw new Error(data.message || "Failed to reset password.");
+    Swal.fire({
+        title: "Reset Password?",
+        text: "Are you sure you want to reset this user's password?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, reset it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/reset-password/${id}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (!data.success) throw new Error(data.message || "Failed to reset password.");
 
-                        Swal.fire({
-                            title: "Success!",
-                            html: `The user's password has been reset.<br><strong>New Password:</strong> <code>${data.newPassword}</code>`,
-                            icon: "success",
-                        });
-                    })
-                    .catch((error) => {
-                        console.error("Reset Password Error:", error);
-                        Swal.fire("Error!", "Something went wrong. Please try again.", "error");
+                    Swal.fire({
+                        title: "Success!",
+                        html: `The user's password has been reset.<br><strong>New Password:</strong> <code>${data.newPassword}</code>`,
+                        icon: "success",
                     });
-            }
-        });
+                })
+                .catch((error) => {
+                    console.error("Reset Password Error:", error);
+                    Swal.fire("Error!", "Something went wrong. Please try again.", "error");
+                });
+        }
     });
+});
+});
 
     // Save Changes (Update Employee)
     saveChangesBtn.addEventListener("click", function () {

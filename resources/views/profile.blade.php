@@ -294,6 +294,7 @@
                 alt="Profile Picture" class="profile-image">
 
             <form id="uploadForm" enctype="multipart/form-data">
+                <input type="hidden" id="employeeId" name="employeeId" value="{{ $employee->id }}">
                 <input type="file" name="profileImage" id="profileImageInput" class="hidden-input" accept="image/*">
                 <button type="button" class="upload-btn" onclick="document.getElementById('profileImageInput').click();">
                     Upload Image

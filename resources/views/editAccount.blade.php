@@ -33,43 +33,41 @@
     </div>
 
     <!-- Custom Modal -->
-    <div id="customManageModal" class="custom-modal hidden">
-        <div class="custom-modal-content">
-            <span class="close-modal">&times;</span>
-            <h2 class="modal-title">Manage Account</h2>
+<div id="customManageModal" class="custom-modal hidden">
+    <div class="custom-modal-content">
+        <span class="close-modal">&times;</span>
+        <h2 class="modal-title">Manage Account</h2>
 
-            <div class="modal-body">
-                <p class="user-name-text" id="modalUserName"></p>
-                <div class="image-upload-container">
-                    <div class="image-preview">
-                        <img id="modalUserImage" src="" alt="User Avatar" class="user-modal-img">
-                    </div>
-                    <div class="upload-section">
-                        <p class="change-image-text">Change Image</p>
-                        <input type="file" id="imageUpload" accept="image/*">
-                    </div>
+        <div class="modal-body">
+            <!-- Hidden field for User ID -->
+            <input type="hidden" id="modalUserId">
+
+            <p class="user-name-text" id="modalUserName"></p>
+            <div class="image-upload-container">
+                <div class="image-preview">
+                    <img id="modalUserImage" src="" alt="User Avatar" class="user-modal-img">
                 </div>
-
-
-                <div class="modal-input-group">
-                    <label for="modalUserRole">Role:</label>
-                    <select id="modalUserRole" class="modal-dropdown">
-                        <option value="Encoder">Encoder</option>
-                        <option value="Employee">Employee</option>
-                    </select>
+                <div class="upload-section">
+                    <p class="change-image-text">Change Image</p>
+                    <input type="file" id="imageUpload" accept="image/*">
                 </div>
-                <div class="modal-buttons">
-                    <button id="resetPasswordBtn" class="modal-btn reset-btn" data-user-id="{{ $employee->id }}">Reset
-                        Password</button>
+            </div>
 
-                    <button id="saveChangesBtn" class="modal-btn save-btn">Save</button>
-                </div>
+            <div class="modal-input-group">
+                <label for="modalUserRole">Role:</label>
+                <select id="modalUserRole" class="modal-dropdown">
+                    <option value="Encoder">Encoder</option>
+                    <option value="Employee">Employee</option>
+                </select>
+            </div>
 
+            <div class="modal-buttons">
+                <button id="resetPasswordBtn" class="modal-btn reset-btn">Reset Password</button>
+                <button id="saveChangesBtn" class="modal-btn save-btn">Save</button>
             </div>
         </div>
     </div>
-
-
+</div>
 
 
 @endsection
