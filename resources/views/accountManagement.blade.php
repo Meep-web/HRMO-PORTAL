@@ -3,30 +3,26 @@
 @section('title', 'Management')
 <script>
     // Wait for the DOM to be ready
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Get the modal
         const modal = document.getElementById("backupModal");
 
-        // Get all buttons with the class "card-button" (there might be more than one)
-        const backupButtons = document.querySelectorAll(".card-button");
+        const backupButton = document.getElementById("backupButton");
+
+        backupButton.addEventListener('click', function () {
+            modal.style.display = "block";
+        });
 
         // Get the <span> element that closes the modal
         const closeButton = document.getElementById("closeModal");
 
-        // When the user clicks the "Manage" button, open the modal
-        backupButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                modal.style.display = "block";
-            });
-        });
-
         // When the user clicks on <span> (x), close the modal
-        closeButton.onclick = function() {
+        closeButton.onclick = function () {
             modal.style.display = "none";
         }
 
         // When the user clicks anywhere outside the modal, close it
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             if (event.target === modal) {
                 modal.style.display = "none";
             }
@@ -48,71 +44,71 @@
         form.submit();
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('submitUploadButton').addEventListener('click', function() {
-        const databaseFile = document.getElementById('databaseFile').files[0];
-        const employmentChangesFile = document.getElementById('employmentChangesFile').files[0];
-        const leaveCreditsFile = document.getElementById('leaveCreditsFile').files[0];
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('submitUploadButton').addEventListener('click', function () {
+            const databaseFile = document.getElementById('databaseFile').files[0];
+            const employmentChangesFile = document.getElementById('employmentChangesFile').files[0];
+            const leaveCreditsFile = document.getElementById('leaveCreditsFile').files[0];
 
-        // Check and log the file names if files are selected
-        if (databaseFile) {
-            console.log("Database SQL File:", databaseFile.name);
-        } else {
-            console.log("No Database SQL file selected.");
-        }
-
-        if (employmentChangesFile) {
-            console.log("Employment Changes JSON File:", employmentChangesFile.name);
-        } else {
-            console.log("No Employment Changes JSON file selected.");
-        }
-
-        if (leaveCreditsFile) {
-            console.log("Leave Credits JSON File:", leaveCreditsFile.name);
-        } else {
-            console.log("No Leave Credits JSON file selected.");
-        }
-
-        // Create a FormData object to send the files to the server
-        const formData = new FormData();
-        if (databaseFile) {
-            formData.append('databaseFile', databaseFile);
-        }
-        if (employmentChangesFile) {
-            formData.append('employmentChangesFile', employmentChangesFile);
-        }
-        if (leaveCreditsFile) {
-            formData.append('leaveCreditsFile', leaveCreditsFile);
-        }
-
-        // Send the data to the server using AJAX
-        fetch("{{ route('backup.upload') }}", {
-            method: "POST",
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Add CSRF token if necessary
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Server error: " + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data);
-            if (data.success) {
-                alert("Files uploaded and processed successfully!");
+            // Check and log the file names if files are selected
+            if (databaseFile) {
+                console.log("Database SQL File:", databaseFile.name);
             } else {
-                alert("Error: " + data.error);
+                console.log("No Database SQL file selected.");
             }
-        })
-        .catch(error => {
-            console.error('Error uploading files:', error);
-            alert("There was an error uploading the files.");
+
+            if (employmentChangesFile) {
+                console.log("Employment Changes JSON File:", employmentChangesFile.name);
+            } else {
+                console.log("No Employment Changes JSON file selected.");
+            }
+
+            if (leaveCreditsFile) {
+                console.log("Leave Credits JSON File:", leaveCreditsFile.name);
+            } else {
+                console.log("No Leave Credits JSON file selected.");
+            }
+
+            // Create a FormData object to send the files to the server
+            const formData = new FormData();
+            if (databaseFile) {
+                formData.append('databaseFile', databaseFile);
+            }
+            if (employmentChangesFile) {
+                formData.append('employmentChangesFile', employmentChangesFile);
+            }
+            if (leaveCreditsFile) {
+                formData.append('leaveCreditsFile', leaveCreditsFile);
+            }
+
+            // Send the data to the server using AJAX
+            fetch("{{ route('backup.upload') }}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // Add CSRF token if necessary
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Server error: " + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    if (data.success) {
+                        alert("Files uploaded and processed successfully!");
+                    } else {
+                        alert("Error: " + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error uploading files:', error);
+                    alert("There was an error uploading the files.");
+                });
         });
     });
-});
 
 
 </script>
@@ -154,7 +150,8 @@
                 </div>
                 <div class="card-content">
                     <div class="card-title">Backup Data</div>
-                    <a href="javascript:void(0);" class="card-button">Manage</a>
+                    <a href="javascript:void(0);" class="card-button" id="backupButton">Manage</a>
+
                 </div>
             </div>
         </div>
@@ -355,43 +352,43 @@
     </style>
 
     <!-- Backup Data Modal -->
-<div id="backupModal" class="modal">
-    <div class="modal-content">
-        <span class="close-button" id="closeModal">&times;</span>
-        <div class="modal-body">
-            <h2>Backup Your Data</h2>
-            <p>Please click "Backup Data" to create a backup, or upload your own data files below.</p>
+    <div id="backupModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">&times;</span>
+            <div class="modal-body">
+                <h2>Backup Your Data</h2>
+                <p>Please click "Backup Data" to create a backup, or upload your own data files below.</p>
 
-            <!-- Button to trigger backup -->
-            <button class="btn btn-primary" id="backupDataButton" onclick="backupData()">Backup Data</button>
+                <!-- Button to trigger backup -->
+                <button class="btn btn-primary" id="backupDataButton" onclick="backupData()">Backup Data</button>
 
-            <hr>
+                <hr>
 
-            <!-- Form to upload files -->
-            <form id="fileUploadForm" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="databaseFile">Database (SQL file)</label>
-                    <input type="file" id="databaseFile" name="databaseFile" class="form-control">
-                </div>
+                <!-- Form to upload files -->
+                <form id="fileUploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="databaseFile">Database (SQL file)</label>
+                        <input type="file" id="databaseFile" name="databaseFile" class="form-control">
+                    </div>
 
-                <div class="form-group">
-                    <label for="employmentChangesFile">Employment Changes (employment_changes.json)</label>
-                    <input type="file" id="employmentChangesFile" name="employmentChangesFile" class="form-control">
-                </div>
+                    <div class="form-group">
+                        <label for="employmentChangesFile">Employment Changes (employment_changes.json)</label>
+                        <input type="file" id="employmentChangesFile" name="employmentChangesFile" class="form-control">
+                    </div>
 
-                <div class="form-group">
-                    <label for="leaveCreditsFile">Leave Credits Usage (leave_usage_all.json)</label>
-                    <input type="file" id="leaveCreditsFile" name="leaveCreditsFile" class="form-control">
-                </div>
+                    <div class="form-group">
+                        <label for="leaveCreditsFile">Leave Credits Usage (leave_usage_all.json)</label>
+                        <input type="file" id="leaveCreditsFile" name="leaveCreditsFile" class="form-control">
+                    </div>
 
-                <!-- Submit Button (Different from Backup Data button) -->
-                <div class="form-group">
-                    <button type="button" class="btn btn-success" id="submitUploadButton">Submit Files</button>
-                </div>
-            </form>
+                    <!-- Submit Button (Different from Backup Data button) -->
+                    <div class="form-group">
+                        <button type="button" class="btn btn-success" id="submitUploadButton">Submit Files</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 
 @endsection

@@ -54,8 +54,7 @@
                                 data-id="{{ $personalInfo->id }}">Print</button>
 
                             <!-- View Files Button -->
-                            <button class="btn btn-info view-files-btn" data-id="{{ $personalInfo->id }}"
-                                style="display: none;">View Files</button>
+                            <button class="btn btn-info view-files-btn" data-id="{{ $personalInfo->id }}">View Files</button>
                         </td>
 
                         <td>{{ $personalInfo->updated_by }}</td> <!-- Now fetching from pdsupdates -->
@@ -169,8 +168,7 @@
                                         <div class="sub-options">
                                             <div class="radio-group">
                                                 <div class="radio-option">
-                                                    <input type="radio" id="byBirth" name="dualCitizenType"
-                                                        value="byBirth">
+                                                    <input type="radio" id="byBirth" name="dualCitizenType" value="byBirth">
                                                     <label for="byBirth">By Birth</label>
                                                 </div>
                                                 <div class="radio-option">
@@ -208,8 +206,8 @@
                                         <!-- Column 1 -->
                                         <div class="radio-group">
                                             <div class="radio-option">
-                                                <input type="radio" id="civilStatusSingle" name="civilStatus"
-                                                    value="Single" required>
+                                                <input type="radio" id="civilStatusSingle" name="civilStatus" value="Single"
+                                                    required>
                                                 <label for="civilStatusSingle">Single</label>
                                             </div>
                                             <div class="radio-option">
@@ -234,8 +232,8 @@
                                         <!-- Last Option (if odd) -->
                                         <div class="radio-group">
                                             <div class="radio-option">
-                                                <input type="radio" id="civilStatusOther" name="civilStatus"
-                                                    value="Other" required>
+                                                <input type="radio" id="civilStatusOther" name="civilStatus" value="Other"
+                                                    required>
                                                 <label for="civilStatusOther">Other</label>
                                             </div>
                                         </div>
@@ -300,8 +298,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="residentialStreet">Street:</label>
-                                                <input type="text" id="residentialStreet" name="residentialStreet"
-                                                    required>
+                                                <input type="text" id="residentialStreet" name="residentialStreet" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="residentialHouseNo">House/Block/Lot No.:</label>
@@ -394,10 +391,10 @@
                                             </div>
 
                                             <!-- Text Field for Permanent City -->
-                                            <div class="form-group"style="display: none;">
+                                            <div class="form-group" style="display: none;">
                                                 <label for="permanentCityTextField">Permanent City Name:</label>
-                                                <input type="text" id="permanentCityTextField"
-                                                    name="permanentCityTextField" readonly />
+                                                <input type="text" id="permanentCityTextField" name="permanentCityTextField"
+                                                    readonly />
                                             </div>
 
                                             <div class="form-group">
@@ -413,18 +410,15 @@
                                         <div class="permanent-col">
                                             <div class="form-group">
                                                 <label for="permanentSubdivision">Subdivision/Village:</label>
-                                                <input type="text" id="permanentSubdivision"
-                                                    name="permanentSubdivision">
+                                                <input type="text" id="permanentSubdivision" name="permanentSubdivision">
                                             </div>
                                             <div class="form-group">
                                                 <label for="permanentStreet">Street:</label>
-                                                <input type="text" id="permanentStreet" name="permanentStreet"
-                                                    required>
+                                                <input type="text" id="permanentStreet" name="permanentStreet" required>
                                             </div>
                                             <div class="form-group">
                                                 <label for="permanentHouseNo">House/Block/Lot No.:</label>
-                                                <input type="text" id="permanentHouseNo" name="permanentHouseNo"
-                                                    required>
+                                                <input type="text" id="permanentHouseNo" name="permanentHouseNo" required>
                                             </div>
                                         </div>
                                     </div>
@@ -486,8 +480,7 @@
                                             </div>
                                             <div class="form-group name-extension">
                                                 <label for="spouseNameExtension">Name Extension:</label>
-                                                <input type="text" id="spouseNameExtension"
-                                                    name="spouseNameExtension">
+                                                <input type="text" id="spouseNameExtension" name="spouseNameExtension">
                                             </div>
                                         </div>
                                         <!-- Other fields -->
@@ -527,8 +520,7 @@
                                             </div>
                                             <div class="form-group name-extension">
                                                 <label for="fatherNameExtension">Name Extension:</label>
-                                                <input type="text" id="fatherNameExtension"
-                                                    name="fatherNameExtension">
+                                                <input type="text" id="fatherNameExtension" name="fatherNameExtension">
                                             </div>
                                         </div>
                                         <!-- Middle Name -->
@@ -586,8 +578,7 @@
                                     <div class="button-group">
                                         <button type="button" class="action-button" id="addChildButton">Add
                                             Another</button>
-                                        <button type="button" class="action-button"
-                                            id="removeChildButton">Remove</button>
+                                        <button type="button" class="action-button" id="removeChildButton">Remove</button>
                                     </div>
                                 </div>
                             </div>
@@ -858,8 +849,7 @@
                         <button type="button" class="action-button" id="cancelButton">Cancel</button>
                         <button type="button" class="action-button" id="prevButton5">Previous</button>
                         <button type="button" class="action-button" id="submitButton">Submit</button>
-                        <button type="button" class="action-button" id="savePDSButton"
-                            style="display: none;">Save</button>
+                        <button type="button" class="action-button" id="savePDSButton" style="display: none;">Save</button>
                     </div>
 
                 </div>
@@ -1120,7 +1110,40 @@
                     <p>File 4 Content</p>
                 </div>
             </div>
+
+            <!-- Other Files Section -->
+            <div class="other-files-section">
+                <h3>Other Files</h3>
+                <table class="other-files-table">
+                    <thead>
+                        <tr>
+                            <th>File Name</th>
+                            <th>File</th>
+                        </tr>
+                    </thead>
+                    <tbody id="otherFilesBody">
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
+
 
 @endsection
